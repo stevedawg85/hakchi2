@@ -268,6 +268,9 @@ namespace com.clusterrr.hakchi_gui
             }
         }
 
+        public static string board = "";
+        public static string region = "";
+
         void Clovershell_OnConnected()
         {
             try
@@ -276,8 +279,8 @@ namespace com.clusterrr.hakchi_gui
                 var customFirmware = Clovershell.ExecuteSimple("[ -d /var/lib/hakchi/firmware/ ] && [ -f /var/lib/hakchi/firmware/*.hsqs ] && echo YES || echo NO");
                 if (customFirmware == "NO")
                 {
-                    var board = Clovershell.ExecuteSimple("cat /etc/clover/boardtype", 500, true);
-                    var region = Clovershell.ExecuteSimple("cat /etc/clover/REGION", 500, true);
+                    board = Clovershell.ExecuteSimple("cat /etc/clover/boardtype", 500, true);
+                    region = Clovershell.ExecuteSimple("cat /etc/clover/REGION", 500, true);
                     Debug.WriteLine(string.Format("Detected board: {0}", board));
                     Debug.WriteLine(string.Format("Detected region: {0}", region));
                     switch (board)
@@ -809,7 +812,7 @@ namespace com.clusterrr.hakchi_gui
                 var maxGamesSize = DefaultMaxGamesSize * 1024 * 1024;
                 if (WorkerForm.NandCTotal > 0)
                 {
-                    maxGamesSize = (WorkerForm.NandCFree + WorkerForm.WritedGamesSize) - WorkerForm.ReservedMemory * 1024 * 1024;
+                    maxGamesSize = ((WorkerForm.extraFs ? WorkerForm.NandEFree : 0) + WorkerForm.NandCFree + WorkerForm.WritedGamesSize) - WorkerForm.ReservedMemory * 1024 * 1024;
                     toolStripStatusLabelSize.Text = string.Format("{0:F1}MB / {1:F1}MB", stats.Size / 1024.0 / 1024.0, maxGamesSize / 1024.0 / 1024.0);
                 }
                 else
