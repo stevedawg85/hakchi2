@@ -45,6 +45,7 @@ namespace com.clusterrr.hakchi_gui
         public string Mod = null;
         public string exportDirectory;
         public bool exportGames = false;
+        bool linkRelativeGames = false;
         public Dictionary<string, string> Config = null;
         public NesMenuCollection Games;
         public IEnumerable<string> hmodsInstall;
@@ -78,6 +79,7 @@ namespace com.clusterrr.hakchi_gui
         readonly string argumentsFilePath;
         readonly string transferDirectory;
         string tempGamesDirectory;
+        string relativeGamesPath;
         //string originalGamesConfigDirectory;
         //string hiddenPath;
         Dictionary<MainForm.ConsoleType, string[]> correctKernels = new Dictionary<MainForm.ConsoleType, string[]>();
@@ -832,6 +834,8 @@ namespace com.clusterrr.hakchi_gui
             const string squashFsPath = "/var/lib/hakchi/squashfs";
             int progress = 0;
             int maxProgress = 400;
+            linkRelativeGames = false;
+            
             if (Games == null || Games.Count == 0)
                 throw new Exception("there are no games");
             SetStatus(Resources.BuildingFolders);
@@ -879,6 +883,17 @@ namespace com.clusterrr.hakchi_gui
                 {
                     tempGamesDirectory = exportDirectory;
                 }
+
+                string exportDrive = Path.GetPathRoot(exportDirectory).ToLower();
+                string baseDrive = Path.GetPathRoot(Program.BaseDirectoryExternal).ToLower();
+                relativeGamesPath = "/media/" + NesMiniApplication.GamesDirectory.Substring(3).Replace("\\", "/");
+                linkRelativeGames = false;
+
+                if (exportDrive == baseDrive && exportGames == true)
+                {
+                    linkRelativeGames = (MessageBox.Show("Do you want to make linked games?", "Question", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question) == DialogResult.Yes);
+                }
+
                 Directory.CreateDirectory(tempDirectory);
                 Directory.CreateDirectory(tempGamesDirectory);
                 if (Directory.GetDirectories(tempGamesDirectory).Length > 0)
@@ -1319,7 +1334,8 @@ namespace com.clusterrr.hakchi_gui
                     var game = element as NesMiniApplication;
                     var gameSize = game.Size();
                     Debug.WriteLine(string.Format("Processing {0} ('{1}'), size: {2}KB", game.Code, game.Name, gameSize / 1024));
-                    var gameCopy = game.CopyTo(targetDirectory);
+
+                    var gameCopy = game.CopyTo(targetDirectory, (linkRelativeGames ? $"{relativeGamesPath}/{game.Code}" : null));
                     stats.TotalSize += gameSize;
                     stats.TransferSize += gameSize;
                     stats.TotalGames++;
