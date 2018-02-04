@@ -248,7 +248,7 @@ namespace com.clusterrr.hakchi_gui
             }
             SetStatus(Resources.WaitingForDevice);
             TaskbarProgress.SetState(this, TaskbarProgress.TaskbarStates.Paused);
-            var result = WaitingClovershellForm.WaitForDevice(this);
+            var result = WaitingConsoleConnectionForm.WaitForDevice(this);
             TaskbarProgress.SetState(this, TaskbarProgress.TaskbarStates.Normal);
             if (result)
                 return DialogResult.OK;
@@ -884,7 +884,7 @@ namespace com.clusterrr.hakchi_gui
         {
             int progress = 0;
             int maxProgress = 500;
-            var clovershell = MainForm.Clovershell;
+            var sshClientWrapper = MainForm.sshClientWrapper;
             try
             {
                 if (WaitForClovershellFromThread() != DialogResult.OK)
@@ -896,7 +896,7 @@ namespace com.clusterrr.hakchi_gui
                 SetProgress(progress, maxProgress);
 
                 ShowSplashScreen();
-                clovershell.ExecuteSimple("sync");
+                sshClientWrapper.ExecuteSimple("sync");
 
                 var partitionSize = 300 * 1024;
                 try
@@ -904,11 +904,11 @@ namespace com.clusterrr.hakchi_gui
                     switch (task)
                     {
                         case Tasks.DumpNandB:
-                            partitionSize = int.Parse(clovershell.ExecuteSimple("echo $((($(hexdump -e '1/4 \"%u\"' -s $((0x28)) -n 4 /dev/mapper/root-crypt)+0xfff)/0x1000))").Trim()) * 4;
+                            partitionSize = int.Parse(sshClientWrapper.ExecuteSimple("echo $((($(hexdump -e '1/4 \"%u\"' -s $((0x28)) -n 4 /dev/mapper/root-crypt)+0xfff)/0x1000))").Trim()) * 4;
                             break;
                         case Tasks.DumpNandC:
                         case Tasks.FlashNandC:
-                            partitionSize = int.Parse(clovershell.ExecuteSimple("df /dev/nandc | tail -n 1 | awk '{ print $2 }'"));
+                            partitionSize = int.Parse(sshClientWrapper.ExecuteSimple("df /dev/nandc | tail -n 1 | awk '{ print $2 }'"));
                             break;
                     }
                 }
@@ -929,10 +929,10 @@ namespace com.clusterrr.hakchi_gui
                         switch (task)
                         {
                             case Tasks.DumpNandB:
-                                clovershell.Execute($"dd if=/dev/mapper/root-crypt bs=4K count={partitionSize / 4}", null, file);
+                                sshClientWrapper.Execute($"dd if=/dev/mapper/root-crypt bs=4K count={partitionSize / 4}", null, file);
                                 break;
                             case Tasks.DumpNandC:
-                                clovershell.Execute("dd if=/dev/nandc", null, file);
+                                sshClientWrapper.Execute("dd if=/dev/nandc", null, file);
                                 break;
                         }
                         file.Close();
@@ -948,7 +948,7 @@ namespace com.clusterrr.hakchi_gui
                             progress = (int)(5 + Position / 1024 / 1024);
                             SetProgress(progress, maxProgress);
                         };
-                        clovershell.Execute("dd of=/dev/nandc", file);
+                        sshClientWrapper.Execute("dd of=/dev/nandc", file);
                         file.Close();
                     }
                 }
@@ -960,8 +960,8 @@ namespace com.clusterrr.hakchi_gui
             {
                 try
                 {
-                    if (clovershell.IsOnline)
-                        clovershell.ExecuteSimple("reboot", 100);
+                    if (MainForm.IsConsoleConnected)
+                        sshClientWrapper.ExecuteSimple("reboot", 100);
                 }
                 catch { }
             }
@@ -976,11 +976,11 @@ namespace com.clusterrr.hakchi_gui
         {
             try
             {
-                var clovershell = MainForm.Clovershell;
-                var storage = clovershell.ExecuteSimple("df \"$(hakchi findGameSyncStorage)\" | tail -n 1 | awk '{ print $2 \" | \" $3 \" | \" $4 }'", 2000, true).Split('|');
-                ExternalSaves = clovershell.ExecuteSimple("mount | grep /var/lib/clover").Trim().Length > 0;
-                WrittenGamesSize = long.Parse(clovershell.ExecuteSimple("du -s \"$(hakchi findGameSyncStorage)\" | awk '{ print $1 }'", 2000, true)) * 1024;
-                SaveStatesSize = long.Parse(clovershell.ExecuteSimple("du -s \"$(readlink /var/saves)\" | awk '{ print $1 }'", 2000, true)) * 1024;
+                var sshClientWrapper = MainForm.sshClientWrapper;
+                var storage = sshClientWrapper.ExecuteSimple("df \"$(hakchi findGameSyncStorage)\" | tail -n 1 | awk '{ print $2 \" | \" $3 \" | \" $4 }'", 2000, true).Split('|');
+                ExternalSaves = sshClientWrapper.ExecuteSimple("mount | grep /var/lib/clover").Trim().Length > 0;
+                WrittenGamesSize = long.Parse(sshClientWrapper.ExecuteSimple("du -s \"$(hakchi findGameSyncStorage)\" | awk '{ print $1 }'", 2000, true)) * 1024;
+                SaveStatesSize = long.Parse(sshClientWrapper.ExecuteSimple("du -s \"$(readlink /var/saves)\" | awk '{ print $1 }'", 2000, true)) * 1024;
                 StorageTotal = long.Parse(storage[0]) * 1024;
                 StorageUsed = long.Parse(storage[1]) * 1024;
                 StorageFree = long.Parse(storage[2]) * 1024;
@@ -1003,24 +1003,24 @@ namespace com.clusterrr.hakchi_gui
 
         public static MainForm.ConsoleType GetConsoleType(bool realType = false)
         {
-            var clovershell = MainForm.Clovershell;
-            var customFirmwareLoaded = clovershell.ExecuteSimple("hakchi currentFirmware") != "_nand_";
+            var sshClientWrapper = MainForm.sshClientWrapper;
+            var customFirmwareLoaded = sshClientWrapper.ExecuteSimple("hakchi currentFirmware") != "_nand_";
             string board, region;
             if (!customFirmwareLoaded || !realType)
             {
-                board = clovershell.ExecuteSimple("cat /etc/clover/boardtype", 3000, true);
-                region = clovershell.ExecuteSimple("cat /etc/clover/REGION", 3000, true);
+                board = sshClientWrapper.ExecuteSimple("cat /etc/clover/boardtype", 3000, true);
+                region = sshClientWrapper.ExecuteSimple("cat /etc/clover/REGION", 3000, true);
             }
             else
             {
-                clovershell.ExecuteSimple("cryptsetup open /dev/nandb root-crypt --readonly --type plain --cipher aes-xts-plain --key-file /etc/key-file", 3000);
-                clovershell.ExecuteSimple("mkdir -p /var/squashfs-original", 3000, true);
-                clovershell.ExecuteSimple("mount /dev/mapper/root-crypt /var/squashfs-original", 3000, true);
-                board = clovershell.ExecuteSimple("cat /var/squashfs-original/etc/clover/boardtype", 3000, true);
-                region = clovershell.ExecuteSimple("cat /var/squashfs-original/etc/clover/REGION", 3000, true);
-                clovershell.ExecuteSimple("umount /var/squashfs-original", 3000, true);
-                clovershell.ExecuteSimple("rm -rf /var/squashfs-original", 3000, true);
-                clovershell.ExecuteSimple("cryptsetup close root-crypt", 3000, true);
+                sshClientWrapper.ExecuteSimple("cryptsetup open /dev/nandb root-crypt --readonly --type plain --cipher aes-xts-plain --key-file /etc/key-file", 3000);
+                sshClientWrapper.ExecuteSimple("mkdir -p /var/squashfs-original", 3000, true);
+                sshClientWrapper.ExecuteSimple("mount /dev/mapper/root-crypt /var/squashfs-original", 3000, true);
+                board = sshClientWrapper.ExecuteSimple("cat /var/squashfs-original/etc/clover/boardtype", 3000, true);
+                region = sshClientWrapper.ExecuteSimple("cat /var/squashfs-original/etc/clover/REGION", 3000, true);
+                sshClientWrapper.ExecuteSimple("umount /var/squashfs-original", 3000, true);
+                sshClientWrapper.ExecuteSimple("rm -rf /var/squashfs-original", 3000, true);
+                sshClientWrapper.ExecuteSimple("cryptsetup close root-crypt", 3000, true);
             }
             Debug.WriteLine(string.Format("Detected board: {0}", board));
             Debug.WriteLine(string.Format("Detected region: {0}", region));
@@ -1053,14 +1053,14 @@ namespace com.clusterrr.hakchi_gui
 
         public static void ShowSplashScreen()
         {
-            var clovershell = MainForm.Clovershell;
+            var sshClientWrapper = MainForm.sshClientWrapper;
             var splashScreenPath = Path.Combine(Path.Combine(Program.BaseDirectoryInternal, "data"), "splash.gz");
-            clovershell.ExecuteSimple("uistop");
+            sshClientWrapper.ExecuteSimple("uistop");
             if (File.Exists(splashScreenPath))
             {
                 using (var splash = new FileStream(splashScreenPath, FileMode.Open))
                 {
-                    clovershell.Execute("gunzip -c - > /dev/fb0", splash, null, null, 3000);
+                    sshClientWrapper.Execute("gunzip -c - > /dev/fb0", splash, null, null, 3000);
                 }
             }
         }
@@ -1110,7 +1110,7 @@ namespace com.clusterrr.hakchi_gui
             progress += 5;
             SetProgress(progress, maxProgress);
 
-            var clovershell = MainForm.Clovershell;
+            var sshClientWrapper = MainForm.sshClientWrapper;
             try
             {
                 if (WaitForClovershellFromThread() != DialogResult.OK)
@@ -1122,9 +1122,9 @@ namespace com.clusterrr.hakchi_gui
                 SetStatus(Resources.AddingGames);
 
                 gameSyncPath = Shared.GetRemoteGameSyncPath();
-                gamesPath = clovershell.ExecuteSimple("hakchi get gamepath", 2000, true).Trim();
-                rootFsPath = clovershell.ExecuteSimple("hakchi get rootfs", 2000, true).Trim();
-                squashFsPath = clovershell.ExecuteSimple("hakchi get squashfs", 2000, true).Trim();
+                gamesPath = sshClientWrapper.ExecuteSimple("hakchi get gamepath", 2000, true).Trim();
+                rootFsPath = sshClientWrapper.ExecuteSimple("hakchi get rootfs", 2000, true).Trim();
+                squashFsPath = sshClientWrapper.ExecuteSimple("hakchi get squashfs", 2000, true).Trim();
 
                 progress += 5;
                 SetProgress(progress, maxProgress);
@@ -1136,7 +1136,7 @@ namespace com.clusterrr.hakchi_gui
                 if (ConfigIni.SeparateGameStorage)
                 {
                     SetStatus(Resources.CleaningUp);
-                    clovershell.ExecuteSimple("find \"$(hakchi findGameSyncStorage)/\" -maxdepth 1 | grep -vEe '(/snes(-usa|-eur|-jpn)?|/nes(-usa|-jpn)?|/)$' | while read f; do rm -rf \"$f\"; done", 0, true);
+                    sshClientWrapper.ExecuteSimple("find \"$(hakchi findGameSyncStorage)/\" -maxdepth 1 | grep -vEe '(/snes(-usa|-eur|-jpn)?|/nes(-usa|-jpn)?|/)$' | while read f; do rm -rf \"$f\"; done", 0, true);
                 }
                 progress += 5;
                 SetProgress(progress, maxProgress);
@@ -1172,7 +1172,7 @@ namespace com.clusterrr.hakchi_gui
                 HashSet<ApplicationFileInfo> localGameSet = ApplicationFileInfo.GetApplicationFileInfoForDirectory(tempGamesDirectory);
 
                 // Get the remote list of files, timestamps, and sizes
-                string gamesOnDevice = clovershell.ExecuteSimple($"mkdir -p \"{gameSyncPath}\"; cd \"{gameSyncPath}\"; find . -type f -exec sh -c \"stat \\\"{{}}\\\" -c \\\"%n %s %y\\\"\" \\;", 0, true);
+                string gamesOnDevice = sshClientWrapper.ExecuteSimple($"mkdir -p \"{gameSyncPath}\"; cd \"{gameSyncPath}\"; find . -type f -exec sh -c \"stat \\\"{{}}\\\" -c \\\"%n %s %y\\\"\" \\;", 0, true);
                 HashSet<ApplicationFileInfo> remoteGameSet = ApplicationFileInfo.GetApplicationFileInfoFromConsoleOutput(gamesOnDevice);
 
                 // Delete any remote files that aren't present locally
@@ -1185,7 +1185,7 @@ namespace com.clusterrr.hakchi_gui
 
                 // Now transfer whatever games are remaining in the temp directory
                 int startProgress = progress;
-                clovershell.ExecuteSimple("hakchi eval 'umount \"$gamepath\"'");
+                sshClientWrapper.ExecuteSimple("hakchi eval 'umount \"$gamepath\"'");
                 using (var gamesTar = new TarStream(tempGamesDirectory, null, null))
                 {
                     maxProgress = (int)(gamesTar.Length / 1024 / 1024 + 55 + originalGames.Count() * 2);
@@ -1200,13 +1200,13 @@ namespace com.clusterrr.hakchi_gui
                         };
 
                         SetStatus(Resources.UploadingGames);
-                        clovershell.Execute($"tar -xvC \"{gameSyncPath}\"", gamesTar, null, null, 30000, true);
+                        sshClientWrapper.Execute($"tar -xvC \"{gameSyncPath}\"", gamesTar, null, null, 30000, true);
                     }
                 }
 
                 // Finally, delete any empty directories we may have left during the differential sync
                 SetStatus(Resources.CleaningUp);
-                clovershell.ExecuteSimple($"for f in $(find \"{gameSyncPath}\" -type d -mindepth 1 -maxdepth 2); do {{ ls -1 \"$f\" | grep -v pixelart | grep -v autoplay " +
+                sshClientWrapper.ExecuteSimple($"for f in $(find \"{gameSyncPath}\" -type d -mindepth 1 -maxdepth 2); do {{ ls -1 \"$f\" | grep -v pixelart | grep -v autoplay " +
                     "| wc -l | { read wc; test $wc -eq 0 && rm -rf \"$f\"; } } ; done", 0);
 
                 SetStatus(Resources.UploadingOriginalGames);
@@ -1237,7 +1237,7 @@ namespace com.clusterrr.hakchi_gui
 
                     //originalSyncCode += $" && sed -Ee 's#([ =])(/var/lib/hakchi/squashfs)?{gamesPath}/#\\1{squashFsPath}{gamesPath}/#' -i '{gameSyncPath}/{originalGames[originalCode]}/{originalCode}/{originalCode}.desktop' && " +
                     //    "echo 'OK'";
-                    clovershell.ExecuteSimple(originalSyncCode, 30000, true);
+                    sshClientWrapper.ExecuteSimple(originalSyncCode, 30000, true);
                     progress += 2;
                     SetProgress(progress, maxProgress);
                 };
@@ -1261,8 +1261,8 @@ namespace com.clusterrr.hakchi_gui
             {
                 try
                 {
-                    if (clovershell.IsOnline)
-                        clovershell.ExecuteSimple("hakchi overmount_games; uistart", 100);
+                    if (MainForm.IsConsoleConnected)
+                        sshClientWrapper.ExecuteSimple("hakchi overmount_games; uistart", 100);
                 }
                 catch { }
             }
@@ -1270,7 +1270,7 @@ namespace com.clusterrr.hakchi_gui
 
         private void DeleteRemoteApplicationFiles(IEnumerable<ApplicationFileInfo> filesToDelete)
         {
-            var clovershell = MainForm.Clovershell;
+            var sshClientWrapper = MainForm.sshClientWrapper;
             string syncPath = Shared.GetRemoteGameSyncPath();
             MemoryStream commandBuilder = new MemoryStream();
 
@@ -1285,12 +1285,12 @@ namespace com.clusterrr.hakchi_gui
 
             try
             {
-                clovershell.Execute("cat > /tmp/cleanup.sh", commandBuilder, null, null, 5000, true);
-                clovershell.ExecuteSimple("chmod +x /tmp/cleanup.sh && /tmp/cleanup.sh", 0, true);
+                sshClientWrapper.Execute("cat > /tmp/cleanup.sh", commandBuilder, null, null, 5000, true);
+                sshClientWrapper.ExecuteSimple("chmod +x /tmp/cleanup.sh && /tmp/cleanup.sh", 0, true);
             }
             finally
             {
-                clovershell.ExecuteSimple("rm /tmp/cleanup.sh");
+                sshClientWrapper.ExecuteSimple("rm /tmp/cleanup.sh");
             }
         }
 
@@ -1390,17 +1390,17 @@ namespace com.clusterrr.hakchi_gui
             {
                 if (updateTar.Length > 0)
                 {
-                    var clovershell = MainForm.Clovershell;
-                    clovershell.Execute("tar -xvC /", updateTar, null, null, 30000, true);
-                    clovershell.ExecuteSimple("chmod +x /bin/*", 3000, true);
-                    clovershell.ExecuteSimple("chmod +x /etc/init.d/*", 3000, true);
+                    var sshClientWrapper = MainForm.sshClientWrapper;
+                    sshClientWrapper.Execute("tar -xvC /", updateTar, null, null, 30000, true);
+                    sshClientWrapper.ExecuteSimple("chmod +x /bin/*", 3000, true);
+                    sshClientWrapper.ExecuteSimple("chmod +x /etc/init.d/*", 3000, true);
                 }
             }
         }
 
         public static void SyncConfig(Dictionary<string, string> Config, bool reboot = false)
         {
-            var clovershell = MainForm.Clovershell;
+            var sshClientWrapper = MainForm.sshClientWrapper;
             const string configPath = "/etc/preinit.d/p0000_config";
 
             // Writing config
@@ -1413,13 +1413,13 @@ namespace com.clusterrr.hakchi_gui
                     config.Write(data, 0, data.Length);
                 }
             }
-            clovershell.Execute($"cat >> {configPath}", config, null, null, 3000, true);
+            sshClientWrapper.Execute($"cat >> {configPath}", config, null, null, 3000, true);
             config.Dispose();
             if (reboot)
             {
                 try
                 {
-                    clovershell.ExecuteSimple("reboot", 100);
+                    sshClientWrapper.ExecuteSimple("reboot", 100);
                 }
                 catch { }
             }
@@ -1427,12 +1427,12 @@ namespace com.clusterrr.hakchi_gui
 
         public static Image TakeScreenshot()
         {
-            var clovershell = MainForm.Clovershell;
+            var sshClientWrapper = MainForm.sshClientWrapper;
             var screenshot = new Bitmap(1280, 720, PixelFormat.Format24bppRgb);
             var rawStream = new MemoryStream();
-            clovershell.ExecuteSimple("hakchi uipause");
-            clovershell.Execute("cat /dev/fb0", null, rawStream, null, 1000, true);
-            clovershell.ExecuteSimple("hakchi uiresume");
+            sshClientWrapper.ExecuteSimple("hakchi uipause");
+            sshClientWrapper.Execute("cat /dev/fb0", null, rawStream, null, 1000, true);
+            sshClientWrapper.ExecuteSimple("hakchi uiresume");
             var raw = rawStream.ToArray();
             BitmapData data = screenshot.LockBits(
                 new Rectangle(0, 0, screenshot.Width, screenshot.Height),
@@ -1462,9 +1462,9 @@ namespace com.clusterrr.hakchi_gui
 
         public void ProcessMods()
         {
-            if (MainForm.Clovershell.IsOnline)
+            if (MainForm.IsConsoleConnected)
             {
-                MainForm.Clovershell.ExecuteSimple("uistop");
+                MainForm.sshClientWrapper.ExecuteSimple("uistop");
                 int hmodCount = hmodsInstall.Count() + 1;
                 int hmodCounter = 0;
                 if (hmodsInstall != null && hmodsInstall.Count() > 0)
@@ -1479,20 +1479,20 @@ namespace com.clusterrr.hakchi_gui
                             if (Directory.Exists(Path.Combine(dir, modName)))
                             {
 
-                                MainForm.Clovershell.ExecuteSimple($"mkdir -p '{hmodHakchiPath}'");
+                                MainForm.sshClientWrapper.ExecuteSimple($"mkdir -p '{hmodHakchiPath}'");
                                 using (var hmodTar = new TarStream(Path.Combine(dir, modName)))
                                 {
                                     if (hmodTar.Length > 0)
                                     {
-                                        MainForm.Clovershell.Execute($"tar -xvC '{hmodHakchiPath}'", hmodTar, null, null, 0, true);
+                                        MainForm.sshClientWrapper.Execute($"tar -xvC '{hmodHakchiPath}'", hmodTar, null, null, 0, true);
                                     }
                                 }
                                 break;
                             }
                             if (File.Exists(Path.Combine(dir, modName)))
                             {
-                                MainForm.Clovershell.ExecuteSimple($"mkdir -p '{hmodHakchiPath}'");
-                                MainForm.Clovershell.Execute($"tar -xzvC '{hmodHakchiPath}'", File.OpenRead(Path.Combine(dir, modName)), null, null, 0, true);
+                                MainForm.sshClientWrapper.ExecuteSimple($"mkdir -p '{hmodHakchiPath}'");
+                                MainForm.sshClientWrapper.Execute($"tar -xzvC '{hmodHakchiPath}'", File.OpenRead(Path.Combine(dir, modName)), null, null, 0, true);
                                 break;
                             }
                         }
@@ -1503,16 +1503,16 @@ namespace com.clusterrr.hakchi_gui
                 if (hmodsUninstall != null && hmodsUninstall.Count() > 0)
                 {
                     SetStatus(Resources.UninstallingMods);
-                    MainForm.Clovershell.ExecuteSimple("mkdir -p /var/lib/hakchi/transfer/", 2000, true);
-                    MainForm.Clovershell.Execute("cat > /var/lib/hakchi/transfer/uninstall", Shared.GenerateStreamFromString(String.Join("\n", hmodsUninstall.ToArray())), null, null, 0, true);
+                    MainForm.sshClientWrapper.ExecuteSimple("mkdir -p /var/lib/hakchi/transfer/", 2000, true);
+                    MainForm.sshClientWrapper.Execute("cat > /var/lib/hakchi/transfer/uninstall", Shared.GenerateStreamFromString(String.Join("\n", hmodsUninstall.ToArray())), null, null, 0, true);
                 }
                 if((hmodsInstall != null && hmodsInstall.Count() > 0) || (hmodsUninstall != null && hmodsUninstall.Count() > 0))
                 {
-                    MainForm.Clovershell.ExecuteSimple("hakchi packs_install /tmp/hmods/", 0);
+                    MainForm.sshClientWrapper.ExecuteSimple("hakchi packs_install /tmp/hmods/", 0);
 
                     try
                     {
-                        MainForm.Clovershell.ExecuteSimple("reboot");
+                        MainForm.sshClientWrapper.ExecuteSimple("reboot");
                     }
                     catch { }
 
@@ -1598,7 +1598,7 @@ namespace com.clusterrr.hakchi_gui
                 Thread.Sleep(500);
                 progress++;
                 SetProgress(progress, maxProgress);
-                if (MainForm.Clovershell.IsOnline)
+                if (MainForm.IsConsoleConnected)
                     break;
             }
 #if !DEBUG
@@ -2229,10 +2229,10 @@ namespace com.clusterrr.hakchi_gui
         {
             if (Games == null) return;
 
-            var clovershell = MainForm.Clovershell;
-            if (!clovershell.IsOnline) return;
+            var sshClientWrapper = MainForm.sshClientWrapper;
+            if (!MainForm.IsConsoleConnected) return;
 
-            string gamesCloverPath = clovershell.ExecuteSimple("hakchi eval 'echo \"$squashfs$gamepath\"'", 2000, true);
+            string gamesCloverPath = sshClientWrapper.ExecuteSimple("hakchi eval 'echo \"$squashfs$gamepath\"'", 2000, true);
             string cachePath = Path.Combine(Program.BaseDirectoryExternal, "games_cache");
 
             try
@@ -2240,11 +2240,11 @@ namespace com.clusterrr.hakchi_gui
                 SevenZipExtractor.SetLibraryPath(Path.Combine(Program.BaseDirectoryInternal, IntPtr.Size == 8 ? @"tools\7z64.dll" : @"tools\7z.dll"));
                 SetStatus(string.Format(Resources.UpdatingLocalCache));
 
-                var reply = clovershell.ExecuteSimple($"[ -d {gamesCloverPath} ] && echo YES || echo NO");
+                var reply = sshClientWrapper.ExecuteSimple($"[ -d {gamesCloverPath} ] && echo YES || echo NO");
                 if (reply == "NO")
                 {
                     gamesCloverPath = NesApplication.GamesHakchiPath;
-                    reply = clovershell.ExecuteSimple($"[ -d {gamesCloverPath} ] && echo YES || echo NO");
+                    reply = sshClientWrapper.ExecuteSimple($"[ -d {gamesCloverPath} ] && echo YES || echo NO");
                     if( reply == "NO")
                         throw new Exception("unable to update local cache. games directory not accessible.");
                 }
@@ -2262,7 +2262,7 @@ namespace com.clusterrr.hakchi_gui
                             using (var tar = new MemoryStream())
                             {
                                 string cmd = $"cd {gamesCloverPath}/{game.Code} && tar -c *";
-                                clovershell.Execute(cmd, null, tar, null, 10000, true);
+                                sshClientWrapper.Execute(cmd, null, tar, null, 10000, true);
                                 tar.Seek(0, SeekOrigin.Begin);
                                 using (var szExtractorTar = new SevenZipExtractor(tar))
                                     szExtractorTar.ExtractArchive(gamePath);

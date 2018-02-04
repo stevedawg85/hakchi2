@@ -9,9 +9,9 @@ using System.Windows.Forms;
 
 namespace com.clusterrr.hakchi_gui
 {
-    public partial class WaitingClovershellForm : Form
+    public partial class WaitingConsoleConnectionForm : Form
     {
-        public WaitingClovershellForm()
+        public WaitingConsoleConnectionForm()
         {
             InitializeComponent();
             buttonDriver.Left = label6.Left + label6.Width;
@@ -21,14 +21,14 @@ namespace com.clusterrr.hakchi_gui
         public static bool WaitForDevice(IWin32Window owner)
         {
             if (DeviceExists()) return true;
-            var form = new WaitingClovershellForm();
+            var form = new WaitingConsoleConnectionForm();
             form.ShowDialog(owner);
             return form.DialogResult == DialogResult.OK;
         }
 
         static bool DeviceExists()
         {
-            return MainForm.Clovershell.IsOnline;
+            return MainForm.sshClientWrapper.IsConnected;
         }
 
         private void timer_Tick(object sender, EventArgs e)

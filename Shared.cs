@@ -398,13 +398,13 @@ namespace com.clusterrr.hakchi_gui
 
         public static string GetRemoteGameSyncPath()
         {
-            var clovershell = MainForm.Clovershell;
-            string gameSyncStorage = clovershell.ExecuteSimple("hakchi findGameSyncStorage", 2000, true).Trim();
+            var sshClientWrapper = MainForm.sshClientWrapper;
+            string gameSyncStorage = sshClientWrapper.ExecuteSimple("hakchi findGameSyncStorage", 2000, true).Trim();
             string gameSyncPath = gameSyncStorage;
 
             if (ConfigIni.SeparateGameStorage)
             {
-                string systemCode = clovershell.ExecuteSimple("hakchi eval 'echo \"$sftype-$sfregion\"'", 2000, true).Trim();
+                string systemCode = sshClientWrapper.ExecuteSimple("hakchi eval 'echo \"$sftype-$sfregion\"'", 2000, true).Trim();
                 gameSyncPath = $"{gameSyncStorage}/{systemCode}";
             }
 

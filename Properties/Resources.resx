@@ -112,10 +112,10 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AreYouSure" xml:space="preserve">
     <value>Are you sure?</value>
@@ -309,7 +309,7 @@
   <data name="NotFound" xml:space="preserve">
     <value>Not found:</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="gamepad" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\gamepad.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -911,5 +911,23 @@ http://darkakuma.z-net.us/p/sfromtool.html</value>
   </data>
   <data name="FormatNandCQ" xml:space="preserve">
     <value>Do you want to format NAND-C? It will erase all user data.</value>
+  </data>
+  <data name="KernelRequiresReflash" xml:space="preserve">
+    <value>Your system's custom kernel is out of date and requires a reflash before you can use this program. Would you like to flash the custom kernel now?</value>
+  </data>
+  <data name="KernelRequiresReflashTitle" xml:space="preserve">
+    <value>Kernel out of date</value>
+  </data>
+  <data name="RootfsEligibleForUpdates" xml:space="preserve">
+    <value>Your system's kernel scripts are out of date and can be updated. Would you like to update the custom kernel scripts now?</value>
+  </data>
+  <data name="RootfsRequiresUpdates" xml:space="preserve">
+    <value>Your system's kernel scripts are out of date and it requires a memboot before you can use this program. Would you like to memboot the custom kernel now?</value>
+  </data>
+  <data name="RootfsRequiresUpdatesTitle" xml:space="preserve">
+    <value>Scripts out of date</value>
+  </data>
+  <data name="UpdatesNotInstalledWarning" xml:space="preserve">
+    <value>Until you install the necessary updates, you will likely experience errors while attempting to use this program. Please update to receive full compatibility.</value>
   </data>
 </root>

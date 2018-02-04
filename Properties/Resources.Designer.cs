@@ -22,7 +22,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    public class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("com.clusterrr.hakchi_gui.Properties.Resources", typeof(Resources).Assembly);
@@ -51,7 +51,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Aborting....
         /// </summary>
-        internal static string Aborting {
+        public static string Aborting {
             get {
                 return ResourceManager.GetString("Aborting", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Processing games, please wait....
         /// </summary>
-        internal static string AddingGames {
+        public static string AddingGames {
             get {
                 return ResourceManager.GetString("AddingGames", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to All files.
         /// </summary>
-        internal static string AllFiles {
+        public static string AllFiles {
             get {
                 return ResourceManager.GetString("AllFiles", resourceCulture);
             }
@@ -90,7 +90,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Apply changes.
         /// </summary>
-        internal static string ApplyChanges {
+        public static string ApplyChanges {
             get {
                 return ResourceManager.GetString("ApplyChanges", resourceCulture);
             }
@@ -99,7 +99,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Do you want to apply your changes?.
         /// </summary>
-        internal static string ApplyChangesQ {
+        public static string ApplyChangesQ {
             get {
                 return ResourceManager.GetString("ApplyChangesQ", resourceCulture);
             }
@@ -108,7 +108,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap ar {
+        public static System.Drawing.Bitmap ar {
             get {
                 object obj = ResourceManager.GetObject("ar", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -118,7 +118,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Are you sure?.
         /// </summary>
-        internal static string AreYouSure {
+        public static string AreYouSure {
             get {
                 return ResourceManager.GetString("AreYouSure", resourceCulture);
             }
@@ -127,7 +127,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Data automatically filled for {0} game(s)..
         /// </summary>
-        internal static string AutofillResult {
+        public static string AutofillResult {
             get {
                 return ResourceManager.GetString("AutofillResult", resourceCulture);
             }
@@ -136,7 +136,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Hold Select+A/B for a second to enable/disable autofire A/B..
         /// </summary>
-        internal static string AutofireHelp1 {
+        public static string AutofireHelp1 {
             get {
                 return ResourceManager.GetString("AutofireHelp1", resourceCulture);
             }
@@ -145,7 +145,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap bg {
+        public static System.Drawing.Bitmap bg {
             get {
                 object obj = ResourceManager.GetObject("bg", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -155,7 +155,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap blank_2600 {
+        public static System.Drawing.Bitmap blank_2600 {
             get {
                 object obj = ResourceManager.GetObject("blank_2600", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -165,7 +165,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap blank_32x {
+        public static System.Drawing.Bitmap blank_32x {
             get {
                 object obj = ResourceManager.GetObject("blank_32x", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -175,7 +175,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap blank_app {
+        public static System.Drawing.Bitmap blank_app {
             get {
                 object obj = ResourceManager.GetObject("blank_app", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -185,7 +185,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap blank_arcade {
+        public static System.Drawing.Bitmap blank_arcade {
             get {
                 object obj = ResourceManager.GetObject("blank_arcade", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -195,7 +195,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap blank_dos {
+        public static System.Drawing.Bitmap blank_dos {
             get {
                 object obj = ResourceManager.GetObject("blank_dos", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -205,7 +205,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap blank_fds {
+        public static System.Drawing.Bitmap blank_fds {
             get {
                 object obj = ResourceManager.GetObject("blank_fds", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -215,7 +215,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap blank_gb {
+        public static System.Drawing.Bitmap blank_gb {
             get {
                 object obj = ResourceManager.GetObject("blank_gb", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -225,7 +225,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap blank_gba {
+        public static System.Drawing.Bitmap blank_gba {
             get {
                 object obj = ResourceManager.GetObject("blank_gba", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -235,7 +235,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap blank_gbc {
+        public static System.Drawing.Bitmap blank_gbc {
             get {
                 object obj = ResourceManager.GetObject("blank_gbc", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -245,7 +245,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap blank_genesis {
+        public static System.Drawing.Bitmap blank_genesis {
             get {
                 object obj = ResourceManager.GetObject("blank_genesis", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -255,7 +255,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap blank_gg {
+        public static System.Drawing.Bitmap blank_gg {
             get {
                 object obj = ResourceManager.GetObject("blank_gg", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -265,7 +265,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap blank_jp {
+        public static System.Drawing.Bitmap blank_jp {
             get {
                 object obj = ResourceManager.GetObject("blank_jp", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -275,7 +275,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap blank_n64 {
+        public static System.Drawing.Bitmap blank_n64 {
             get {
                 object obj = ResourceManager.GetObject("blank_n64", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -285,7 +285,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap blank_neogeo {
+        public static System.Drawing.Bitmap blank_neogeo {
             get {
                 object obj = ResourceManager.GetObject("blank_neogeo", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -295,7 +295,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap blank_nes {
+        public static System.Drawing.Bitmap blank_nes {
             get {
                 object obj = ResourceManager.GetObject("blank_nes", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -305,7 +305,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap blank_pce {
+        public static System.Drawing.Bitmap blank_pce {
             get {
                 object obj = ResourceManager.GetObject("blank_pce", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -315,7 +315,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap blank_sms {
+        public static System.Drawing.Bitmap blank_sms {
             get {
                 object obj = ResourceManager.GetObject("blank_sms", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -325,7 +325,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap blank_snes_eu_jp {
+        public static System.Drawing.Bitmap blank_snes_eu_jp {
             get {
                 object obj = ResourceManager.GetObject("blank_snes_eu_jp", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -335,7 +335,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap blank_snes_us {
+        public static System.Drawing.Bitmap blank_snes_us {
             get {
                 object obj = ResourceManager.GetObject("blank_snes_us", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -345,7 +345,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap br {
+        public static System.Drawing.Bitmap br {
             get {
                 object obj = ResourceManager.GetObject("br", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -355,7 +355,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Building the custom kernel image....
         /// </summary>
-        internal static string BuildingCustom {
+        public static string BuildingCustom {
             get {
                 return ResourceManager.GetString("BuildingCustom", resourceCulture);
             }
@@ -364,7 +364,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Building the folder structure....
         /// </summary>
-        internal static string BuildingFolders {
+        public static string BuildingFolders {
             get {
                 return ResourceManager.GetString("BuildingFolders", resourceCulture);
             }
@@ -373,7 +373,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Building menu....
         /// </summary>
-        internal static string BuildingMenu {
+        public static string BuildingMenu {
             get {
                 return ResourceManager.GetString("BuildingMenu", resourceCulture);
             }
@@ -382,7 +382,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Calculating differential....
         /// </summary>
-        internal static string CalculatingDiff {
+        public static string CalculatingDiff {
             get {
                 return ResourceManager.GetString("CalculatingDiff", resourceCulture);
             }
@@ -391,7 +391,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Error deleting temp folder. Please try again..
         /// </summary>
-        internal static string CannotDeleteTempFolder {
+        public static string CannotDeleteTempFolder {
             get {
                 return ResourceManager.GetString("CannotDeleteTempFolder", resourceCulture);
             }
@@ -400,7 +400,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Cleaning up previous task....
         /// </summary>
-        internal static string CleaningUp {
+        public static string CleaningUp {
             get {
                 return ResourceManager.GetString("CleaningUp", resourceCulture);
             }
@@ -409,7 +409,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap cn {
+        public static System.Drawing.Bitmap cn {
             get {
                 object obj = ResourceManager.GetObject("cn", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -419,7 +419,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Compressing {0}....
         /// </summary>
-        internal static string Compressing {
+        public static string Compressing {
             get {
                 return ResourceManager.GetString("Compressing", resourceCulture);
             }
@@ -428,7 +428,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Compressing games....
         /// </summary>
-        internal static string CompressingGames {
+        public static string CompressingGames {
             get {
                 return ResourceManager.GetString("CompressingGames", resourceCulture);
             }
@@ -437,7 +437,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Congratulations!.
         /// </summary>
-        internal static string Congratulations {
+        public static string Congratulations {
             get {
                 return ResourceManager.GetString("Congratulations", resourceCulture);
             }
@@ -446,7 +446,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Box art.
         /// </summary>
-        internal static string Cover {
+        public static string Cover {
             get {
                 return ResourceManager.GetString("Cover", resourceCulture);
             }
@@ -455,7 +455,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to App code already exists, please use a different code!.
         /// </summary>
-        internal static string CustomGameCodeAlreadyExists {
+        public static string CustomGameCodeAlreadyExists {
             get {
                 return ResourceManager.GetString("CustomGameCodeAlreadyExists", resourceCulture);
             }
@@ -464,7 +464,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to You need to enter a valid app code and name!.
         /// </summary>
-        internal static string CustomGameNeedValidData {
+        public static string CustomGameNeedValidData {
             get {
                 return ResourceManager.GetString("CustomGameNeedValidData", resourceCulture);
             }
@@ -473,7 +473,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Custom kernel.
         /// </summary>
-        internal static string CustomKernel {
+        public static string CustomKernel {
             get {
                 return ResourceManager.GetString("CustomKernel", resourceCulture);
             }
@@ -482,7 +482,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Do you want to flash the custom kernel?.
         /// </summary>
-        internal static string CustomKernelQ {
+        public static string CustomKernelQ {
             get {
                 return ResourceManager.GetString("CustomKernelQ", resourceCulture);
             }
@@ -491,7 +491,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to You need to flash the custom kernel to your NES/SNES Mini. This is only required once. Do you want to continue?.
         /// </summary>
-        internal static string CustomWarning {
+        public static string CustomWarning {
             get {
                 return ResourceManager.GetString("CustomWarning", resourceCulture);
             }
@@ -500,7 +500,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap de {
+        public static System.Drawing.Bitmap de {
             get {
                 object obj = ResourceManager.GetObject("de", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -510,7 +510,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Decompressing {0}....
         /// </summary>
-        internal static string Decompressing {
+        public static string Decompressing {
             get {
                 return ResourceManager.GetString("Decompressing", resourceCulture);
             }
@@ -519,7 +519,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Decompressing games....
         /// </summary>
-        internal static string DecompressingGames {
+        public static string DecompressingGames {
             get {
                 return ResourceManager.GetString("DecompressingGames", resourceCulture);
             }
@@ -528,7 +528,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Original games.
         /// </summary>
-        internal static string Default30games {
+        public static string Default30games {
             get {
                 return ResourceManager.GetString("Default30games", resourceCulture);
             }
@@ -537,7 +537,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Do you really want to delete &quot;{0}&quot;?.
         /// </summary>
-        internal static string DeleteElement {
+        public static string DeleteElement {
             get {
                 return ResourceManager.GetString("DeleteElement", resourceCulture);
             }
@@ -546,7 +546,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Do you really want to delete {0} elements?.
         /// </summary>
-        internal static string DeleteElements {
+        public static string DeleteElements {
             get {
                 return ResourceManager.GetString("DeleteElements", resourceCulture);
             }
@@ -555,7 +555,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Do you really want to delete &quot;{0}&quot; game?.
         /// </summary>
-        internal static string DeleteGame {
+        public static string DeleteGame {
             get {
                 return ResourceManager.GetString("DeleteGame", resourceCulture);
             }
@@ -564,7 +564,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Do you really want to delete the &quot;{0}&quot; preset?.
         /// </summary>
-        internal static string DeletePreset {
+        public static string DeletePreset {
             get {
                 return ResourceManager.GetString("DeletePreset", resourceCulture);
             }
@@ -573,7 +573,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Do you really want to delete those save-states?.
         /// </summary>
-        internal static string DeleteSavesQ {
+        public static string DeleteSavesQ {
             get {
                 return ResourceManager.GetString("DeleteSavesQ", resourceCulture);
             }
@@ -582,7 +582,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Delete selected game(s)?.
         /// </summary>
-        internal static string DeleteSelectedGamesQ {
+        public static string DeleteSelectedGamesQ {
             get {
                 return ResourceManager.GetString("DeleteSelectedGamesQ", resourceCulture);
             }
@@ -591,7 +591,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Detected Console: {0}.
         /// </summary>
-        internal static string DetectedConsole {
+        public static string DetectedConsole {
             get {
                 return ResourceManager.GetString("DetectedConsole", resourceCulture);
             }
@@ -600,7 +600,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Discard changes.
         /// </summary>
-        internal static string DiscardChanges {
+        public static string DiscardChanges {
             get {
                 return ResourceManager.GetString("DiscardChanges", resourceCulture);
             }
@@ -609,7 +609,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Are you sure you want to discard your changes?.
         /// </summary>
-        internal static string DiscardChangesQ {
+        public static string DiscardChangesQ {
             get {
                 return ResourceManager.GetString("DiscardChangesQ", resourceCulture);
             }
@@ -618,7 +618,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap dk {
+        public static System.Drawing.Bitmap dk {
             get {
                 object obj = ResourceManager.GetObject("dk", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -628,7 +628,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to If you like this app, you can donate to me. You can find my PayPal in the &quot;About&quot; box..
         /// </summary>
-        internal static string Donate {
+        public static string Donate {
             get {
                 return ResourceManager.GetString("Donate", resourceCulture);
             }
@@ -637,7 +637,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Done!.
         /// </summary>
-        internal static string Done {
+        public static string Done {
             get {
                 return ResourceManager.GetString("Done", resourceCulture);
             }
@@ -646,7 +646,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Done! You can upload games to your NES/SNES Mini now..
         /// </summary>
-        internal static string DoneYouCanUpload {
+        public static string DoneYouCanUpload {
             get {
                 return ResourceManager.GetString("DoneYouCanUpload", resourceCulture);
             }
@@ -655,7 +655,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Downloading box art for all games (I&apos;m feeling lucky!).
         /// </summary>
-        internal static string DownloadAllCoversTitle {
+        public static string DownloadAllCoversTitle {
             get {
                 return ResourceManager.GetString("DownloadAllCoversTitle", resourceCulture);
             }
@@ -664,7 +664,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Do you want to try to download box art for &quot;{0}&quot;?.
         /// </summary>
-        internal static string DownloadCoverQ {
+        public static string DownloadCoverQ {
             get {
                 return ResourceManager.GetString("DownloadCoverQ", resourceCulture);
             }
@@ -680,7 +680,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         ///
         ///http://darkakuma.z-net.us/p/sfromtool.html.
         /// </summary>
-        internal static string DownloadSfromTool {
+        public static string DownloadSfromTool {
             get {
                 return ResourceManager.GetString("DownloadSfromTool", resourceCulture);
             }
@@ -689,7 +689,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Do you want to cancel the current operation?.
         /// </summary>
-        internal static string DoYouWantCancel {
+        public static string DoYouWantCancel {
             get {
                 return ResourceManager.GetString("DoYouWantCancel", resourceCulture);
             }
@@ -698,7 +698,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Do you want to continue?.
         /// </summary>
-        internal static string DoYouWantToContinue {
+        public static string DoYouWantToContinue {
             get {
                 return ResourceManager.GetString("DoYouWantToContinue", resourceCulture);
             }
@@ -707,7 +707,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Dumping kernel....
         /// </summary>
-        internal static string DumpingKernel {
+        public static string DumpingKernel {
             get {
                 return ResourceManager.GetString("DumpingKernel", resourceCulture);
             }
@@ -716,7 +716,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Dumping NAND....
         /// </summary>
-        internal static string DumpingNand {
+        public static string DumpingNand {
             get {
                 return ResourceManager.GetString("DumpingNand", resourceCulture);
             }
@@ -725,7 +725,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Do you want to dump the kernel?.
         /// </summary>
-        internal static string DumpKernelQ {
+        public static string DumpKernelQ {
             get {
                 return ResourceManager.GetString("DumpKernelQ", resourceCulture);
             }
@@ -734,7 +734,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Error.
         /// </summary>
-        internal static string Error {
+        public static string Error {
             get {
                 return ResourceManager.GetString("Error", resourceCulture);
             }
@@ -743,7 +743,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap es {
+        public static System.Drawing.Bitmap es {
             get {
                 object obj = ResourceManager.GetObject("es", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -753,7 +753,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Executing command:.
         /// </summary>
-        internal static string ExecutingCommand {
+        public static string ExecutingCommand {
             get {
                 return ResourceManager.GetString("ExecutingCommand", resourceCulture);
             }
@@ -762,7 +762,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Export Games.
         /// </summary>
-        internal static string ExportGames {
+        public static string ExportGames {
             get {
                 return ResourceManager.GetString("ExportGames", resourceCulture);
             }
@@ -771,7 +771,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to You can add global command-line arguments which will be appended to all games including the original. This is only for experts!.
         /// </summary>
-        internal static string ExtraArgsInfo {
+        public static string ExtraArgsInfo {
             get {
                 return ResourceManager.GetString("ExtraArgsInfo", resourceCulture);
             }
@@ -780,7 +780,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Extra command-line arguments.
         /// </summary>
-        internal static string ExtraArgsTitle {
+        public static string ExtraArgsTitle {
             get {
                 return ResourceManager.GetString("ExtraArgsTitle", resourceCulture);
             }
@@ -789,7 +789,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap fi {
+        public static System.Drawing.Bitmap fi {
             get {
                 object obj = ResourceManager.GetObject("fi", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -799,7 +799,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Hello there! I&apos;m very glad that you are using hakchi2. It&apos;s very simple to use. Just click &quot;Add more games&quot;, select some ROMs, press &quot;Synchronize&quot; to upload games to the console internal memory, or press &quot;Export&quot; to use USB HOST mode, and follow the instructions. Good luck!.
         /// </summary>
-        internal static string FirstRun {
+        public static string FirstRun {
             get {
                 return ResourceManager.GetString("FirstRun", resourceCulture);
             }
@@ -808,7 +808,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Flashing NAND memory....
         /// </summary>
-        internal static string FlashingNand {
+        public static string FlashingNand {
             get {
                 return ResourceManager.GetString("FlashingNand", resourceCulture);
             }
@@ -817,7 +817,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Flashing uboot....
         /// </summary>
-        internal static string FlashingUboot {
+        public static string FlashingUboot {
             get {
                 return ResourceManager.GetString("FlashingUboot", resourceCulture);
             }
@@ -826,7 +826,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Do you want to flash NAND-C partition image? It will replace all user data..
         /// </summary>
-        internal static string FlashNandCQ {
+        public static string FlashNandCQ {
             get {
                 return ResourceManager.GetString("FlashNandCQ", resourceCulture);
             }
@@ -835,7 +835,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Do you really want to flash the NORMAL MODE uboot?.
         /// </summary>
-        internal static string FlashUbootNormalQ {
+        public static string FlashUbootNormalQ {
             get {
                 return ResourceManager.GetString("FlashUbootNormalQ", resourceCulture);
             }
@@ -844,7 +844,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Do you really want to flash the SD MODE uboot?.
         /// </summary>
-        internal static string FlashUbootSDQ {
+        public static string FlashUbootSDQ {
             get {
                 return ResourceManager.GetString("FlashUbootSDQ", resourceCulture);
             }
@@ -853,7 +853,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Flashing custom kernel....
         /// </summary>
-        internal static string FlasingCustom {
+        public static string FlasingCustom {
             get {
                 return ResourceManager.GetString("FlasingCustom", resourceCulture);
             }
@@ -862,7 +862,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Flashing original kernel....
         /// </summary>
-        internal static string FlasingOriginal {
+        public static string FlasingOriginal {
             get {
                 return ResourceManager.GetString("FlasingOriginal", resourceCulture);
             }
@@ -871,7 +871,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap folder {
+        public static System.Drawing.Bitmap folder {
             get {
                 object obj = ResourceManager.GetObject("folder", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -881,7 +881,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap folder_a {
+        public static System.Drawing.Bitmap folder_a {
             get {
                 object obj = ResourceManager.GetObject("folder_a", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -891,7 +891,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap folder_b {
+        public static System.Drawing.Bitmap folder_b {
             get {
                 object obj = ResourceManager.GetObject("folder_b", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -901,7 +901,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap folder_back {
+        public static System.Drawing.Bitmap folder_back {
             get {
                 object obj = ResourceManager.GetObject("folder_back", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -911,7 +911,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap folder_c {
+        public static System.Drawing.Bitmap folder_c {
             get {
                 object obj = ResourceManager.GetObject("folder_c", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -921,7 +921,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap folder_d {
+        public static System.Drawing.Bitmap folder_d {
             get {
                 object obj = ResourceManager.GetObject("folder_d", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -931,7 +931,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap folder_e {
+        public static System.Drawing.Bitmap folder_e {
             get {
                 object obj = ResourceManager.GetObject("folder_e", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -941,7 +941,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap folder_f {
+        public static System.Drawing.Bitmap folder_f {
             get {
                 object obj = ResourceManager.GetObject("folder_f", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -951,7 +951,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap folder_g {
+        public static System.Drawing.Bitmap folder_g {
             get {
                 object obj = ResourceManager.GetObject("folder_g", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -961,7 +961,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap folder_h {
+        public static System.Drawing.Bitmap folder_h {
             get {
                 object obj = ResourceManager.GetObject("folder_h", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -971,7 +971,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap folder_i {
+        public static System.Drawing.Bitmap folder_i {
             get {
                 object obj = ResourceManager.GetObject("folder_i", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -981,7 +981,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap folder_j {
+        public static System.Drawing.Bitmap folder_j {
             get {
                 object obj = ResourceManager.GetObject("folder_j", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -991,7 +991,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap folder_k {
+        public static System.Drawing.Bitmap folder_k {
             get {
                 object obj = ResourceManager.GetObject("folder_k", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1001,7 +1001,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap folder_l {
+        public static System.Drawing.Bitmap folder_l {
             get {
                 object obj = ResourceManager.GetObject("folder_l", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1011,7 +1011,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap folder_m {
+        public static System.Drawing.Bitmap folder_m {
             get {
                 object obj = ResourceManager.GetObject("folder_m", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1021,7 +1021,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap folder_n {
+        public static System.Drawing.Bitmap folder_n {
             get {
                 object obj = ResourceManager.GetObject("folder_n", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1031,7 +1031,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap folder_number {
+        public static System.Drawing.Bitmap folder_number {
             get {
                 object obj = ResourceManager.GetObject("folder_number", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1041,7 +1041,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap folder_o {
+        public static System.Drawing.Bitmap folder_o {
             get {
                 object obj = ResourceManager.GetObject("folder_o", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1051,7 +1051,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap folder_p {
+        public static System.Drawing.Bitmap folder_p {
             get {
                 object obj = ResourceManager.GetObject("folder_p", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1061,7 +1061,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap folder_q {
+        public static System.Drawing.Bitmap folder_q {
             get {
                 object obj = ResourceManager.GetObject("folder_q", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1071,7 +1071,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap folder_r {
+        public static System.Drawing.Bitmap folder_r {
             get {
                 object obj = ResourceManager.GetObject("folder_r", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1081,7 +1081,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap folder_s {
+        public static System.Drawing.Bitmap folder_s {
             get {
                 object obj = ResourceManager.GetObject("folder_s", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1091,7 +1091,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap folder_t {
+        public static System.Drawing.Bitmap folder_t {
             get {
                 object obj = ResourceManager.GetObject("folder_t", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1101,7 +1101,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap folder_u {
+        public static System.Drawing.Bitmap folder_u {
             get {
                 object obj = ResourceManager.GetObject("folder_u", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1111,7 +1111,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap folder_v {
+        public static System.Drawing.Bitmap folder_v {
             get {
                 object obj = ResourceManager.GetObject("folder_v", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1121,7 +1121,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap folder_w {
+        public static System.Drawing.Bitmap folder_w {
             get {
                 object obj = ResourceManager.GetObject("folder_w", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1131,7 +1131,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap folder_x {
+        public static System.Drawing.Bitmap folder_x {
             get {
                 object obj = ResourceManager.GetObject("folder_x", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1141,7 +1141,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap folder_y {
+        public static System.Drawing.Bitmap folder_y {
             get {
                 object obj = ResourceManager.GetObject("folder_y", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1151,7 +1151,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap folder_z {
+        public static System.Drawing.Bitmap folder_z {
             get {
                 object obj = ResourceManager.GetObject("folder_z", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1161,7 +1161,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Deleted content will be moved to the Recycle Bin. You can delete this folder permanently or move the games to other folders..
         /// </summary>
-        internal static string FolderContent {
+        public static string FolderContent {
             get {
                 return ResourceManager.GetString("FolderContent", resourceCulture);
             }
@@ -1170,7 +1170,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Back.
         /// </summary>
-        internal static string FolderNameBack {
+        public static string FolderNameBack {
             get {
                 return ResourceManager.GetString("FolderNameBack", resourceCulture);
             }
@@ -1179,7 +1179,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to More games....
         /// </summary>
-        internal static string FolderNameMoreGames {
+        public static string FolderNameMoreGames {
             get {
                 return ResourceManager.GetString("FolderNameMoreGames", resourceCulture);
             }
@@ -1188,7 +1188,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to New folder.
         /// </summary>
-        internal static string FolderNameNewFolder {
+        public static string FolderNameNewFolder {
             get {
                 return ResourceManager.GetString("FolderNameNewFolder", resourceCulture);
             }
@@ -1197,7 +1197,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Original games.
         /// </summary>
-        internal static string FolderNameOriginalGames {
+        public static string FolderNameOriginalGames {
             get {
                 return ResourceManager.GetString("FolderNameOriginalGames", resourceCulture);
             }
@@ -1206,7 +1206,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Recycle Bin.
         /// </summary>
-        internal static string FolderNameTrashBin {
+        public static string FolderNameTrashBin {
             get {
                 return ResourceManager.GetString("FolderNameTrashBin", resourceCulture);
             }
@@ -1215,7 +1215,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Unsorted.
         /// </summary>
-        internal static string FolderNameUnsorted {
+        public static string FolderNameUnsorted {
             get {
                 return ResourceManager.GetString("FolderNameUnsorted", resourceCulture);
             }
@@ -1224,7 +1224,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to The selected folder isn&apos;t empty.
         /// </summary>
-        internal static string FolderNotEmpty {
+        public static string FolderNotEmpty {
             get {
                 return ResourceManager.GetString("FolderNotEmpty", resourceCulture);
             }
@@ -1233,7 +1233,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Do you want to save this folder structure?.
         /// </summary>
-        internal static string FoldersSaveQ {
+        public static string FoldersSaveQ {
             get {
                 return ResourceManager.GetString("FoldersSaveQ", resourceCulture);
             }
@@ -1242,7 +1242,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Folder &quot;{0}&quot; contains {1} elements..
         /// </summary>
-        internal static string FolderStatistics {
+        public static string FolderStatistics {
             get {
                 return ResourceManager.GetString("FolderStatistics", resourceCulture);
             }
@@ -1251,7 +1251,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Do you want to format NAND-C? It will erase all user data..
         /// </summary>
-        internal static string FormatNandCQ {
+        public static string FormatNandCQ {
             get {
                 return ResourceManager.GetString("FormatNandCQ", resourceCulture);
             }
@@ -1260,7 +1260,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Oops, {0} uses four-screen mode (i.e. the game has additional VRAM memory in the cartridge), and this feature is not supported by the NES Mini. The game will probably not start. But it should work if other emulator&apos;s module installed. Do you want to add this game anyway?.
         /// </summary>
-        internal static string FourScreenNotSupported {
+        public static string FourScreenNotSupported {
             get {
                 return ResourceManager.GetString("FourScreenNotSupported", resourceCulture);
             }
@@ -1269,7 +1269,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap fr {
+        public static System.Drawing.Bitmap fr {
             get {
                 object obj = ResourceManager.GetObject("fr", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1279,7 +1279,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Invalid Game Genie code &quot;{0}&quot; for game &quot;{1}&quot;..
         /// </summary>
-        internal static string GameGenieFormatError {
+        public static string GameGenieFormatError {
             get {
                 return ResourceManager.GetString("GameGenieFormatError", resourceCulture);
             }
@@ -1288,7 +1288,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Can&apos;t apply Game Genie code &quot;{0}&quot; to game &quot;{1}&quot; - value not found. Maybe this code is for another game?.
         /// </summary>
-        internal static string GameGenieNotFound {
+        public static string GameGenieNotFound {
             get {
                 return ResourceManager.GetString("GameGenieNotFound", resourceCulture);
             }
@@ -1297,7 +1297,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap gamepad {
+        public static System.Drawing.Bitmap gamepad {
             get {
                 object obj = ResourceManager.GetObject("gamepad", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1307,7 +1307,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap gamepad_snes {
+        public static System.Drawing.Bitmap gamepad_snes {
             get {
                 object obj = ResourceManager.GetObject("gamepad_snes", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1317,7 +1317,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Games and apps.
         /// </summary>
-        internal static string GamesAndApps {
+        public static string GamesAndApps {
             get {
                 return ResourceManager.GetString("GamesAndApps", resourceCulture);
             }
@@ -1326,7 +1326,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to game(s) selected.
         /// </summary>
-        internal static string GamesSelected {
+        public static string GamesSelected {
             get {
                 return ResourceManager.GetString("GamesSelected", resourceCulture);
             }
@@ -1335,7 +1335,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap gb {
+        public static System.Drawing.Bitmap gb {
             get {
                 object obj = ResourceManager.GetObject("gb", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1345,7 +1345,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Do you want to delete &quot;{0}&quot; code?.
         /// </summary>
-        internal static string GGCodeDelete {
+        public static string GGCodeDelete {
             get {
                 return ResourceManager.GetString("GGCodeDelete", resourceCulture);
             }
@@ -1354,7 +1354,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to You must enter a code!.
         /// </summary>
-        internal static string GGCodeEmpty {
+        public static string GGCodeEmpty {
             get {
                 return ResourceManager.GetString("GGCodeEmpty", resourceCulture);
             }
@@ -1363,7 +1363,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to This code already exists. Do you want to edit it?.
         /// </summary>
-        internal static string GGCodeExists {
+        public static string GGCodeExists {
             get {
                 return ResourceManager.GetString("GGCodeExists", resourceCulture);
             }
@@ -1372,16 +1372,16 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to You must enter a description!.
         /// </summary>
-        internal static string GGDescriptionEmpty {
+        public static string GGDescriptionEmpty {
             get {
                 return ResourceManager.GetString("GGDescriptionEmpty", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 5025636 (dirty).
+        ///   Looks up a localized string similar to a7aa781 (dirty).
         /// </summary>
-        internal static string gitCommit {
+        public static string gitCommit {
             get {
                 return ResourceManager.GetString("gitCommit", resourceCulture);
             }
@@ -1390,7 +1390,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Googling for.
         /// </summary>
-        internal static string GooglingFor {
+        public static string GooglingFor {
             get {
                 return ResourceManager.GetString("GooglingFor", resourceCulture);
             }
@@ -1399,7 +1399,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap gr {
+        public static System.Drawing.Bitmap gr {
             get {
                 object obj = ResourceManager.GetObject("gr", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1409,7 +1409,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap green {
+        public static System.Drawing.Bitmap green {
             get {
                 object obj = ResourceManager.GetObject("green", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1419,7 +1419,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Hello.
         /// </summary>
-        internal static string Hello {
+        public static string Hello {
             get {
                 return ResourceManager.GetString("Hello", resourceCulture);
             }
@@ -1428,7 +1428,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap hu {
+        public static System.Drawing.Bitmap hu {
             get {
                 object obj = ResourceManager.GetObject("hu", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1438,7 +1438,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon icon {
+        public static System.Drawing.Icon icon {
             get {
                 object obj = ResourceManager.GetObject("icon", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -1448,7 +1448,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap id {
+        public static System.Drawing.Bitmap id {
             get {
                 object obj = ResourceManager.GetObject("id", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1458,7 +1458,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Images.
         /// </summary>
-        internal static string Images {
+        public static string Images {
             get {
                 return ResourceManager.GetString("Images", resourceCulture);
             }
@@ -1467,7 +1467,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Please input a preset name for the current games selection..
         /// </summary>
-        internal static string InputPreset {
+        public static string InputPreset {
             get {
                 return ResourceManager.GetString("InputPreset", resourceCulture);
             }
@@ -1476,7 +1476,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Installing mods....
         /// </summary>
-        internal static string InstallingMods {
+        public static string InstallingMods {
             get {
                 return ResourceManager.GetString("InstallingMods", resourceCulture);
             }
@@ -1485,7 +1485,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Invalid console selected! Detected console:.
         /// </summary>
-        internal static string InvalidConsoleSelected {
+        public static string InvalidConsoleSelected {
             get {
                 return ResourceManager.GetString("InvalidConsoleSelected", resourceCulture);
             }
@@ -1494,7 +1494,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Image resolution must be {0}x{1}.
         /// </summary>
-        internal static string InvalidImageResolution {
+        public static string InvalidImageResolution {
             get {
                 return ResourceManager.GetString("InvalidImageResolution", resourceCulture);
             }
@@ -1503,7 +1503,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Invalid kernel header..
         /// </summary>
-        internal static string InvalidKernelHeader {
+        public static string InvalidKernelHeader {
             get {
                 return ResourceManager.GetString("InvalidKernelHeader", resourceCulture);
             }
@@ -1512,7 +1512,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Invalid kernel size:.
         /// </summary>
-        internal static string InvalidKernelSize {
+        public static string InvalidKernelSize {
             get {
                 return ResourceManager.GetString("InvalidKernelSize", resourceCulture);
             }
@@ -1521,7 +1521,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Invalid uboot.bin file size..
         /// </summary>
-        internal static string InvalidUbootSize {
+        public static string InvalidUbootSize {
             get {
                 return ResourceManager.GetString("InvalidUbootSize", resourceCulture);
             }
@@ -1530,7 +1530,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap it {
+        public static System.Drawing.Bitmap it {
             get {
                 object obj = ResourceManager.GetObject("it", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1540,7 +1540,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap jp {
+        public static System.Drawing.Bitmap jp {
             get {
                 object obj = ResourceManager.GetObject("jp", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1550,16 +1550,34 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Your original kernel is saved in the &quot;hakchi2\dump&quot; folder. Do not lose it. .
         /// </summary>
-        internal static string KernelDumped {
+        public static string KernelDumped {
             get {
                 return ResourceManager.GetString("KernelDumped", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Your system&apos;s custom kernel is out of date and requires a reflash before you can use this program. Would you like to flash the custom kernel now?.
+        /// </summary>
+        public static string KernelRequiresReflash {
+            get {
+                return ResourceManager.GetString("KernelRequiresReflash", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Kernel out of date.
+        /// </summary>
+        public static string KernelRequiresReflashTitle {
+            get {
+                return ResourceManager.GetString("KernelRequiresReflashTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Do you want to make linked games?.
         /// </summary>
-        internal static string LinkedGamesQ {
+        public static string LinkedGamesQ {
             get {
                 return ResourceManager.GetString("LinkedGamesQ", resourceCulture);
             }
@@ -1568,7 +1586,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to All Games.
         /// </summary>
-        internal static string ListCategoryAll {
+        public static string ListCategoryAll {
             get {
                 return ResourceManager.GetString("ListCategoryAll", resourceCulture);
             }
@@ -1577,7 +1595,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Custom Games.
         /// </summary>
-        internal static string ListCategoryCustom {
+        public static string ListCategoryCustom {
             get {
                 return ResourceManager.GetString("ListCategoryCustom", resourceCulture);
             }
@@ -1586,7 +1604,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to New Apps.
         /// </summary>
-        internal static string ListCategoryNew {
+        public static string ListCategoryNew {
             get {
                 return ResourceManager.GetString("ListCategoryNew", resourceCulture);
             }
@@ -1595,7 +1613,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Original Games.
         /// </summary>
-        internal static string ListCategoryOriginal {
+        public static string ListCategoryOriginal {
             get {
                 return ResourceManager.GetString("ListCategoryOriginal", resourceCulture);
             }
@@ -1604,7 +1622,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Unknown Apps.
         /// </summary>
-        internal static string ListCategoryUnknown {
+        public static string ListCategoryUnknown {
             get {
                 return ResourceManager.GetString("ListCategoryUnknown", resourceCulture);
             }
@@ -1613,7 +1631,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Loading games....
         /// </summary>
-        internal static string LoadingGames {
+        public static string LoadingGames {
             get {
                 return ResourceManager.GetString("LoadingGames", resourceCulture);
             }
@@ -1622,7 +1640,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Loading mods....
         /// </summary>
-        internal static string LoadingHmods {
+        public static string LoadingHmods {
             get {
                 return ResourceManager.GetString("LoadingHmods", resourceCulture);
             }
@@ -1631,7 +1649,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to HOME Menu.
         /// </summary>
-        internal static string MainMenu {
+        public static string MainMenu {
             get {
                 return ResourceManager.GetString("MainMenu", resourceCulture);
             }
@@ -1640,7 +1658,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &quot;{0}&quot; uses mapper #{1} but this mapper is not supported by the NES Mini and the game will probably not start with the default emulator. But it should work if other emulator&apos;s module installed. Do you want to add this game?.
         /// </summary>
-        internal static string MapperNotSupported {
+        public static string MapperNotSupported {
             get {
                 return ResourceManager.GetString("MapperNotSupported", resourceCulture);
             }
@@ -1649,7 +1667,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Kernel dumped but the MD5 checksum is unknown:.
         /// </summary>
-        internal static string MD5Failed {
+        public static string MD5Failed {
             get {
                 return ResourceManager.GetString("MD5Failed", resourceCulture);
             }
@@ -1658,7 +1676,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to The kernel is already patched or it&apos;s an unknown revision. Please send this message to me (press Ctrl+C). Continue at your own risk..
         /// </summary>
-        internal static string MD5Failed2 {
+        public static string MD5Failed2 {
             get {
                 return ResourceManager.GetString("MD5Failed2", resourceCulture);
             }
@@ -1667,7 +1685,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Booting the kernel from RAM....
         /// </summary>
-        internal static string Membooting {
+        public static string Membooting {
             get {
                 return ResourceManager.GetString("Membooting", resourceCulture);
             }
@@ -1676,7 +1694,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Sorry, there are {0}MBytes of games, it&apos;s too much..
         /// </summary>
-        internal static string MemoryFull {
+        public static string MemoryFull {
             get {
                 return ResourceManager.GetString("MemoryFull", resourceCulture);
             }
@@ -1685,7 +1703,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Total writable memory size: {0:F1}MBytes|Available memory for games: {1:F1}MBytes|Used by saves: {2:F1}MBytes|Used by other files: {3:F1}MBytes.
         /// </summary>
-        internal static string MemoryStats {
+        public static string MemoryStats {
             get {
                 return ResourceManager.GetString("MemoryStats", resourceCulture);
             }
@@ -1694,7 +1712,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to NAND memory is dumped successfully..
         /// </summary>
-        internal static string NandDumped {
+        public static string NandDumped {
             get {
                 return ResourceManager.GetString("NandDumped", resourceCulture);
             }
@@ -1703,7 +1721,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to NAND memory flashed..
         /// </summary>
-        internal static string NandFlashed {
+        public static string NandFlashed {
             get {
                 return ResourceManager.GetString("NandFlashed", resourceCulture);
             }
@@ -1712,7 +1730,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Oops, it seems like &quot;{0}&quot; is not going not work correctly with the original emulator. Do you want to use a 3rd party emulator for this game (it needs to be installed)?.
         /// </summary>
-        internal static string Need3rdPartyEmulator {
+        public static string Need3rdPartyEmulator {
             get {
                 return ResourceManager.GetString("Need3rdPartyEmulator", resourceCulture);
             }
@@ -1721,7 +1739,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to New custom game.
         /// </summary>
-        internal static string NewCustomGame {
+        public static string NewCustomGame {
             get {
                 return ResourceManager.GetString("NewCustomGame", resourceCulture);
             }
@@ -1730,7 +1748,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to New games are moved to the &quot;Unsorted&quot; folder..
         /// </summary>
-        internal static string NewGamesUnsorted {
+        public static string NewGamesUnsorted {
             get {
                 return ResourceManager.GetString("NewGamesUnsorted", resourceCulture);
             }
@@ -1739,7 +1757,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to New selection preset.
         /// </summary>
-        internal static string NewPreset {
+        public static string NewPreset {
             get {
                 return ResourceManager.GetString("NewPreset", resourceCulture);
             }
@@ -1748,7 +1766,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap nl {
+        public static System.Drawing.Bitmap nl {
             get {
                 object obj = ResourceManager.GetObject("nl", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1758,7 +1776,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to No.
         /// </summary>
-        internal static string No {
+        public static string No {
             get {
                 return ResourceManager.GetString("No", resourceCulture);
             }
@@ -1767,7 +1785,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap noboxart {
+        public static System.Drawing.Bitmap noboxart {
             get {
                 object obj = ResourceManager.GetObject("noboxart", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1777,7 +1795,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to No drive selected.
         /// </summary>
-        internal static string NoDriveSelected {
+        public static string NoDriveSelected {
             get {
                 return ResourceManager.GetString("NoDriveSelected", resourceCulture);
             }
@@ -1786,7 +1804,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to No for all.
         /// </summary>
-        internal static string NoForAll {
+        public static string NoForAll {
             get {
                 return ResourceManager.GetString("NoForAll", resourceCulture);
             }
@@ -1795,7 +1813,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to No kernel dump found.
         /// </summary>
-        internal static string NoKernel {
+        public static string NoKernel {
             get {
                 return ResourceManager.GetString("NoKernel", resourceCulture);
             }
@@ -1804,7 +1822,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to First, dump the kernel image of your NES/SNES Mini. You only need to do this once. Do you want to continue?.
         /// </summary>
-        internal static string NoKernelWarning {
+        public static string NoKernelWarning {
             get {
                 return ResourceManager.GetString("NoKernelWarning", resourceCulture);
             }
@@ -1813,7 +1831,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to No kernel dump found. You need to dump the kernel first..
         /// </summary>
-        internal static string NoKernelYouNeed {
+        public static string NoKernelYouNeed {
             get {
                 return ResourceManager.GetString("NoKernelYouNeed", resourceCulture);
             }
@@ -1822,7 +1840,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Can&apos;t start Telnet client, seems like it&apos;s disabled. You need to enable it first, you can do it in “Control Panel“ -&gt; “Programs“ -&gt; &quot;Turn Windows features on or off&quot;..
         /// </summary>
-        internal static string NoTelnet {
+        public static string NoTelnet {
             get {
                 return ResourceManager.GetString("NoTelnet", resourceCulture);
             }
@@ -1831,7 +1849,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Not found:.
         /// </summary>
-        internal static string NotFound {
+        public static string NotFound {
             get {
                 return ResourceManager.GetString("NotFound", resourceCulture);
             }
@@ -1840,7 +1858,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to not recommended.
         /// </summary>
-        internal static string NotRecommended {
+        public static string NotRecommended {
             get {
                 return ResourceManager.GetString("NotRecommended", resourceCulture);
             }
@@ -1849,7 +1867,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Do you want to flash the original kernel?.
         /// </summary>
-        internal static string OriginalKernelQ {
+        public static string OriginalKernelQ {
             get {
                 return ResourceManager.GetString("OriginalKernelQ", resourceCulture);
             }
@@ -1858,7 +1876,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Kernel out of date.
         /// </summary>
-        internal static string OutdatedKernel {
+        public static string OutdatedKernel {
             get {
                 return ResourceManager.GetString("OutdatedKernel", resourceCulture);
             }
@@ -1867,7 +1885,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Scripts out of date.
         /// </summary>
-        internal static string OutdatedScripts {
+        public static string OutdatedScripts {
             get {
                 return ResourceManager.GetString("OutdatedScripts", resourceCulture);
             }
@@ -1876,7 +1894,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Patch available.
         /// </summary>
-        internal static string PatchAvailable {
+        public static string PatchAvailable {
             get {
                 return ResourceManager.GetString("PatchAvailable", resourceCulture);
             }
@@ -1885,7 +1903,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to There is patch for &quot;{0}&quot;. Do you want to patch this game?.
         /// </summary>
-        internal static string PatchQ {
+        public static string PatchQ {
             get {
                 return ResourceManager.GetString("PatchQ", resourceCulture);
             }
@@ -1898,7 +1916,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         ///
         ///This process cannot be undone!.
         /// </summary>
-        internal static string PermanentlyDeleteQ {
+        public static string PermanentlyDeleteQ {
             get {
                 return ResourceManager.GetString("PermanentlyDeleteQ", resourceCulture);
             }
@@ -1907,7 +1925,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap pl {
+        public static System.Drawing.Bitmap pl {
             get {
                 object obj = ResourceManager.GetObject("pl", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1917,7 +1935,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to If this problem persists, try using another USB port or cable..
         /// </summary>
-        internal static string PleaseTryAgainUSB {
+        public static string PleaseTryAgainUSB {
             get {
                 return ResourceManager.GetString("PleaseTryAgainUSB", resourceCulture);
             }
@@ -1926,7 +1944,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Until you install the necessary updates, you will likely experience errors while attempting to use this program. Please update to receive full compatibility..
         /// </summary>
-        internal static string PleaseUpdate {
+        public static string PleaseUpdate {
             get {
                 return ResourceManager.GetString("PleaseUpdate", resourceCulture);
             }
@@ -1935,7 +1953,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Please wait....
         /// </summary>
-        internal static string PleaseWait {
+        public static string PleaseWait {
             get {
                 return ResourceManager.GetString("PleaseWait", resourceCulture);
             }
@@ -1944,7 +1962,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Press OK to continue..
         /// </summary>
-        internal static string PressOkToContinue {
+        public static string PressOkToContinue {
             get {
                 return ResourceManager.GetString("PressOkToContinue", resourceCulture);
             }
@@ -1953,7 +1971,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap pt {
+        public static System.Drawing.Bitmap pt {
             get {
                 object obj = ResourceManager.GetObject("pt", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -1967,7 +1985,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
         /// *//*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */html{font-family:sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}body{margin:0}article,aside,details,figcaption,figure,footer,header,hgroup,main,menu,nav,section,summary{display:block}audio,canvas,progress,video{display:inline-block;vertical-align:b [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string readmeTemplateCSS {
+        public static string readmeTemplateCSS {
             get {
                 return ResourceManager.GetString("readmeTemplateCSS", resourceCulture);
             }
@@ -1983,7 +2001,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         ///    &lt;/body&gt;
         ///&lt;/html&gt;.
         /// </summary>
-        internal static string readmeTemplateHTML {
+        public static string readmeTemplateHTML {
             get {
                 return ResourceManager.GetString("readmeTemplateHTML", resourceCulture);
             }
@@ -1992,7 +2010,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap red {
+        public static System.Drawing.Bitmap red {
             get {
                 object obj = ResourceManager.GetObject("red", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -2002,7 +2020,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Removing {0}....
         /// </summary>
-        internal static string Removing {
+        public static string Removing {
             get {
                 return ResourceManager.GetString("Removing", resourceCulture);
             }
@@ -2011,7 +2029,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Removing cover art....
         /// </summary>
-        internal static string RemovingCovers {
+        public static string RemovingCovers {
             get {
                 return ResourceManager.GetString("RemovingCovers", resourceCulture);
             }
@@ -2020,7 +2038,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Removing games....
         /// </summary>
-        internal static string RemovingGames {
+        public static string RemovingGames {
             get {
                 return ResourceManager.GetString("RemovingGames", resourceCulture);
             }
@@ -2029,7 +2047,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to You already have the kernel dump. If you REALLY want to replace the backup of your kernel and you REALLY understand what you are doing, delete the &quot;hakchi2/dump&quot; folder manually..
         /// </summary>
-        internal static string ReplaceKernelQ {
+        public static string ReplaceKernelQ {
             get {
                 return ResourceManager.GetString("ReplaceKernelQ", resourceCulture);
             }
@@ -2038,7 +2056,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Do you really want to undo all customization on original games?.
         /// </summary>
-        internal static string ResetOriginalGamesQ {
+        public static string ResetOriginalGamesQ {
             get {
                 return ResourceManager.GetString("ResetOriginalGamesQ", resourceCulture);
             }
@@ -2047,7 +2065,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Are you sure you want to reset/repair selected games&apos; SFROM headers?.
         /// </summary>
-        internal static string ResetROMHeaderSelectedGamesQ {
+        public static string ResetROMHeaderSelectedGamesQ {
             get {
                 return ResourceManager.GetString("ResetROMHeaderSelectedGamesQ", resourceCulture);
             }
@@ -2056,7 +2074,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Resetting SFROM header in {0}.
         /// </summary>
-        internal static string ResettingHeader {
+        public static string ResettingHeader {
             get {
                 return ResourceManager.GetString("ResettingHeader", resourceCulture);
             }
@@ -2065,7 +2083,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Resetting SFROM headers....
         /// </summary>
-        internal static string ResettingHeaders {
+        public static string ResettingHeaders {
             get {
                 return ResourceManager.GetString("ResettingHeaders", resourceCulture);
             }
@@ -2074,7 +2092,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Restoring original games....
         /// </summary>
-        internal static string ResettingOriginalGames {
+        public static string ResettingOriginalGames {
             get {
                 return ResourceManager.GetString("ResettingOriginalGames", resourceCulture);
             }
@@ -2093,7 +2111,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         ///SNK - Neo Geo Pocket Color
         ///.
         /// </summary>
-        internal static string retroarch_systems_blacklist {
+        public static string retroarch_systems_blacklist {
             get {
                 return ResourceManager.GetString("retroarch_systems_blacklist", resourceCulture);
             }
@@ -2129,9 +2147,6 @@ namespace com.clusterrr.hakchi_gui.Properties {
         ///imageviewer
         ///lutro
         ///mame2000
-        ///mame2003_standard
-        ///mame2003_ffight
-        ///mame2003_sys32
         ///mame2010
         ///mame2014
         ///mednafen_ngp
@@ -2148,9 +2163,15 @@ namespace com.clusterrr.hakchi_gui.Properties {
         ///nxengine
         ///o2em
         ///pcsx_rearmed_neon
-        ///picod [rest of string was truncated]&quot;;.
+        ///picodrive
+        ///pocketcdg
+        ///pokemini
+        ///ppsspp
+        ///prboom
+        ///prosystem
+        ///p [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string retroarch_whitelist {
+        public static string retroarch_whitelist {
             get {
                 return ResourceManager.GetString("retroarch_whitelist", resourceCulture);
             }
@@ -2159,7 +2180,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap ro {
+        public static System.Drawing.Bitmap ro {
             get {
                 object obj = ResourceManager.GetObject("ro", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -2167,9 +2188,36 @@ namespace com.clusterrr.hakchi_gui.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Your system&apos;s kernel scripts are out of date and can be updated. Would you like to update the custom kernel scripts now?.
+        /// </summary>
+        public static string RootfsEligibleForUpdates {
+            get {
+                return ResourceManager.GetString("RootfsEligibleForUpdates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your system&apos;s kernel scripts are out of date and it requires a memboot before you can use this program. Would you like to memboot the custom kernel now?.
+        /// </summary>
+        public static string RootfsRequiresUpdates {
+            get {
+                return ResourceManager.GetString("RootfsRequiresUpdates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scripts out of date.
+        /// </summary>
+        public static string RootfsRequiresUpdatesTitle {
+            get {
+                return ResourceManager.GetString("RootfsRequiresUpdatesTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap ru {
+        public static System.Drawing.Bitmap ru {
             get {
                 object obj = ResourceManager.GetObject("ru", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -2179,7 +2227,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Save-state backups.
         /// </summary>
-        internal static string SavesFlterName {
+        public static string SavesFlterName {
             get {
                 return ResourceManager.GetString("SavesFlterName", resourceCulture);
             }
@@ -2188,7 +2236,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Scanning &quot;/art&quot; folder for box art....
         /// </summary>
-        internal static string ScanningCovers {
+        public static string ScanningCovers {
             get {
                 return ResourceManager.GetString("ScanningCovers", resourceCulture);
             }
@@ -2197,7 +2245,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap se {
+        public static System.Drawing.Bitmap se {
             get {
                 object obj = ResourceManager.GetObject("se", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -2207,7 +2255,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Select at least one game..
         /// </summary>
-        internal static string SelectAtLeast {
+        public static string SelectAtLeast {
             get {
                 return ResourceManager.GetString("SelectAtLeast", resourceCulture);
             }
@@ -2216,7 +2264,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Select at least two buttons..
         /// </summary>
-        internal static string SelectAtLeastTwo {
+        public static string SelectAtLeastTwo {
             get {
                 return ResourceManager.GetString("SelectAtLeastTwo", resourceCulture);
             }
@@ -2225,7 +2273,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Select the modules to install on your NES/SNES Mini.
         /// </summary>
-        internal static string SelectModsInstall {
+        public static string SelectModsInstall {
             get {
                 return ResourceManager.GetString("SelectModsInstall", resourceCulture);
             }
@@ -2234,7 +2282,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Select the modules to remove from your NES/SNES Mini.
         /// </summary>
-        internal static string SelectModsUninstall {
+        public static string SelectModsUninstall {
             get {
                 return ResourceManager.GetString("SelectModsUninstall", resourceCulture);
             }
@@ -2243,7 +2291,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Please select a region.
         /// </summary>
-        internal static string SelectRegion {
+        public static string SelectRegion {
             get {
                 return ResourceManager.GetString("SelectRegion", resourceCulture);
             }
@@ -2252,7 +2300,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to SFROM Tool.
         /// </summary>
-        internal static string SfromTool {
+        public static string SfromTool {
             get {
                 return ResourceManager.GetString("SfromTool", resourceCulture);
             }
@@ -2261,7 +2309,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Size:.
         /// </summary>
-        internal static string Size {
+        public static string Size {
             get {
                 return ResourceManager.GetString("Size", resourceCulture);
             }
@@ -2270,7 +2318,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Size of selected save-states: .
         /// </summary>
-        internal static string SizeOfSaves {
+        public static string SizeOfSaves {
             get {
                 return ResourceManager.GetString("SizeOfSaves", resourceCulture);
             }
@@ -2279,7 +2327,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap sk {
+        public static System.Drawing.Bitmap sk {
             get {
                 object obj = ResourceManager.GetObject("sk", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -2289,7 +2337,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Skipping {0}.
         /// </summary>
-        internal static string Skipping {
+        public static string Skipping {
             get {
                 return ResourceManager.GetString("Skipping", resourceCulture);
             }
@@ -2298,7 +2346,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Your system&apos;s kernel scripts are out of date and can be updated. Would you like to update the custom kernel scripts now?.
         /// </summary>
-        internal static string SystemEligibleForRootfsUpdate {
+        public static string SystemEligibleForRootfsUpdate {
             get {
                 return ResourceManager.GetString("SystemEligibleForRootfsUpdate", resourceCulture);
             }
@@ -2307,7 +2355,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Your system&apos;s custom kernel is out of date and requires a reflash before you can use this program. Would you like to flash the custom kernel now?.
         /// </summary>
-        internal static string SystemRequiresReflash {
+        public static string SystemRequiresReflash {
             get {
                 return ResourceManager.GetString("SystemRequiresReflash", resourceCulture);
             }
@@ -2316,7 +2364,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Your system&apos;s kernel scripts are out of date and it requires a memboot before you can use this program. Would you like to memboot the custom kernel now?.
         /// </summary>
-        internal static string SystemRequiresRootfsUpdate {
+        public static string SystemRequiresRootfsUpdate {
             get {
                 return ResourceManager.GetString("SystemRequiresRootfsUpdate", resourceCulture);
             }
@@ -2325,7 +2373,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Warning! It&apos;s not recommended to store so many games per folder..
         /// </summary>
-        internal static string TooManyPerFolder {
+        public static string TooManyPerFolder {
             get {
                 return ResourceManager.GetString("TooManyPerFolder", resourceCulture);
             }
@@ -2334,7 +2382,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap tw {
+        public static System.Drawing.Bitmap tw {
             get {
                 object obj = ResourceManager.GetObject("tw", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -2344,7 +2392,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap ua {
+        public static System.Drawing.Bitmap ua {
             get {
                 object obj = ResourceManager.GetObject("ua", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -2354,7 +2402,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Uboot successfully flashed..
         /// </summary>
-        internal static string UbootFlashed {
+        public static string UbootFlashed {
             get {
                 return ResourceManager.GetString("UbootFlashed", resourceCulture);
             }
@@ -2363,7 +2411,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Unassigned.
         /// </summary>
-        internal static string Unassigned {
+        public static string Unassigned {
             get {
                 return ResourceManager.GetString("Unassigned", resourceCulture);
             }
@@ -2372,7 +2420,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Don&apos;t forget to perform a factory reset if you want to delete all Suspend Points..
         /// </summary>
-        internal static string UninstallFactoryNote {
+        public static string UninstallFactoryNote {
             get {
                 return ResourceManager.GetString("UninstallFactoryNote", resourceCulture);
             }
@@ -2381,7 +2429,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Uninstalling....
         /// </summary>
-        internal static string Uninstalling {
+        public static string Uninstalling {
             get {
                 return ResourceManager.GetString("Uninstalling", resourceCulture);
             }
@@ -2390,7 +2438,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Uninstalling mods....
         /// </summary>
-        internal static string UninstallingMods {
+        public static string UninstallingMods {
             get {
                 return ResourceManager.GetString("UninstallingMods", resourceCulture);
             }
@@ -2399,7 +2447,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Do you really want to remove all traces of hakchi2 and return your NES/SNES Mini to its original state?.
         /// </summary>
-        internal static string UninstallQ1 {
+        public static string UninstallQ1 {
             get {
                 return ResourceManager.GetString("UninstallQ1", resourceCulture);
             }
@@ -2408,7 +2456,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Done. Wait until the power LED goes out. You also need to flash the original kernel. Do you want to flash the original kernel now?.
         /// </summary>
-        internal static string UninstallQ2 {
+        public static string UninstallQ2 {
             get {
                 return ResourceManager.GetString("UninstallQ2", resourceCulture);
             }
@@ -2417,7 +2465,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Unknown.
         /// </summary>
-        internal static string Unknown {
+        public static string Unknown {
             get {
                 return ResourceManager.GetString("Unknown", resourceCulture);
             }
@@ -2426,16 +2474,25 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Unknown game.
         /// </summary>
-        internal static string UnknownGame {
+        public static string UnknownGame {
             get {
                 return ResourceManager.GetString("UnknownGame", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Until you install the necessary updates, you will likely experience errors while attempting to use this program. Please update to receive full compatibility..
+        /// </summary>
+        public static string UpdatesNotInstalledWarning {
+            get {
+                return ResourceManager.GetString("UpdatesNotInstalledWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Updating local original games cache....
         /// </summary>
-        internal static string UpdatingLocalCache {
+        public static string UpdatingLocalCache {
             get {
                 return ResourceManager.GetString("UpdatingLocalCache", resourceCulture);
             }
@@ -2444,7 +2501,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Uploading new config....
         /// </summary>
-        internal static string UploadingConfig {
+        public static string UploadingConfig {
             get {
                 return ResourceManager.GetString("UploadingConfig", resourceCulture);
             }
@@ -2453,7 +2510,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Uploading and running FES-1....
         /// </summary>
-        internal static string UploadingFes1 {
+        public static string UploadingFes1 {
             get {
                 return ResourceManager.GetString("UploadingFes1", resourceCulture);
             }
@@ -2462,7 +2519,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Uploading games....
         /// </summary>
-        internal static string UploadingGames {
+        public static string UploadingGames {
             get {
                 return ResourceManager.GetString("UploadingGames", resourceCulture);
             }
@@ -2471,7 +2528,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Uploading the kernel....
         /// </summary>
-        internal static string UploadingKernel {
+        public static string UploadingKernel {
             get {
                 return ResourceManager.GetString("UploadingKernel", resourceCulture);
             }
@@ -2480,7 +2537,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Processing original games....
         /// </summary>
-        internal static string UploadingOriginalGames {
+        public static string UploadingOriginalGames {
             get {
                 return ResourceManager.GetString("UploadingOriginalGames", resourceCulture);
             }
@@ -2489,7 +2546,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap us {
+        public static System.Drawing.Bitmap us {
             get {
                 object obj = ResourceManager.GetObject("us", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -2499,7 +2556,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Verify failed :O This is not good..
         /// </summary>
-        internal static string VerifyFailed {
+        public static string VerifyFailed {
             get {
                 return ResourceManager.GetString("VerifyFailed", resourceCulture);
             }
@@ -2508,7 +2565,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Verifying....
         /// </summary>
-        internal static string Verifying {
+        public static string Verifying {
             get {
                 return ResourceManager.GetString("Verifying", resourceCulture);
             }
@@ -2517,7 +2574,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to INTERNAL VERSION FOR TESTING PURPOSES ONLY.
         /// </summary>
-        internal static string VersionRevisionNotice {
+        public static string VersionRevisionNotice {
             get {
                 return ResourceManager.GetString("VersionRevisionNotice", resourceCulture);
             }
@@ -2526,7 +2583,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Waiting for the device....
         /// </summary>
-        internal static string WaitingForDevice {
+        public static string WaitingForDevice {
             get {
                 return ResourceManager.GetString("WaitingForDevice", resourceCulture);
             }
@@ -2535,7 +2592,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Warning!.
         /// </summary>
-        internal static string Warning {
+        public static string Warning {
             get {
                 return ResourceManager.GetString("Warning", resourceCulture);
             }
@@ -2544,7 +2601,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Wow.
         /// </summary>
-        internal static string Wow {
+        public static string Wow {
             get {
                 return ResourceManager.GetString("Wow", resourceCulture);
             }
@@ -2553,7 +2610,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Yes.
         /// </summary>
-        internal static string Yes {
+        public static string Yes {
             get {
                 return ResourceManager.GetString("Yes", resourceCulture);
             }
@@ -2562,7 +2619,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Yes for all.
         /// </summary>
-        internal static string YesForAll {
+        public static string YesForAll {
             get {
                 return ResourceManager.GetString("YesForAll", resourceCulture);
             }
