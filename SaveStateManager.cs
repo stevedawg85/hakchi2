@@ -47,7 +47,7 @@ namespace com.clusterrr.hakchi_gui
                     listViewSaves.Visible = false;
                     exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled =
                         buttonExport.Enabled = buttonImport.Enabled = false;
-                    if (!WaitingClovershellForm.WaitForDevice(this))
+                    if (!WaitingConsoleConnectionForm.WaitForDevice(this))
                         return false;
                     return true;
                 })))
@@ -56,7 +56,7 @@ namespace com.clusterrr.hakchi_gui
                     return;
                 }
 
-                var clovershell = MainForm.Clovershell;
+                var sshClientWrapper = MainForm.sshClientWrapper;
                 WorkerForm.ShowSplashScreen();
                 var listSavesScript =
                      "#!/bin/sh\n" +
@@ -87,7 +87,7 @@ namespace com.clusterrr.hakchi_gui
                 var listSavesScriptStream = new MemoryStream(Encoding.UTF8.GetBytes(listSavesScript));
                 listSavesScriptStream.Seek(0, SeekOrigin.Begin);
                 var output = new MemoryStream();
-                clovershell.Execute("sh", listSavesScriptStream, output, null, 10000, true);
+                sshClientWrapper.Execute("sh", listSavesScriptStream, output, null, 10000, true);
                 var lines = Encoding.UTF8.GetString(output.ToArray()).Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
                 Invoke(new Action(delegate
                 {
@@ -158,14 +158,14 @@ namespace com.clusterrr.hakchi_gui
                 var savesToDelete = (IEnumerable<ListViewItem>)o;
                 if (!(bool)Invoke(new Func<bool>(delegate
                 {
-                    if (!WaitingClovershellForm.WaitForDevice(this))
+                    if (!WaitingConsoleConnectionForm.WaitForDevice(this))
                         return false;
                     return true;
                 }))) return;
                 foreach (ListViewItem game in savesToDelete)
                 {
-                    var clovershell = MainForm.Clovershell;
-                    clovershell.ExecuteSimple("rm -rf /var/lib/clover/profiles/0/" + game.SubItems["colCode"].Text, 3000, true);
+                    var sshClient = MainForm.sshClientWrapper;
+                    sshClient.ExecuteSimple("rm -rf /var/lib/clover/profiles/0/" + game.SubItems["colCode"].Text, 3000, true);
                     Invoke(new Action(delegate
                     {
                         listViewSaves.Items.Remove(game);
@@ -202,12 +202,12 @@ namespace com.clusterrr.hakchi_gui
                     saveFileDialog.Title = name;
                     if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                     {
-                        if (!WaitingClovershellForm.WaitForDevice(this))
+                        if (!WaitingConsoleConnectionForm.WaitForDevice(this))
                             return;
-                        var clovershell = MainForm.Clovershell;
+                        var sshClientWrapper = MainForm.sshClientWrapper;
                         using (var save = new MemoryStream())
                         {
-                            clovershell.Execute("cd /var/lib/clover/profiles/0 && tar -cz " + game.SubItems["colCode"].Text, null, save, null, 10000, true);
+                            sshClientWrapper.Execute("cd /var/lib/clover/profiles/0 && tar -cz " + game.SubItems["colCode"].Text, null, save, null, 10000, true);
                             var buffer = save.ToArray();
                             File.WriteAllBytes(saveFileDialog.FileName, buffer);
                         }
@@ -249,16 +249,16 @@ namespace com.clusterrr.hakchi_gui
                 var files = (string[])o;
                 if (!(bool)Invoke(new Func<bool>(delegate
                 {
-                    if (!WaitingClovershellForm.WaitForDevice(this))
+                    if (!WaitingConsoleConnectionForm.WaitForDevice(this))
                         return false;
                     return true;
                 }))) return;
                 foreach (var file in files)
                 {
-                    var clovershell = MainForm.Clovershell;
+                    var sshClientWrapper = MainForm.sshClientWrapper;
                     using (var f = new FileStream(file, FileMode.Open))
                     {
-                        clovershell.Execute("cd /var/lib/clover/profiles/0 && tar -xvz", f, null, null, 10000, true);
+                        sshClientWrapper.Execute("cd /var/lib/clover/profiles/0 && tar -xvz", f, null, null, 10000, true);
                     }
                 }
             }
@@ -285,9 +285,9 @@ namespace com.clusterrr.hakchi_gui
                 imagesForm.Dispose();
             try
             {
-                var clovershell = MainForm.Clovershell;
-                if (clovershell.IsOnline)
-                    clovershell.ExecuteSimple("uistart", 100);
+                var sshClient = MainForm.sshClientWrapper;
+                if (sshClient.IsConnected)
+                    sshClient.ExecuteSimple("uistart", 100);
             }
             catch { }
         }
@@ -298,11 +298,11 @@ namespace com.clusterrr.hakchi_gui
             var code = s.ToString();
             try
             {
-                var clovershell = MainForm.Clovershell;
+                var sshClientWrapper = MainForm.sshClientWrapper;
                 var images = new List<Image>();
                 using (var save = new MemoryStream())
                 {
-                    clovershell.Execute("cd /var/lib/clover/profiles/0 && tar -cz " + code, null, save, null, 10000, true);
+                    sshClientWrapper.Execute("cd /var/lib/clover/profiles/0 && tar -cz " + code, null, save, null, 10000, true);
                     save.Seek(0, SeekOrigin.Begin);
                     SevenZipExtractor.SetLibraryPath(Path.Combine(Program.BaseDirectoryInternal, IntPtr.Size == 8 ? @"tools\7z64.dll" : @"tools\7z.dll"));
                     using (var szExtractor = new SevenZipExtractor(save))

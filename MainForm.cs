@@ -1,5 +1,4 @@
 ﻿using com.clusterrr.clovershell;
-using com.clusterrr.Famicom;
 using com.clusterrr.hakchi_gui.Properties;
 using AutoUpdaterDotNET;
 using SevenZip;
@@ -12,12 +11,14 @@ using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Resources;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 using System.Net;
+using Zeroconf;
+using com.clusterrr.hakchi_gui.Ssh;
+using System.Net.NetworkInformation;
 
 namespace com.clusterrr.hakchi_gui
 {
@@ -26,7 +27,12 @@ namespace com.clusterrr.hakchi_gui
         /// <summary>
         /// The URL for the update metadata XML file
         /// </summary>
-        private static string UPDATE_XML_URL = "https://teamshinkansen.github.io/xml/updates/update.xml";
+        private const string UPDATE_XML_URL = "https://teamshinkansen.github.io/xml/updates/update.xml";
+
+        /// <summary>
+        /// The name of the service advertised by avahi on the console
+        /// </summary>
+        private const string AVAHI_SERVICE_NAME = "_hakchi._tcp.local."; 
 
         public enum OriginalGamesPosition { AtTop = 0, AtBottom = 1, Sorted = 2 }
         public enum ConsoleType { NES = 0, Famicom = 1, SNES = 2, SuperFamicom = 3, Unknown = 255 }
@@ -63,17 +69,33 @@ namespace com.clusterrr.hakchi_gui
             return string.Empty;
         }
 
+        public static bool IsConsoleConnected
+        {
+            get
+            {
+                return sshClientWrapper != null && sshClientWrapper.IsConnected;
+            }
+        }
+
         public static IEnumerable<string> InternalMods;
         public static bool? DownloadCover;
         public const int MaxGamesPerFolder = 50;
 
+        // temporary while we migrate everything to SSH/rsync
         public static ClovershellConnection Clovershell;
         mooftpserv.Server ftpServer;
+
+        // new client to use for remote commands
+        private ZeroconfResolver.ResolverListener avahiListener;
+        private IZeroconfHost consoleHost;
+        public static SshClientWrapper sshClientWrapper;
 
         public MainForm()
         {
             InitializeComponent();
             FormInitialize();
+
+            // Initialize Clovershell and the FTP/Telnet servers (for now...)
             Clovershell = new ClovershellConnection() { AutoReconnect = true, Enabled = true };
             Clovershell.OnConnected += Clovershell_OnConnected;
             Clovershell.OnDisconnected += Clovershell_OnDisconnected;
@@ -88,6 +110,137 @@ namespace com.clusterrr.hakchi_gui
                 FTPToolStripMenuItem_Click(null, null);
             if (ConfigIni.TelnetServer)
                 Clovershell.ShellEnabled = shellToolStripMenuItem.Checked = true;
+
+            // start also listening for proper network connections
+            avahiListener = ZeroconfResolver.CreateListener(AVAHI_SERVICE_NAME);
+            avahiListener.ServiceFound += ZeroconfHost_OnDetected;
+        }
+
+        private void ZeroconfHost_OnDetected(object src, IZeroconfHost host)
+        {
+            if (consoleHost == null)
+            {
+                consoleHost = host;
+            }
+        }
+
+        private void NetworkHost_Connect()
+        {
+            // connect the SSH client
+            sshClientWrapper = new SshClientWrapper(consoleHost.IPAddress, 22, "root", "");
+            sshClientWrapper.Connect();
+
+            Debug.WriteLine("Console connected via SSH: " + consoleHost.IPAddress);
+
+            try
+            {
+                // Trying to autodetect console type
+                var board = sshClientWrapper.ExecuteSimple("cat /etc/clover/boardtype", 500, true);
+                var region = sshClientWrapper.ExecuteSimple("cat /etc/clover/REGION", 500, true);
+                Debug.WriteLine(string.Format("Detected board: {0}", board));
+                Debug.WriteLine(string.Format("Detected region: {0}", region));
+                var c = ConfigIni.ConsoleType;
+
+                switch (board)
+                {
+                    default:
+                    case "dp-nes":
+                    case "dp-hvc":
+                        switch (region)
+                        {
+                            case "EUR_USA":
+                                c = ConsoleType.NES;
+                                break;
+                            case "JPN":
+                                c = ConsoleType.Famicom;
+                                break;
+                        }
+                        break;
+                    case "dp-shvc":
+                        switch (region)
+                        {
+                            case "USA":
+                            case "EUR":
+                                c = ConsoleType.SNES;
+                                break;
+                            case "JPN":
+                                c = ConsoleType.SuperFamicom;
+                                break;
+                        }
+                        break;
+                }
+
+                ConfigIni.ConsoleType = c;
+                ConfigIni.CustomFlashed = true; // Just in case of new installation
+                DetectedConnectedConsole = c;
+
+                Invoke(new Action(SyncConsoleType));
+                bool canInteract = true;
+
+                // do minimum version checks before we try to interact with the console in any meaningful way
+                if (SystemRequiresReflash())
+                {
+                    canInteract = false;
+
+                    if (BackgroundThreadMessageBox(Resources.KernelRequiresReflash, Resources.KernelRequiresReflashTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                    {
+                        canInteract = FlashCustomKernel();
+
+                        if (canInteract)
+                        {
+                            BackgroundThreadMessageBox(Resources.DoneYouCanUpload, Resources.Wow, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                    }
+                }
+                else if (SystemRequiresRootfsUpdate())
+                {
+                    canInteract = false;
+
+                    if (BackgroundThreadMessageBox(Resources.RootfsRequiresUpdates, Resources.RootfsRequiresUpdatesTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                    {
+                        canInteract = MembootCustomKernel();
+
+                        if (canInteract)
+                        {
+                            BackgroundThreadMessageBox(Resources.DoneYouCanUpload, Resources.Wow, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                    }
+                }
+                else if (SystemEligibleForRootfsUpdate())
+                {
+                    if (BackgroundThreadMessageBox(Resources.RootfsEligibleForUpdates, Resources.RootfsRequiresUpdatesTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                    {
+                        if (MembootCustomKernel())
+                        {
+                            BackgroundThreadMessageBox(Resources.DoneYouCanUpload, Resources.Wow, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                    }
+                }
+
+                if (canInteract)
+                {
+                    Invoke(new Action(UpdateLocalCache));
+                    WorkerForm.GetMemoryStats();
+                    new Thread(RecalculateSelectedGamesThread).Start();
+                }
+                else
+                {
+                    BackgroundThreadMessageBox(Resources.UpdatesNotInstalledWarning, Resources.Warning, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message + ex.StackTrace);
+            }
+        }
+
+        private void NetworkHost_Disconnect()
+        {
+            Console.WriteLine("Console disconnected via SSH");
+            DetectedConnectedConsole = null;
+            Invoke(new Action(SyncConsoleType));
+            sshClientWrapper.Disconnect();
+            sshClientWrapper = null;
         }
 
         void FormInitialize()
@@ -169,7 +322,8 @@ namespace com.clusterrr.hakchi_gui
 
         void Clovershell_OnConnected()
         {
-            try
+            BackgroundThreadMessageBox("FUCK OFF CLOVERSHELL", "FUCK OFF CLOVERSHELL", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+            /*try
             {
                 // Trying to autodetect console type
                 var board = Clovershell.ExecuteSimple("cat /etc/clover/boardtype", 500, true);
@@ -277,13 +431,13 @@ namespace com.clusterrr.hakchi_gui
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message + ex.StackTrace);
-            }
+            }*/
         }
 
         void Clovershell_OnDisconnected()
         {
-            DetectedConnectedConsole = null;
-            Invoke(new Action(SyncConsoleType));
+            //DetectedConnectedConsole = null;
+            //Invoke(new Action(SyncConsoleType));
         }
 
         private bool SystemRequiresReflash()
@@ -292,8 +446,8 @@ namespace com.clusterrr.hakchi_gui
 
             try
             {
-                var bootVersion = Clovershell.ExecuteSimple("source /var/version && echo $bootVersion", 500, true);
-                var kernelVersion = Clovershell.ExecuteSimple("source /var/version && echo $kernelVersion", 500, true);
+                var bootVersion = sshClientWrapper.ExecuteSimple("source /var/version && echo $bootVersion", 500, true);
+                var kernelVersion = sshClientWrapper.ExecuteSimple("source /var/version && echo $kernelVersion", 500, true);
                 kernelVersion = kernelVersion.Substring(0, kernelVersion.LastIndexOf('.'));
 
                 if (!Shared.IsVersionGreaterOrEqual(kernelVersion, Shared.MinimumHakchiKernelVersion) ||
@@ -316,7 +470,7 @@ namespace com.clusterrr.hakchi_gui
 
             try
             {
-                var scriptVersion = Clovershell.ExecuteSimple("source /var/version && echo $hakchiVersion", 500, true);
+                var scriptVersion = sshClientWrapper.ExecuteSimple("source /var/version && echo $hakchiVersion", 500, true);
                 scriptVersion = scriptVersion.Substring(scriptVersion.IndexOf('v') + 1);
                 scriptVersion = scriptVersion.Substring(0, scriptVersion.LastIndexOf('('));
 
@@ -342,7 +496,7 @@ namespace com.clusterrr.hakchi_gui
 
             try
             {
-                var scriptVersion = Clovershell.ExecuteSimple("source /var/version && echo $hakchiVersion", 500, true);
+                var scriptVersion = sshClientWrapper.ExecuteSimple("source /var/version && echo $hakchiVersion", 500, true);
                 scriptVersion = scriptVersion.Substring(scriptVersion.IndexOf('v') + 1);
                 scriptVersion = scriptVersion.Substring(0, scriptVersion.LastIndexOf('('));
 
@@ -1043,6 +1197,7 @@ namespace com.clusterrr.hakchi_gui
             SaveConfig();
             ftpServer.Stop();
             Clovershell.Dispose();
+            sshClientWrapper.Disconnect();
         }
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
@@ -1837,7 +1992,7 @@ namespace com.clusterrr.hakchi_gui
             }
 
             // check for an update after the initial console selection / on each app start
-            ServicePointManager.SecurityProtocol = (SecurityProtocolType)4080;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
             AutoUpdater.Start(UPDATE_XML_URL);
 
             // enable timers
@@ -2000,8 +2155,45 @@ namespace com.clusterrr.hakchi_gui
 
         private void timerConnectionCheck_Tick(object sender, EventArgs e)
         {
-            toolStripStatusConnectionIcon.Image = Clovershell.IsOnline ? Resources.green : Resources.red;
-            toolStripStatusConnectionIcon.ToolTipText = Clovershell.IsOnline ? "Online" : "Offline";
+            if (consoleHost != null)
+            {
+                // if we've detected a console host, we need to try connecting to the IP
+                // if it's available and we're not connected
+                if (!IsConsoleConnected)
+                {
+                    // if the console is pingable and we're not connected, go ahead and connect
+                    if (IsConsolePingable())
+                    {
+                        NetworkHost_Connect();
+                    }
+                    // if the console isn't connected but we've connected before, call the disconnect callback
+                    else if (sshClientWrapper != null && !sshClientWrapper.IsConnected)
+                    {
+                        NetworkHost_Disconnect();
+                    }
+                }
+            }
+
+            toolStripStatusConnectionIcon.Image = IsConsoleConnected ? Resources.green : Resources.red;
+            toolStripStatusConnectionIcon.ToolTipText = IsConsoleConnected ? "Online" : "Offline";
+        }
+
+        private bool IsConsolePingable()
+        {
+            bool pingable = false;
+
+            if (consoleHost != null)
+            {
+                Ping pingSender = new Ping();
+                PingReply reply = pingSender.Send(consoleHost.IPAddress, 100);
+
+                if (reply != null)
+                {
+                    pingable = reply.Status.Equals(IPStatus.Success);
+                }
+            }
+
+            return pingable;
         }
 
         private void saveSettingsToNESMiniNowToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2009,7 +2201,7 @@ namespace com.clusterrr.hakchi_gui
             if (RequirePatchedKernel() == DialogResult.No) return;
             try
             {
-                if (WaitingClovershellForm.WaitForDevice(this))
+                if (WaitingConsoleConnectionForm.WaitForDevice(this))
                 {
                     WorkerForm.SyncConfig(ConfigIni.GetConfigDictionary(), true);
                     if (!ConfigIni.DisablePopups)
@@ -2147,7 +2339,7 @@ namespace com.clusterrr.hakchi_gui
             if (RequirePatchedKernel() == DialogResult.No) return;
             try
             {
-                if (WaitingClovershellForm.WaitForDevice(this))
+                if (WaitingConsoleConnectionForm.WaitForDevice(this))
                 {
                     var screenshot = WorkerForm.TakeScreenshot();
                     var screenshotPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".png");
@@ -2438,7 +2630,7 @@ namespace com.clusterrr.hakchi_gui
         {
             try
             {
-                if (WaitingClovershellForm.WaitForDevice(this))
+                if (WaitingConsoleConnectionForm.WaitForDevice(this))
                 {
                     using (OpenFileDialog ofdPng = new OpenFileDialog())
                     {
@@ -2453,7 +2645,7 @@ namespace com.clusterrr.hakchi_gui
                                 return;
                             }
                         }
-                        Clovershell.Execute("hakchi unset cfg_boot_logo; cat > \"$(hakchi get rootfs)/etc/boot.png\"", File.OpenRead(ofdPng.FileName));
+                        sshClientWrapper.Execute("hakchi unset cfg_boot_logo; cat > \"$(hakchi get rootfs)/etc/boot.png\"", File.OpenRead(ofdPng.FileName));
                         if (!ConfigIni.DisablePopups)
                             MessageBox.Show(Resources.Done, Resources.Wow, MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
@@ -2471,10 +2663,10 @@ namespace com.clusterrr.hakchi_gui
             if (RequirePatchedKernel() == DialogResult.No) return;
             try
             {
-                if (WaitingClovershellForm.WaitForDevice(this))
+                if (WaitingConsoleConnectionForm.WaitForDevice(this))
                 {
                     var assembly = GetType().Assembly;
-                    Clovershell.Execute("hakchi unset cfg_boot_logo; cat > \"$(hakchi get rootfs)/etc/boot.png\"", File.OpenRead(Shared.PathCombine(Program.BaseDirectoryInternal, "data", "blankBoot.png")));
+                    sshClientWrapper.Execute("hakchi unset cfg_boot_logo; cat > \"$(hakchi get rootfs)/etc/boot.png\"", File.OpenRead(Shared.PathCombine(Program.BaseDirectoryInternal, "data", "blankBoot.png")));
                     if (!ConfigIni.DisablePopups)
                         MessageBox.Show(Resources.Done, Resources.Wow, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
@@ -2491,9 +2683,9 @@ namespace com.clusterrr.hakchi_gui
             if (RequirePatchedKernel() == DialogResult.No) return;
             try
             {
-                if (WaitingClovershellForm.WaitForDevice(this))
+                if (WaitingConsoleConnectionForm.WaitForDevice(this))
                 {
-                    Clovershell.ExecuteSimple("hakchi unset cfg_boot_logo; rm \"$(hakchi get rootfs)/etc/boot.png\"");
+                    sshClientWrapper.ExecuteSimple("hakchi unset cfg_boot_logo; rm \"$(hakchi get rootfs)/etc/boot.png\"");
                     if (!ConfigIni.DisablePopups)
                         MessageBox.Show(Resources.Done, Resources.Wow, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }

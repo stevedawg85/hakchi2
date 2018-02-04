@@ -19,7 +19,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -1281,7 +1281,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 7357a01 (dirty).
+        ///   Looks up a localized string similar to 660e4b4 (dirty).
         /// </summary>
         internal static string gitCommit {
             get {
@@ -1455,6 +1455,24 @@ namespace com.clusterrr.hakchi_gui.Properties {
         internal static string KernelDumped {
             get {
                 return ResourceManager.GetString("KernelDumped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your system&apos;s custom kernel is out of date and requires a reflash before you can use this program. Would you like to flash the custom kernel now?.
+        /// </summary>
+        internal static string KernelRequiresReflash {
+            get {
+                return ResourceManager.GetString("KernelRequiresReflash", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Kernel out of date.
+        /// </summary>
+        internal static string KernelRequiresReflashTitle {
+            get {
+                return ResourceManager.GetString("KernelRequiresReflashTitle", resourceCulture);
             }
         }
         
@@ -1847,6 +1865,33 @@ namespace com.clusterrr.hakchi_gui.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Your system&apos;s kernel scripts are out of date and can be updated. Would you like to update the custom kernel scripts now?.
+        /// </summary>
+        internal static string RootfsEligibleForUpdates {
+            get {
+                return ResourceManager.GetString("RootfsEligibleForUpdates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your system&apos;s kernel scripts are out of date and it requires a memboot before you can use this program. Would you like to memboot the custom kernel now?.
+        /// </summary>
+        internal static string RootfsRequiresUpdates {
+            get {
+                return ResourceManager.GetString("RootfsRequiresUpdates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scripts out of date.
+        /// </summary>
+        internal static string RootfsRequiresUpdatesTitle {
+            get {
+                return ResourceManager.GetString("RootfsRequiresUpdatesTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap ru {
@@ -2046,6 +2091,15 @@ namespace com.clusterrr.hakchi_gui.Properties {
         internal static string UnknownGame {
             get {
                 return ResourceManager.GetString("UnknownGame", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Until you install the necessary updates, you will likely experience errors while attempting to use this program. Please update to receive full compatibility..
+        /// </summary>
+        internal static string UpdatesNotInstalledWarning {
+            get {
+                return ResourceManager.GetString("UpdatesNotInstalledWarning", resourceCulture);
             }
         }
         
