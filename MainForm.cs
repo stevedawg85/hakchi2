@@ -1477,10 +1477,10 @@ namespace com.clusterrr.hakchi_gui
         {
             var workerForm = new WorkerForm(this);
             workerForm.Text = Resources.InstallingMods;
-            workerForm.Task = WorkerForm.Tasks.Memboot;
-            workerForm.zImage = Shared.PathCombine(Program.BaseDirectoryInternal, "data", "zImageMemboot");
+            workerForm.Task = WorkerForm.Tasks.ProcessMods;
             workerForm.Mod = "mod_hakchi";
             workerForm.hmodsInstall = new List<string>(mods);
+            workerForm.hmodsUninstall = new List<string>();
             workerForm.Start();
             return workerForm.DialogResult == DialogResult.OK;
         }
@@ -1489,9 +1489,9 @@ namespace com.clusterrr.hakchi_gui
         {
             var workerForm = new WorkerForm(this);
             workerForm.Text = Resources.UninstallingMods;
-            workerForm.Task = WorkerForm.Tasks.Memboot;
-            workerForm.zImage = Shared.PathCombine(Program.BaseDirectoryInternal, "data", "zImageMemboot");
+            workerForm.Task = WorkerForm.Tasks.ProcessMods;
             workerForm.Mod = "mod_hakchi";
+            workerForm.hmodsInstall = new List<string>();
             workerForm.hmodsUninstall = new List<string>(mods);
             workerForm.Start();
             return workerForm.DialogResult == DialogResult.OK;
