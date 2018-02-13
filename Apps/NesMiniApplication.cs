@@ -10,6 +10,7 @@ using System.Linq;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using Newtonsoft.Json;
 
 namespace com.clusterrr.hakchi_gui
 {
@@ -180,7 +181,7 @@ namespace com.clusterrr.hakchi_gui
             }
         }
 
-        protected AppTypeCollection.AppInfo appInfo;
+        protected AppTypeCollection.AppInfo appInfo = AppTypeCollection.UnknownApplicationType;
         public AppTypeCollection.AppInfo AppInfo
         {
             get { return appInfo; }
@@ -805,8 +806,7 @@ namespace com.clusterrr.hakchi_gui
                     }
                     else
                     {
-                        AppTypeCollection.AppInfo info = AppTypeCollection.GetAppByClass(GetType());
-                        SetImage(info.DefaultCover);
+                        SetImage(AppInfo.DefaultCover);
                     }
                 }
                 else
