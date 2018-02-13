@@ -289,7 +289,7 @@ namespace com.clusterrr.hakchi_gui
                     requiresReflash = true;
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 requiresReflash = true;
             }
@@ -315,7 +315,7 @@ namespace com.clusterrr.hakchi_gui
                     requiresUpdate = true;
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 requiresUpdate = true;
             }
@@ -341,7 +341,7 @@ namespace com.clusterrr.hakchi_gui
                     eligibleForUpdate = true;
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 eligibleForUpdate = true;
             }
