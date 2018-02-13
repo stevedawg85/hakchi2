@@ -451,37 +451,20 @@ namespace com.clusterrr.clovershell
         void shellListenerThreadLoop(object o)
         {
             var server = o as TcpListener;
+
             try
             {
                 while (true)
                 {
                     while (!server.Pending()) Thread.Sleep(100);
-                    var connection = new ShellConnection(this, server.AcceptSocket());
-                    Debug.WriteLine("Shell client connected");
-                    try
+                    NetworkStream netStream = new NetworkStream(server.AcceptSocket());
+                    if (online)
                     {
-                        if (!online) throw new ClovershellException("NES Mini is offline");
-                        pendingShellConnections.Enqueue(connection);
-                        writeUsb(ClovershellCommand.CMD_SHELL_NEW_REQ, 0);
-                        int t = 0;
-                        while (connection.id < 0)
-                        {
-                            Thread.Sleep(50);
-                            t++;
-                            if (t >= 50)
-                                throw new ClovershellException("shell request timeout");
-                        }
+                        Execute("netcat 127.0.0.1 873", netStream, netStream);
                     }
-                    catch (ThreadAbortException)
+                    else
                     {
-                        return;
-                    }
-                    catch (ClovershellException ex)
-                    {
-                        Debug.WriteLine(ex.Message + ex.StackTrace);
-                        if (connection.socket.Connected)
-                            connection.socket.Send(Encoding.ASCII.GetBytes("Error: " + ex.Message));
-                        connection.Dispose();
+                        netStream.Close();
                     }
                 }
             }
@@ -544,7 +527,13 @@ namespace com.clusterrr.clovershell
             var c = execConnections[arg];
             if (c == null) return;
             if (c.stdout != null)
-                c.stdout.Write(data, pos, len);
+            {
+                try
+                {
+                    c.stdout.Write(data, pos, len);
+                }
+                catch  { }
+            }
             c.LastDataTime = DateTime.Now;
             //Debug.WriteLine("stdout: " + Encoding.UTF8.GetString(data, pos, len));
             if (len == 0)
