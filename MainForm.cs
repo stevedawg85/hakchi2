@@ -52,11 +52,11 @@ namespace com.clusterrr.hakchi_gui
         {
             switch (c)
             {
-                case ConsoleType.NES: return nESMiniToolStripMenuItem.Text;
-                case ConsoleType.Famicom: return famicomMiniToolStripMenuItem.Text;
-                case ConsoleType.SNES: return sNESMiniToolStripMenuItem.Text;
-                case ConsoleType.SuperFamicom: return superFamicomMiniToolStripMenuItem.Text;
-                case ConsoleType.Unknown: return Resources.Unknown;
+                case ConsoleType.NES: return "NES";
+                case ConsoleType.Famicom: return "Famicom";
+                case ConsoleType.SNES: return "SNES";
+                case ConsoleType.SuperFamicom: return "Super Famicom";
+                case ConsoleType.Unknown: return "Unknown";
             }
             return string.Empty;
         }
@@ -200,62 +200,62 @@ namespace com.clusterrr.hakchi_gui
         {
             try
             {
-                if (!hakchi.MinimalMemboot)
+                if (hakchi.MinimalMemboot)
+                    return;
+
+                if (hakchi.CanInteract)
                 {
-                    if (hakchi.CanInteract)
+                    if (hakchi.DetectedConsoleType != null)
                     {
-                        if (hakchi.DetectedConsoleType != null)
-                        {
-                            if (hakchi.DetectedConsoleType != ConsoleType.Unknown)
-                                ConfigIni.Instance.ConsoleType = (ConsoleType)hakchi.DetectedConsoleType;
-                            ConfigIni.Instance.LastConnectedConsoleType = (ConsoleType)hakchi.DetectedConsoleType;
-                        }
-                        Invoke(new Action(SyncConsoleType));
-
-                        if (hakchi.SystemEligibleForRootfsUpdate())
-                        {
-                            if (BackgroundThreadMessageBox(Resources.SystemEligibleForRootfsUpdate, Resources.OutdatedScripts, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
-                            {
-                                if (MembootCustomKernel())
-                                {
-                                    BackgroundThreadMessageBox(Resources.DoneYouCanUpload, Resources.Wow, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                }
-                                return;
-                            }
-                        }
-
-                        Invoke(new Action(UpdateLocalCache));
-                        WorkerForm.GetMemoryStats();
-                        new Thread(RecalculateSelectedGamesThread).Start();
+                        if (hakchi.DetectedConsoleType != ConsoleType.Unknown)
+                            ConfigIni.Instance.ConsoleType = (ConsoleType)hakchi.DetectedConsoleType;
+                        ConfigIni.Instance.LastConnectedConsoleType = (ConsoleType)hakchi.DetectedConsoleType;
                     }
-                    else
+                    Invoke(new Action(SyncConsoleType));
+
+                    if (hakchi.SystemEligibleForRootfsUpdate())
                     {
-                        if (hakchi.SystemRequiresReflash())
+                        if (BackgroundThreadMessageBox(Resources.SystemEligibleForRootfsUpdate, Resources.OutdatedScripts, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
                         {
-                            if (BackgroundThreadMessageBox(Resources.SystemRequiresReflash, Resources.OutdatedKernel, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                            if (MembootCustomKernel())
                             {
-                                if (FlashCustomKernel())
-                                {
-                                    BackgroundThreadMessageBox(Resources.DoneYouCanUpload, Resources.Wow, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                }
-                                return;
+                                BackgroundThreadMessageBox(Resources.DoneYouCanUpload, Resources.Wow, MessageBoxButtons.OK, MessageBoxIcon.Information);
                             }
+                            return;
                         }
-                        else if (hakchi.SystemRequiresRootfsUpdate())
-                        {
-                            if (BackgroundThreadMessageBox(Resources.SystemRequiresRootfsUpdate, Resources.OutdatedScripts, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
-                            {
-                                if (MembootCustomKernel())
-                                {
-                                    BackgroundThreadMessageBox(Resources.DoneYouCanUpload, Resources.Wow, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                }
-                                return;
-                            }
-                        }
-
-                        // show warning message that any interaction is ill-advised
-                        BackgroundThreadMessageBox(Resources.PleaseUpdate, Resources.Warning, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     }
+
+                    Invoke(new Action(UpdateLocalCache));
+                    WorkerForm.GetMemoryStats();
+                    new Thread(RecalculateSelectedGamesThread).Start();
+                }
+                else
+                {
+                    if (hakchi.SystemRequiresReflash())
+                    {
+                        if (BackgroundThreadMessageBox(Resources.SystemRequiresReflash, Resources.OutdatedKernel, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                        {
+                            if (FlashCustomKernel())
+                            {
+                                BackgroundThreadMessageBox(Resources.DoneYouCanUpload, Resources.Wow, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                            return;
+                        }
+                    }
+                    else if (hakchi.SystemRequiresRootfsUpdate())
+                    {
+                        if (BackgroundThreadMessageBox(Resources.SystemRequiresRootfsUpdate, Resources.OutdatedScripts, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                        {
+                            if (MembootCustomKernel())
+                            {
+                                BackgroundThreadMessageBox(Resources.DoneYouCanUpload, Resources.Wow, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                            return;
+                        }
+                    }
+
+                    // show warning message that any interaction is ill-advised
+                    BackgroundThreadMessageBox(Resources.PleaseUpdate, Resources.Warning, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
 
             }
@@ -275,13 +275,6 @@ namespace com.clusterrr.hakchi_gui
         {
             // update window title
             SetWindowTitle();
-
-            // detected console type
-            noneToolStripMenuItem.Checked = hakchi.DetectedConsoleType == null || hakchi.DetectedConsoleType == ConsoleType.Unknown;
-            nESMiniToolStripMenuItem.Checked = hakchi.DetectedConsoleType == ConsoleType.NES;
-            famicomMiniToolStripMenuItem.Checked = hakchi.DetectedConsoleType == ConsoleType.Famicom;
-            sNESMiniToolStripMenuItem.Checked = hakchi.DetectedConsoleType == ConsoleType.SNES;
-            superFamicomMiniToolStripMenuItem.Checked = hakchi.DetectedConsoleType == ConsoleType.SuperFamicom;
 
             // skip if unchanged
             if (ConfigIni.Instance.ConsoleType == lastConsoleType)
