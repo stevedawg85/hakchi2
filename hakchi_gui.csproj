@@ -116,6 +116,12 @@
       <HintPath>packages\Costura.Fody.1.6.2\lib\portable-net+sl+win+wpa+wp\Costura.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Mono.Zeroconf, Version=4.0.0.90, Culture=neutral, PublicKeyToken=e60c4f4a95e1099e, processorArchitecture=MSIL">
+      <HintPath>packages\Mono.Zeroconf.0.9.0.0\lib\Net20\Mono.Zeroconf.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Zeroconf.Providers.Bonjour, Version=4.0.0.90, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Mono.Zeroconf.0.9.0.0\lib\Net20\Mono.Zeroconf.Providers.Bonjour.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.11.0.1\lib\net35\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -542,6 +548,8 @@
     <Compile Include="SnesPresetEditor.Designer.cs">
       <DependentUpon>SnesPresetEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="SSH\SshClientException.cs" />
+    <Compile Include="SSH\SshClientWrapper.cs" />
     <Compile Include="StringInputForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -1335,6 +1343,11 @@
     <Content Include="tools\arm\sntool.static">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="network_mods\avahi-7bbd517.hmod" />
+    <None Include="network_mods\dropbear-b5ca992.hmod" />
+    <None Include="network_mods\ftpd-e56a930.hmod" />
+    <None Include="network_mods\rndis-197ace1.hmod" />
+    <None Include="network_mods\telnetd-ca53806.hmod" />
     <None Include="sfrom_tool\README.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -1344,15 +1357,33 @@
     <Content Include="tools\arm\unpackbootimg.static">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="tools\xz.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <Content Include="tools\rsyncpass">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="tools\xz.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="mods\hmods\font_remount.hmod">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="patches\1c3848c0-Illusion of Gaia %28U%29 [!].ips">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Content Include="tools\cygcrypto-1.0.0.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="tools\cygpopt-0.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="tools\cygssp-0.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="tools\cygz.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="tools\rsync.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="user_mods\advanced_music_hack.hmod\etc\preinit.d\bb223_advanced_music_hack">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -3235,41 +3266,41 @@
     <None Include="patches\README.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="tools\7z.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="tools\7z64.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <Content Include="tools\7z.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="tools\7z64.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="SevenZip\gpl.txt" />
     <Content Include="SevenZip\lgpl.txt" />
-    <None Include="tools\cpio.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="tools\cyggcc_s-1.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="tools\cygiconv-2.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="tools\cygintl-8.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="tools\cygwin1.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="tools\lzop.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="tools\mkbootfs.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="tools\mkbootimg.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="tools\unpackbootimg.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <Content Include="tools\cpio.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="tools\cyggcc_s-1.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="tools\cygiconv-2.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="tools\cygintl-8.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="tools\cygwin1.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="tools\lzop.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="tools\mkbootfs.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="tools\mkbootimg.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="tools\unpackbootimg.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -3361,8 +3392,8 @@ git --version &amp;&amp; (
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('packages\Costura.Fody.1.6.2\build\portable-net+sl+win+wpa+wp\Costura.Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Costura.Fody.1.6.2\build\portable-net+sl+win+wpa+wp\Costura.Fody.targets'))" />
-    <Error Condition="!Exists('packages\Fody.2.4.2\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Fody.2.4.2\build\Fody.targets'))" />
+    <Error Condition="!Exists('packages\Fody.2.4.6\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Fody.2.4.6\build\Fody.targets'))" />
   </Target>
   <Import Project="packages\Costura.Fody.1.6.2\build\portable-net+sl+win+wpa+wp\Costura.Fody.targets" Condition="Exists('packages\Costura.Fody.1.6.2\build\portable-net+sl+win+wpa+wp\Costura.Fody.targets')" />
-  <Import Project="packages\Fody.2.4.2\build\Fody.targets" Condition="Exists('packages\Fody.2.4.2\build\Fody.targets')" />
+  <Import Project="packages\Fody.2.4.6\build\Fody.targets" Condition="Exists('packages\Fody.2.4.6\build\Fody.targets')" />
 </Project>
