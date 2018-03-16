@@ -1,4 +1,4 @@
-﻿using com.clusterrr.clovershell;
+﻿using com.clusterrr.Famicom;
 using com.clusterrr.hakchi_gui.Properties;
 using AutoUpdaterDotNET;
 using SevenZip;
@@ -15,7 +15,6 @@ using System.Resources;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
-using System.Net;
 
 namespace com.clusterrr.hakchi_gui
 {
@@ -25,6 +24,11 @@ namespace com.clusterrr.hakchi_gui
         /// The URL for the update metadata XML file
         /// </summary>
         private static string UPDATE_XML_URL = "https://teamshinkansen.github.io/xml/updates/update.xml";
+
+        /// <summary>
+        /// The name of the service advertised by avahi on the console
+        /// </summary>
+        public const string AVAHI_SERVICE_NAME = "_hakchi._tcp.local.";
 
         public enum OriginalGamesPosition { AtTop = 0, AtBottom = 1, Sorted = 2, Hidden = 3 }
         public enum ConsoleType { NES = 0, Famicom = 1, SNES = 2, SuperFamicom = 3, Unknown = 255 }
@@ -196,7 +200,7 @@ namespace com.clusterrr.hakchi_gui
                                    () => { return MessageBox.Show(this, text, title, buttons, icon); }));
         }
 
-        void Shell_OnConnected()
+        void Shell_OnConnected(ISystemShell caller)
         {
             try
             {

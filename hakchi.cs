@@ -1,5 +1,7 @@
 ﻿using com.clusterrr.clovershell;
+using com.clusterrr.ssh;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -9,26 +11,9 @@ using System.Text.RegularExpressions;
 
 namespace com.clusterrr.hakchi_gui
 {
-    public delegate void OnConnectedEventHandler();
-    public delegate void OnDisconnectedEventHandler();
-    public interface INetworkShell : IDisposable
-    {
-        bool Enabled { get; }
-        bool IsOnline { get; }
-        bool ShellEnabled { get; set; }
-        ushort ShellPort { get; }
-        void Connect();
-        void Disconnect();
-        int Ping();
-        event OnConnectedEventHandler OnConnected;
-        event OnDisconnectedEventHandler OnDisconnected;
-        string ExecuteSimple(string command, int timeout = 2000, bool throwOnNonZero = false);
-        int Execute(string command, Stream stdin = null, Stream stdout = null, Stream stderr = null, int timeout = 0, bool throwOnNonZero = false);
-    }
-
     public static class hakchi
     {
-        public static INetworkShell Shell { get; private set; }
+        public static ISystemShell Shell { get; private set; }
         public static bool Connected { get; private set; }
 
         public static MainForm.ConsoleType? DetectedConsoleType { get; private set; }
@@ -121,8 +106,8 @@ namespace com.clusterrr.hakchi_gui
 
         private static void clearProperties()
         {
-            DetectedConsoleType = null;
             Connected = false;
+            DetectedConsoleType = null;
             CustomFirmwareLoaded = false;
             BootVersion = "";
             KernelVersion = "";
@@ -139,33 +124,62 @@ namespace com.clusterrr.hakchi_gui
             SquashFsPath = "/var/squashfs";
         }
 
+        private static List<ISystemShell> shells = new List<ISystemShell>();
+
         public static void Initialize()
         {
-            var clovershell = new ClovershellConnection() { AutoReconnect = true, Enabled = true };
+            if (shells.Any())
+                return;
+
+            // placeholder shell
+            shells.Add(new UnknownShell());
+            Shell = shells.First();
+
+            // clovershell (for legacy compatibility)
+            var clovershell = new ClovershellConnection() { AutoReconnect = true };
             clovershell.OnConnected += Shell_OnConnected;
             clovershell.OnDisconnected += Shell_OnDisconnected;
-            Shell = clovershell;
+            shells.Add(clovershell);
+
+            // new high-tech but slow SSH connection
+            var ssh = new SshClientWrapper(MainForm.AVAHI_SERVICE_NAME, 22, "root", "") { AutoReconnect = true };
+            ssh.OnConnected += Shell_OnConnected;
+            ssh.OnDisconnected += Shell_OnDisconnected;
+            shells.Add(ssh);
+
+            // start their watchers
+            clovershell.Enabled = true;
+            ssh.Enabled = true;
         }
 
         public static void Shutdown()
         {
-            Shell.Dispose();
+            shells.ForEach(shell => shell.Dispose());
+            shells.Clear();
+            Shell = null;
         }
 
         public static void Shell_OnDisconnected()
         {
+            // clear up used shell
+            Shell = shells.First();
+            shells.ForEach(shell => shell.Enabled = true);
             clearProperties();
         }
 
-        public static void Shell_OnConnected()
+        public static void Shell_OnConnected(ISystemShell caller)
         {
+            // set calling shell as current used shell
+            Shell = caller;
+            shells.ForEach(shell => { if (shell != caller) shell.Enabled = false; });
             clearProperties();
+
             try
             {
                 Connected = Shell.IsOnline;
                 if (!Shell.IsOnline)
                 {
-                    throw new IOException("Clovershell connection unexpectedly offline");
+                    throw new IOException("Shell connection should be online!");
                 }
                 MinimalMemboot = Shell.Execute("stat /generalmemboot.flag &>/dev/null") == 0;
 

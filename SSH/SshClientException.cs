@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace com.clusterrr.hakchi_gui.Ssh
+namespace com.clusterrr.ssh
 {
     public class SshClientException : Exception
     {

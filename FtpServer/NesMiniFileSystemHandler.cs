@@ -17,21 +17,21 @@ namespace mooftpserv
         // current path as TVFS or unix-like
         private string currentPath;
         // shell
-        private INetworkShell shell;
+        private ISystemShell shell;
 
-        public NesMiniFileSystemHandler(INetworkShell shell, string startPath)
+        public NesMiniFileSystemHandler(ISystemShell shell, string startPath)
         {
             os = OS.Unix;
             this.currentPath = startPath;
             this.shell = shell;
         }
 
-        public NesMiniFileSystemHandler(INetworkShell shell)
+        public NesMiniFileSystemHandler(ISystemShell shell)
             : this(shell, "/")
         {
         }
 
-        private NesMiniFileSystemHandler(string path, OS os, INetworkShell shell)
+        private NesMiniFileSystemHandler(string path, OS os, ISystemShell shell)
         {
             this.currentPath = path;
             this.os = os;

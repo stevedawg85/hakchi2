@@ -1,4 +1,6 @@
-﻿using Renci.SshNet;
+﻿using com.clusterrr.hakchi_gui;
+using Renci.SshNet;
+using Zeroconf;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,58 +9,222 @@ using System.IO.Pipes;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using System.Net.NetworkInformation;
+using System.Threading;
 
-namespace com.clusterrr.hakchi_gui.Ssh
+namespace com.clusterrr.ssh
 {
-    public class SshClientWrapper
+    public class SshClientWrapper : ISystemShell
     {
-        private SshClient sshClient;
-        private bool hasConnected;
-        private string host;
+        public event OnConnectedEventHandler OnConnected = delegate { };
+        public event OnDisconnectedEventHandler OnDisconnected = delegate { };
 
-        public bool IsConnected
+        private ZeroconfResolver.ResolverListener avahiListener;
+        private IZeroconfHost avahiHost;
+        private SshClient sshClient;
+        Thread connectThread;
+        private bool enabled;
+        private bool hasConnected;
+        private int retries;
+        private string service;
+        private ushort port;
+        private string username;
+        private string password;
+
+        public bool AutoReconnect { set; get; }
+        public bool Enabled
+        {
+            get { return enabled; }
+            set
+            {
+                if (enabled == value) return;
+                enabled = value;
+                if (value)
+                {
+                    // start listening for proper network connections
+                    avahiListener = ZeroconfResolver.CreateListener(service);
+                    avahiListener.ServiceFound += ZeroconfHost_OnServiceFound;
+
+                    // start connection watching thread
+                    if (connectThread == null)
+                    {
+                        connectThread = new Thread(connectThreadLoop);
+                        connectThread.Start();
+                    }
+                }
+                else
+                {
+                    if (connectThread != null)
+                    {
+                        connectThread.Abort();
+                        connectThread = null;
+                    }
+                    if (sshClient != null)
+                    {
+                        if (sshClient.IsConnected)
+                        {
+                            sshClient.Disconnect();
+                        }
+                        sshClient.Dispose();
+                        sshClient = null;
+                    }
+                    if (avahiListener != null)
+                    {
+                        avahiListener.Dispose();
+                        avahiListener = null;
+                    }
+                }
+            }
+        }
+
+        private void connectThreadLoop()
+        {
+            try
+            {
+                while (true)
+                {
+                    if (!IsOnline)
+                    {
+                        if (hasConnected)
+                        {
+                            avahiHost = null;
+                            hasConnected = false;
+                            OnDisconnected();
+                        }
+                        else if (avahiHost != null && AutoReconnect)
+                        {
+                            if (Ping() != -1)
+                            {
+                                retries = 0;
+                                Connect();
+                            }
+                            else
+                            {
+                                if (retries++ > 3)
+                                {
+                                    retries = 0;
+                                    avahiHost = null;
+                                }
+                            }
+                        }
+                    }
+                    Thread.Sleep(250);
+                }
+            }
+            catch (ThreadAbortException)
+            {
+                return;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Critical error: " + ex.Message + ex.StackTrace);
+            }
+
+        }
+
+        public bool IsOnline
         {
             get
             {
-                return hasConnected ? sshClient.IsConnected : false;
+                return (avahiHost != null && sshClient != null) ? sshClient.IsConnected : false;
             }
+        }
+
+        public ushort ShellPort
+        {
+            get { return port; }
+        }
+
+        public bool ShellEnabled
+        {
+            get { return true; }
+            set { }
         }
 
         public string ClientIP
         {
             get
             {
-                return host;
+                return avahiHost == null ? null : avahiHost.IPAddress;
             }
         }
 
-        public SshClientWrapper(string host, int port, string username, string password)
+        private void ZeroconfHost_OnServiceFound(object src, IZeroconfHost host)
         {
-            this.hasConnected = false;
-            this.host = host;
-            this.sshClient = new SshClient(host, port, username, password);
-            sshClient.ErrorOccurred += SshClient_OnError;
+            if (avahiHost == null)
+            {
+                Debug.WriteLine($"Detected host: \"{host.DisplayName}\" IP: {host.IPAddress}");
+                avahiHost = host;
+            }
+        }
+
+        public SshClientWrapper(string serviceName, ushort port, string username, string password)
+        {
+            avahiListener = null;
+            avahiHost = null;
+            sshClient = null;
+            connectThread = null;
+            enabled = false;
+            hasConnected = false;
+            retries = 0;
+            this.service = serviceName;
+            this.port = port;
+            this.username = username;
+            this.password = password;
+        }
+
+        public void Dispose()
+        {
+            Enabled = false;
         }
 
         public void Connect()
         {
-            sshClient.Connect();
-            hasConnected = true;
+            if (IsOnline)
+                return;
+            if (avahiHost == null)
+                return;
 
+            if (sshClient == null)
+            {
+                sshClient = new SshClient(avahiHost.IPAddress, port, username, password);
+                sshClient.ErrorOccurred += SshClient_OnError;
+            }
+            if (!sshClient.IsConnected)
+            {
+                sshClient.Connect();
+            }
             if (!sshClient.IsConnected)
             {
                 throw new SshClientException(string.Format("Unable to connect to SSH server at {0}:{1}", 
                     sshClient.ConnectionInfo.Host, sshClient.ConnectionInfo.Port));
             }
+            hasConnected = true;
+            OnConnected(this);
         }
 
         public void Disconnect()
         {
+            if (sshClient == null) return;
             if (sshClient.IsConnected)
             {
                 sshClient.Disconnect();
+                OnDisconnected();
             }
+        }
+
+        public int Ping()
+        {
+            if (avahiHost != null)
+            {
+                Ping pingSender = new Ping();
+                PingReply reply = pingSender.Send(avahiHost.IPAddress, 100);
+                if (reply != null)
+                {
+                    return reply.Status.Equals(IPStatus.Success) ? (int)reply.RoundtripTime : -1;
+                }
+            }
+            return -1;
         }
 
         public string ExecuteSimple(string command, int timeout = 2000, bool throwOnNonZero = false)
@@ -123,11 +289,7 @@ namespace com.clusterrr.hakchi_gui.Ssh
             Debug.WriteLine(string.Format("Error occurred on SSH client: {0}\n{1}\n{2}",
                 args.Exception.Message, args.Exception.InnerException, args.Exception.StackTrace));
 #endif
-
-            if (sshClient.IsConnected)
-            {
-                sshClient.Disconnect();
-            }
+            Disconnect();
         }
     }
 }

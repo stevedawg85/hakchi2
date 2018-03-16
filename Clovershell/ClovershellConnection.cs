@@ -13,7 +13,7 @@ using com.clusterrr.hakchi_gui;
 
 namespace com.clusterrr.clovershell
 {
-    public class ClovershellConnection : IDisposable, INetworkShell
+    public class ClovershellConnection : IDisposable, ISystemShell
     {
         const UInt16 vid = 0x1F3A;
         const UInt16 pid = 0xEFE8;
@@ -258,7 +258,7 @@ namespace com.clusterrr.clovershell
                             epReader.DataReceivedEnabled = true;
                             lastAliveTime = DateTime.Now;
                             online = true;
-                            OnConnected();
+                            OnConnected(this);
                             while (device.mUsbRegistry.IsAlive)
                             {
                                 Thread.Sleep(100);

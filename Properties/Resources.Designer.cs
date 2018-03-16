@@ -1388,7 +1388,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to b053b61 (dirty).
+        ///   Looks up a localized string similar to eebea64 (dirty).
         /// </summary>
         internal static string gitCommit {
             get {
