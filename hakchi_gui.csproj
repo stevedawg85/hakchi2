@@ -548,8 +548,8 @@
     <Compile Include="SnesPresetEditor.Designer.cs">
       <DependentUpon>SnesPresetEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="SSH\SshClientException.cs" />
-    <Compile Include="SSH\SshClientWrapper.cs" />
+    <Compile Include="Ssh\SshClientException.cs" />
+    <Compile Include="Ssh\SshClientWrapper.cs" />
     <Compile Include="StringInputForm.cs">
       <SubType>Form</SubType>
     </Compile>

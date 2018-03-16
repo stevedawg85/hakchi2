@@ -9,3 +9,4 @@ commit.txt
 packages/**/*
 !packages/repositories.config
 Web Installer/*.exe
+SSH.NET/src/Renci.SshNet.NET35/bin/*
