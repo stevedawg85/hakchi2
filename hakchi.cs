@@ -15,6 +15,8 @@ namespace com.clusterrr.hakchi_gui
     {
         public static ISystemShell Shell { get; private set; }
         public static bool Connected { get; private set; }
+        public static event OnConnectedEventHandler OnConnected = delegate { };
+        public static event OnDisconnectedEventHandler OnDisconnected = delegate { };
 
         public static MainForm.ConsoleType? DetectedConsoleType { get; private set; }
         public static bool CustomFirmwareLoaded { get; private set; }
@@ -161,19 +163,19 @@ namespace com.clusterrr.hakchi_gui
 
         public static void Shell_OnDisconnected()
         {
-            // clear up used shell
+            // clear up used shell and reenable all
             Shell = shells.First();
             shells.ForEach(shell => shell.Enabled = true);
+
             clearProperties();
+            OnDisconnected();
         }
 
         public static void Shell_OnConnected(ISystemShell caller)
         {
-            // set calling shell as current used shell
+            // set calling shell as current used shell and disable others
             Shell = caller;
             shells.ForEach(shell => { if (shell != caller) shell.Enabled = false; });
-            clearProperties();
-
             try
             {
                 Connected = Shell.IsOnline;
@@ -219,6 +221,9 @@ namespace com.clusterrr.hakchi_gui
 
                 // load config
                 ConfigIni.SetConfigDictionary(LoadConfig());
+
+                // chain to other OnConnected events
+                OnConnected(caller);
             }
             catch (Exception ex)
             {

@@ -83,10 +83,15 @@ namespace com.clusterrr.ssh
             {
                 while (true)
                 {
-                    if (!IsOnline)
+                    if (IsOnline)
+                    {
+                        Thread.Sleep(1000);
+                    }
+                    else
                     {
                         if (hasConnected)
                         {
+                            Debug.WriteLine("SSH shell disconnected");
                             avahiHost = null;
                             hasConnected = false;
                             OnDisconnected();
@@ -107,8 +112,8 @@ namespace com.clusterrr.ssh
                                 }
                             }
                         }
+                        Thread.Sleep(250);
                     }
-                    Thread.Sleep(250);
                 }
             }
             catch (ThreadAbortException)
@@ -119,7 +124,6 @@ namespace com.clusterrr.ssh
             {
                 Debug.WriteLine("Critical error: " + ex.Message + ex.StackTrace);
             }
-
         }
 
         public bool IsOnline
@@ -151,9 +155,11 @@ namespace com.clusterrr.ssh
 
         private void ZeroconfHost_OnServiceFound(object src, IZeroconfHost host)
         {
-            if (avahiHost == null)
+            if (avahiHost == null && host != null)
             {
-                Debug.WriteLine($"Detected host: \"{host.DisplayName}\" IP: {host.IPAddress}");
+#if DEBUG
+                Debug.WriteLine($"Detected host: \"{host.DisplayName ?? "Unknown"}\", IP: {host.IPAddress ?? "0.0.0.0"}");
+#endif
                 avahiHost = host;
             }
         }
@@ -175,6 +181,7 @@ namespace com.clusterrr.ssh
 
         public void Dispose()
         {
+            // this will shutdown everything
             Enabled = false;
         }
 
@@ -199,6 +206,8 @@ namespace com.clusterrr.ssh
                 throw new SshClientException(string.Format("Unable to connect to SSH server at {0}:{1}", 
                     sshClient.ConnectionInfo.Host, sshClient.ConnectionInfo.Port));
             }
+
+            Debug.WriteLine($"SSH shell connected, encryption: {sshClient.ConnectionInfo.CurrentServerEncryption}");
             hasConnected = true;
             OnConnected(this);
         }
@@ -208,8 +217,8 @@ namespace com.clusterrr.ssh
             if (sshClient == null) return;
             if (sshClient.IsConnected)
             {
+                // this will disconnect the shell and thread loop will detect it and call OnDisconnected and clean up
                 sshClient.Disconnect();
-                OnDisconnected();
             }
         }
 
@@ -219,9 +228,12 @@ namespace com.clusterrr.ssh
             {
                 Ping pingSender = new Ping();
                 PingReply reply = pingSender.Send(avahiHost.IPAddress, 100);
-                if (reply != null)
+                if (reply != null && reply.Status.Equals(IPStatus.Success))
                 {
-                    return reply.Status.Equals(IPStatus.Success) ? (int)reply.RoundtripTime : -1;
+#if DEBUG
+                    Debug.WriteLine($"Pinged {reply.Address}, {reply.RoundtripTime}ms");
+#endif
+                    return (int)reply.RoundtripTime;
                 }
             }
             return -1;

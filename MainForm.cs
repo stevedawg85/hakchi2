@@ -69,7 +69,7 @@ namespace com.clusterrr.hakchi_gui
         public static bool? DownloadCover;
         public const int MaxGamesPerFolder = 50;
 
-        mooftpserv.Server ftpServer;
+        public static mooftpserv.Server FtpServer;
 
         private class GamesSorter : IComparer
         {
@@ -91,20 +91,18 @@ namespace com.clusterrr.hakchi_gui
         {
             InitializeComponent();
             FormInitialize();
+
+            // setup system shell
             hakchi.Initialize();
-            hakchi.Shell.OnConnected += Shell_OnConnected;
-            hakchi.Shell.OnDisconnected += Shell_OnDisconnected;
+            hakchi.OnConnected += Shell_OnConnected;
+            hakchi.OnDisconnected += Shell_OnDisconnected;
 
-            ftpServer = new mooftpserv.Server();
-            ftpServer.AuthHandler = new mooftpserv.NesMiniAuthHandler();
-            ftpServer.FileSystemHandler = new mooftpserv.NesMiniFileSystemHandler(hakchi.Shell);
-            ftpServer.LogHandler = new mooftpserv.DebugLogHandler();
-            ftpServer.LocalPort = 1021;
-
-            if (ConfigIni.Instance.FtpServer)
-                FTPToolStripMenuItem_Click(null, null);
-            if (ConfigIni.Instance.TelnetServer)
-                shellToolStripMenuItem_Click(null, null);
+            // setup ftp server for legacy system shell
+            FtpServer = new mooftpserv.Server();
+            FtpServer.AuthHandler = new mooftpserv.NesMiniAuthHandler();
+            FtpServer.FileSystemHandler = new mooftpserv.NesMiniFileSystemHandler(hakchi.Shell);
+            FtpServer.LogHandler = new mooftpserv.DebugLogHandler();
+            FtpServer.LocalPort = 1021;
         }
 
         void SetWindowTitle()
@@ -180,6 +178,7 @@ namespace com.clusterrr.hakchi_gui
                 // Loading games database in background
                 new Thread(NesGame.LoadCache).Start();
                 new Thread(SnesGame.LoadCache).Start();
+
                 // Recalculate games in background
                 new Thread(RecalculateSelectedGamesThread).Start();
 
@@ -228,6 +227,12 @@ namespace com.clusterrr.hakchi_gui
                             return;
                         }
                     }
+
+                    // enable helper servers
+                    if (ConfigIni.Instance.FtpServer)
+                        FTPToolStripMenuItem_Click(null, null);
+                    if (ConfigIni.Instance.TelnetServer)
+                        shellToolStripMenuItem_Click(null, null);
 
                     Invoke(new Action(UpdateLocalCache));
                     WorkerForm.GetMemoryStats();
@@ -1124,7 +1129,7 @@ namespace com.clusterrr.hakchi_gui
         {
             Debug.WriteLine("Closing main form");
             SaveConfig();
-            ftpServer.Stop();
+            FtpServer.Stop();
             hakchi.Shutdown();
         }
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -2165,7 +2170,8 @@ namespace com.clusterrr.hakchi_gui
                     {
                         try
                         {
-                            ftpServer.Run();
+                            (FtpServer.FileSystemHandler as mooftpserv.NesMiniFileSystemHandler).UpdateShell(hakchi.Shell);
+                            FtpServer.Run();
                         }
                         catch (ThreadAbortException)
                         {
@@ -2174,7 +2180,7 @@ namespace com.clusterrr.hakchi_gui
                         {
                             try
                             {
-                                ftpServer.Stop();
+                                FtpServer.Stop();
                             }
                             catch { }
                             Debug.WriteLine(ex.Message + ex.StackTrace);
@@ -2198,7 +2204,7 @@ namespace com.clusterrr.hakchi_gui
             }
             else
             {
-                ftpServer.Stop();
+                FtpServer.Stop();
                 ConfigIni.Instance.FtpServer = false;
             }
             openFTPInExplorerToolStripMenuItem.Enabled = FTPToolStripMenuItem.Checked;

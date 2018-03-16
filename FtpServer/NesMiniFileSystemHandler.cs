@@ -38,6 +38,11 @@ namespace mooftpserv
             this.shell = shell;
         }
 
+        public void UpdateShell(ISystemShell shell)
+        {
+            this.shell = shell;
+        }
+
         public IFileSystemHandler Clone(IPEndPoint peer)
         {
             return new NesMiniFileSystemHandler(currentPath, os, shell);

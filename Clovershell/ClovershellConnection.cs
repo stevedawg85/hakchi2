@@ -32,10 +32,8 @@ namespace com.clusterrr.clovershell
         bool autoreconnect = false;
         byte[] lastPingResponse = null;
         DateTime lastAliveTime;
-        //public delegate void OnClovershellConnected();
-        public event OnConnectedEventHandler OnConnected = delegate { };
-        //public delegate void OnClovershellDisconnected();
-        public event OnDisconnectedEventHandler OnDisconnected = delegate { };
+        public event OnConnectedEventHandler OnConnected = delegate { }; //public delegate void OnClovershellConnected();
+        public event OnDisconnectedEventHandler OnDisconnected = delegate { }; //public delegate void OnClovershellDisconnected();
 
         internal enum ClovershellCommand
         {
