@@ -1286,6 +1286,15 @@ namespace com.clusterrr.hakchi_gui.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to FTP server on ftp://root@{0}.
+        /// </summary>
+        internal static string FTPServerOn {
+            get {
+                return ResourceManager.GetString("FTPServerOn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid Game Genie code &quot;{0}&quot; for game &quot;{1}&quot;..
         /// </summary>
         internal static string GameGenieFormatError {
@@ -1388,7 +1397,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to eebea64 (dirty).
+        ///   Looks up a localized string similar to 212a7c8 (dirty).
         /// </summary>
         internal static string gitCommit {
             get {
@@ -2358,6 +2367,15 @@ namespace com.clusterrr.hakchi_gui.Properties {
         internal static string SystemRequiresRootfsUpdate {
             get {
                 return ResourceManager.GetString("SystemRequiresRootfsUpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Telnet server on telnet://{0} (login:root).
+        /// </summary>
+        internal static string TelnetServerOn {
+            get {
+                return ResourceManager.GetString("TelnetServerOn", resourceCulture);
             }
         }
         

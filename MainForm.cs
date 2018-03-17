@@ -1,5 +1,4 @@
-﻿using com.clusterrr.Famicom;
-using com.clusterrr.hakchi_gui.Properties;
+﻿using com.clusterrr.hakchi_gui.Properties;
 using AutoUpdaterDotNET;
 using SevenZip;
 using System;
@@ -183,8 +182,10 @@ namespace com.clusterrr.hakchi_gui
                 new Thread(RecalculateSelectedGamesThread).Start();
 
                 // servers menu settings
-                openFTPInExplorerToolStripMenuItem.Enabled = FTPToolStripMenuItem.Checked = ConfigIni.Instance.FtpServer;
-                openTelnetToolStripMenuItem.Enabled = shellToolStripMenuItem.Checked = ConfigIni.Instance.TelnetServer;
+                FTPToolStripMenuItem.Checked = ConfigIni.Instance.FtpServer;
+                openFTPInExplorerToolStripMenuItem.Enabled = false;
+                shellToolStripMenuItem.Checked = ConfigIni.Instance.TelnetServer;
+                openTelnetToolStripMenuItem.Enabled = false;
             }
             catch (Exception ex)
             {
@@ -229,10 +230,35 @@ namespace com.clusterrr.hakchi_gui
                     }
 
                     // enable helper servers
-                    if (ConfigIni.Instance.FtpServer)
-                        FTPToolStripMenuItem_Click(null, null);
-                    if (ConfigIni.Instance.TelnetServer)
-                        shellToolStripMenuItem_Click(null, null);
+                    if (caller is ssh.SshClientWrapper)
+                    {
+                        Invoke(new Action(delegate {
+                            changeFTPServerState(false);
+
+                            FTPToolStripMenuItem.Text = string.Format(Resources.FTPServerOn, (caller as ssh.SshClientWrapper).IPAddress + ":21");
+                            FTPToolStripMenuItem.Checked = ConfigIni.Instance.FtpServer;
+                            FTPToolStripMenuItem.Enabled = false;
+                            openFTPInExplorerToolStripMenuItem.Enabled = true;
+
+                            shellToolStripMenuItem.Text = string.Format(Resources.TelnetServerOn, (caller as ssh.SshClientWrapper).IPAddress + ":" + caller.ShellPort);
+                            shellToolStripMenuItem.Checked = ConfigIni.Instance.TelnetServer;
+                            shellToolStripMenuItem.Enabled = false;
+                            openTelnetToolStripMenuItem.Enabled = true;
+                        }));
+                    }
+                    else
+                    {
+                        Invoke(new Action(delegate
+                        {
+                            FTPToolStripMenuItem.Text = string.Format(Resources.FTPServerOn, "127.0.0.1:21");
+                            FTPToolStripMenuItem.Enabled = true;
+                            FTPToolStripMenuItem_Click(null, null);
+
+                            shellToolStripMenuItem.Text = string.Format(Resources.TelnetServerOn, "127.0.0.1:1023");
+                            shellToolStripMenuItem.Enabled = true;
+                            shellToolStripMenuItem_Click(null, null);
+                        }));
+                    }
 
                     Invoke(new Action(UpdateLocalCache));
                     WorkerForm.GetMemoryStats();
@@ -276,7 +302,20 @@ namespace com.clusterrr.hakchi_gui
 
         void Shell_OnDisconnected()
         {
-            Invoke(new Action(SyncConsoleType));
+            Invoke(new Action(delegate
+            {
+                SyncConsoleType();
+
+                FTPToolStripMenuItem.Text = string.Format(Resources.FTPServerOn, "127.0.0.1:21");
+                FTPToolStripMenuItem.Enabled = true;
+                FTPToolStripMenuItem_Click(null, null);
+                openFTPInExplorerToolStripMenuItem.Enabled = false;
+
+                shellToolStripMenuItem.Text = string.Format(Resources.TelnetServerOn, "127.0.0.1:1023");
+                shellToolStripMenuItem.Enabled = true;
+                shellToolStripMenuItem_Click(null, null);
+                openTelnetToolStripMenuItem.Enabled = false;
+            }));
         }
 
         static ConsoleType lastConsoleType = ConsoleType.Unknown;
@@ -1304,8 +1343,6 @@ namespace com.clusterrr.hakchi_gui
             return workerForm.DialogResult == DialogResult.OK;
         }
 
-        
-
         bool DoNandFlash()
         {
             openDumpFileDialog.FileName = "nand.bin";
@@ -2160,7 +2197,7 @@ namespace com.clusterrr.hakchi_gui
             form.ShowDialog();
         }
 
-        private void FTPToolStripMenuItem_Click(object sender, EventArgs e)
+        private bool changeFTPServerState(bool enabled)
         {
             if (FTPToolStripMenuItem.Checked)
             {
@@ -2185,36 +2222,40 @@ namespace com.clusterrr.hakchi_gui
                             catch { }
                             Debug.WriteLine(ex.Message + ex.StackTrace);
                             Invoke(new Action(delegate ()
-                                {
-                                    MessageBox.Show(this, ex.Message, Resources.Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                    FTPToolStripMenuItem.Checked = false;
-                                }));
+                            {
+                                MessageBox.Show(this, ex.Message, Resources.Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                ConfigIni.Instance.FtpServer = openFTPInExplorerToolStripMenuItem.Enabled = FTPToolStripMenuItem.Checked = false;
+                            }));
                         }
                     });
                     ftpThread.Start();
-                    ConfigIni.Instance.FtpServer = true;
+                    return true;
                 }
                 catch (Exception ex)
                 {
                     Debug.WriteLine(ex.Message + ex.StackTrace);
                     MessageBox.Show(this, ex.Message, Resources.Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    FTPToolStripMenuItem.Checked = false;
-                    ConfigIni.Instance.FtpServer = false;
                 }
             }
             else
             {
                 FtpServer.Stop();
-                ConfigIni.Instance.FtpServer = false;
             }
-            openFTPInExplorerToolStripMenuItem.Enabled = FTPToolStripMenuItem.Checked;
+            return false;
+        }
+
+        private void FTPToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ConfigIni.Instance.FtpServer = FTPToolStripMenuItem.Checked = changeFTPServerState(FTPToolStripMenuItem.Checked);
+            openFTPInExplorerToolStripMenuItem.Enabled = hakchi.Connected;
         }
 
         private void shellToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
             {
-                ConfigIni.Instance.TelnetServer = openTelnetToolStripMenuItem.Enabled = hakchi.Shell.ShellEnabled = shellToolStripMenuItem.Checked;
+                ConfigIni.Instance.TelnetServer = hakchi.Shell.ShellEnabled = shellToolStripMenuItem.Checked;
+                openTelnetToolStripMenuItem.Enabled = hakchi.Connected;
             }
             catch (Exception ex)
             {
@@ -2226,15 +2267,26 @@ namespace com.clusterrr.hakchi_gui
 
         private void openFTPInExplorerToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            string ip, port;
+            if (hakchi.Shell is ssh.SshClientWrapper)
+            {
+                ip = (hakchi.Shell as ssh.SshClientWrapper).IPAddress;
+                port = "21";
+            }
+            else
+            {
+                ip = "127.0.0.1";
+                port = FtpServer.LocalPort.ToString();
+            }
+
             try
             {
                 new Process()
                 {
                     StartInfo = new ProcessStartInfo()
                     {
-                        FileName = String.Format(ConfigIni.Instance.FtpCommand, "root", "clover", "127.0.0.1", "1021"),
-                        Arguments = String.Format(ConfigIni.Instance.FtpArguments, "root", "clover", "127.0.0.1", "1021"),
-                        
+                        FileName = String.Format(ConfigIni.Instance.FtpCommand, "root", "clover", ip, port),
+                        Arguments = String.Format(ConfigIni.Instance.FtpArguments, "root", "clover", ip, port)
                     }
                 }.Start();
             }
@@ -2247,14 +2299,26 @@ namespace com.clusterrr.hakchi_gui
 
         private void openTelnetToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            string ip, port;
+            if (hakchi.Shell is ssh.SshClientWrapper)
+            {
+                ip = (hakchi.Shell as ssh.SshClientWrapper).IPAddress;
+                port = hakchi.Shell.ShellPort.ToString();
+            }
+            else
+            {
+                ip = "127.0.0.1";
+                port = "1023";
+            }
+
             try
             {
                 new Process()
                 {
                     StartInfo = new ProcessStartInfo()
                     {
-                        FileName = String.Format(ConfigIni.Instance.TelnetCommand, "127.0.0.1", "1023"),
-                        Arguments = String.Format(ConfigIni.Instance.TelnetArguments, "127.0.0.1", "1023"),
+                        FileName = String.Format(ConfigIni.Instance.TelnetCommand, ip, port),
+                        Arguments = String.Format(ConfigIni.Instance.TelnetArguments, ip, port)
                     }
                 }.Start();
             }

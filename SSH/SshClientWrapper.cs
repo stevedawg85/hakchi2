@@ -44,6 +44,7 @@ namespace com.clusterrr.ssh
                     // start listening for proper network connections
                     avahiListener = ZeroconfResolver.CreateListener(service);
                     avahiListener.ServiceFound += ZeroconfHost_OnServiceFound;
+                    avahiListener.ServiceLost += ZeroconfHost_OnServiceLost;
 
                     // start connection watching thread
                     if (connectThread == null)
@@ -72,6 +73,7 @@ namespace com.clusterrr.ssh
                     {
                         avahiListener.Dispose();
                         avahiListener = null;
+                        avahiHost = null;
                     }
                 }
             }
@@ -83,37 +85,29 @@ namespace com.clusterrr.ssh
             {
                 while (true)
                 {
-                    if (IsOnline)
-                    {
-                        Thread.Sleep(1000);
-                    }
-                    else
+                    if (!IsOnline)
                     {
                         if (hasConnected)
                         {
                             Debug.WriteLine("SSH shell disconnected");
-                            avahiHost = null;
                             hasConnected = false;
                             OnDisconnected();
+                            continue;
                         }
-                        else if (avahiHost != null && AutoReconnect)
+                        else if (AutoReconnect)
                         {
-                            if (Ping() != -1)
+                            if (avahiHost != null)
                             {
-                                retries = 0;
-                                Connect();
+                                if (Ping() != -1) Connect();
                             }
                             else
                             {
-                                if (retries++ > 3)
-                                {
-                                    retries = 0;
-                                    avahiHost = null;
-                                }
+                                Thread.Sleep(250);
+                                continue;
                             }
                         }
-                        Thread.Sleep(250);
                     }
+                    Thread.Sleep(1000);
                 }
             }
             catch (ThreadAbortException)
@@ -136,7 +130,7 @@ namespace com.clusterrr.ssh
 
         public ushort ShellPort
         {
-            get { return port; }
+            get { return 23; }
         }
 
         public bool ShellEnabled
@@ -145,7 +139,7 @@ namespace com.clusterrr.ssh
             set { }
         }
 
-        public string ClientIP
+        public string IPAddress
         {
             get
             {
@@ -157,11 +151,18 @@ namespace com.clusterrr.ssh
         {
             if (avahiHost == null && host != null)
             {
-#if DEBUG
-                Debug.WriteLine($"Detected host: \"{host.DisplayName ?? "Unknown"}\", IP: {host.IPAddress ?? "0.0.0.0"}");
+#if VERY_DEBUG
+                Debug.WriteLine($"Detected host: \"{host.DisplayName ?? "Unknown"}\", IP: {host.IPAddress ?? "Unknown"}");
 #endif
                 avahiHost = host;
             }
+        }
+
+        private void ZeroconfHost_OnServiceLost(object src, IZeroconfHost host)
+        {
+#if VERY_DEBUG
+            Debug.WriteLine($"Lost host: \"{host.DisplayName ?? "Unknown"}\", IP: {host.IPAddress ?? "Unknown"}");
+#endif
         }
 
         public SshClientWrapper(string serviceName, ushort port, string username, string password)
@@ -207,7 +208,11 @@ namespace com.clusterrr.ssh
                     sshClient.ConnectionInfo.Host, sshClient.ConnectionInfo.Port));
             }
 
-            Debug.WriteLine($"SSH shell connected, encryption: {sshClient.ConnectionInfo.CurrentServerEncryption}");
+            Debug.WriteLine("SSH shell connected");
+#if VERU_DEBUG
+            Debug.WriteLine($"Encryption: {sshClient.ConnectionInfo.CurrentServerEncryption}");
+#endif
+
             hasConnected = true;
             OnConnected(this);
         }
