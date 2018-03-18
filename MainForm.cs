@@ -1238,8 +1238,10 @@ namespace com.clusterrr.hakchi_gui
 
         DialogResult RequireKernelDump()
         {
+            /*
             if (File.Exists(WorkerForm.KernelDumpPath)) return DialogResult.OK; // OK - already dumped
                                                                                 // Asking user to dump kernel
+            */
             if (MessageBox.Show(Resources.NoKernelWarning, Resources.NoKernel, MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
                 == System.Windows.Forms.DialogResult.Yes)
             {
@@ -1624,11 +1626,13 @@ namespace com.clusterrr.hakchi_gui
 
         private void dumpKernelToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            /*
             if (File.Exists(WorkerForm.KernelDumpPath))
             {
                 MessageBox.Show(Resources.ReplaceKernelQ, Resources.Warning, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+            */
             if (MessageBox.Show(Resources.DumpKernelQ, Resources.AreYouSure, MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
                 == System.Windows.Forms.DialogResult.Yes)
             {
@@ -1678,7 +1682,6 @@ namespace com.clusterrr.hakchi_gui
 
         private void dumpNANDBToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (RequirePatchedKernel() == DialogResult.No) return;
             if (DoNand(WorkerForm.Tasks.DumpNandB))
                 MessageBox.Show(Resources.NandDumped, Resources.Done, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
@@ -1686,14 +1689,12 @@ namespace com.clusterrr.hakchi_gui
 
         private void flashNANDBPartitionToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (RequirePatchedKernel() == DialogResult.No) return;
             if (DoNand(WorkerForm.Tasks.FlashNandB))
                 MessageBox.Show(Resources.NandFlashed, Resources.Done, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void dumpNANDCPartitionToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (RequirePatchedKernel() == DialogResult.No) return;
             if (DoNand(WorkerForm.Tasks.DumpNandC))
                 MessageBox.Show(Resources.NandDumped, Resources.Done, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
@@ -1703,7 +1704,6 @@ namespace com.clusterrr.hakchi_gui
             if (MessageBox.Show(Resources.FlashNandCQ, Resources.AreYouSure, MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
                 == DialogResult.Yes)
             {
-                if (RequirePatchedKernel() == DialogResult.No) return;
                 if (DoNand(WorkerForm.Tasks.FlashNandC))
                     MessageBox.Show(Resources.NandFlashed, Resources.Done, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -1714,7 +1714,6 @@ namespace com.clusterrr.hakchi_gui
             if (MessageBox.Show(Resources.FormatNandCQ, Resources.AreYouSure, MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
                 == DialogResult.Yes)
             {
-                if (RequireKernelDump() == DialogResult.No) return;
                 MembootCustomKernel(extraFiles: "mod_format", copyBaseMods: true);
             }
         }
@@ -1733,12 +1732,14 @@ namespace com.clusterrr.hakchi_gui
 
         private void membootOriginalKernelToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            /*
             if (!File.Exists(WorkerForm.KernelDumpPath))
             {
                 MessageBox.Show(Resources.NoKernelYouNeed, Resources.Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             MembootOriginalKernel();
+            */
         }
 
 
@@ -1750,11 +1751,13 @@ namespace com.clusterrr.hakchi_gui
 
         private void flashOriginalKernelToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            /*
             if (!File.Exists(WorkerForm.KernelDumpPath))
             {
                 MessageBox.Show(Resources.NoKernelYouNeed, Resources.Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+            */
             if (MessageBox.Show(Resources.OriginalKernelQ, Resources.AreYouSure, MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
                 == System.Windows.Forms.DialogResult.Yes)
             {
@@ -1765,11 +1768,13 @@ namespace com.clusterrr.hakchi_gui
 
         private void uninstallToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            /*
             if (!File.Exists(WorkerForm.KernelDumpPath))
             {
                 MessageBox.Show(Resources.NoKernelYouNeed, Resources.Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+            */
             if (MessageBox.Show(Resources.UninstallQ1, Resources.AreYouSure, MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
                 == System.Windows.Forms.DialogResult.Yes)
             {
