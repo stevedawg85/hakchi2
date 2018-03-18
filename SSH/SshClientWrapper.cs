@@ -98,7 +98,18 @@ namespace com.clusterrr.ssh
                         {
                             if (avahiHost != null)
                             {
-                                if (Ping() != -1) Connect();
+                                if (Ping() != -1)
+                                {
+                                    Connect();
+                                }
+                                else
+                                {
+                                    if (retries++ > 30)
+                                    {
+                                        retries = 0;
+                                        avahiHost = null;
+                                    }
+                                }
                             }
                             else
                             {
@@ -151,11 +162,11 @@ namespace com.clusterrr.ssh
         {
             if (avahiHost == null && host != null)
             {
-#if VERY_DEBUG
-                Debug.WriteLine($"Detected host: \"{host.DisplayName ?? "Unknown"}\", IP: {host.IPAddress ?? "Unknown"}");
-#endif
                 avahiHost = host;
             }
+#if DEBUG
+            Debug.WriteLine($"Detected host: \"{host.DisplayName ?? "Unknown"}\", IP: {host.IPAddress ?? "Unknown"}");
+#endif
         }
 
         private void ZeroconfHost_OnServiceLost(object src, IZeroconfHost host)
