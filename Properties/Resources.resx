@@ -770,9 +770,6 @@ This process cannot be undone!</value>
   <data name="DetectedConsole" xml:space="preserve">
     <value>Detected Console: {0}</value>
   </data>
-  <data name="VersionRevisionNotice" xml:space="preserve">
-    <value>INTERNAL VERSION FOR TESTING PURPOSES ONLY</value>
-  </data>
   <data name="InvalidUbootSize" xml:space="preserve">
     <value>Invalid uboot.bin file size.</value>
   </data>
@@ -932,5 +929,14 @@ http://darkakuma.z-net.us/p/sfromtool.html</value>
   </data>
   <data name="TelnetServerOn" xml:space="preserve">
     <value>Telnet server on telnet://{0} (login:root)</value>
+  </data>
+  <data name="FlashedKernelQ" xml:space="preserve">
+    <value>You have to make sure you have already and successfully flashed the custom kernel before proceeding. Do you want to continue?</value>
+  </data>
+  <data name="KernelDumpedQ" xml:space="preserve">
+    <value>You have to make sure you have a valid and safe backup of your original kernel before proceeding. Do you want to continue?</value>
+  </data>
+  <data name="BrickConsoleQ" xml:space="preserve">
+    <value>This operation is proven to BRICK your console. Do you want to continue?</value>
   </data>
 </root>

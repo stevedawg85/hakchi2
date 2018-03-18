@@ -1274,37 +1274,29 @@ namespace com.clusterrr.hakchi_gui
 
         DialogResult RequireKernelDump()
         {
-            if (File.Exists(WorkerForm.KernelDumpPath)) return DialogResult.OK; // OK - already dumped
-                                                                                // Asking user to dump kernel
-            if (MessageBox.Show(Resources.NoKernelWarning, Resources.NoKernel, MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+            if (File.Exists(Shared.PathCombine(Program.BaseDirectoryExternal, "dump", "kernel.img"))) return DialogResult.OK; // OK - already dumped
+            if (MessageBox.Show(Resources.KernelDumpedQ, Resources.NoKernel, MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
                 == System.Windows.Forms.DialogResult.Yes)
             {
-                if (DoKernelDump())
-                    return DialogResult.Yes; // Succesfully dumped
-                else
-                    return DialogResult.No; // Not dumped for some other reason
+                return DialogResult.Yes;
             }
-            else return DialogResult.No; // Kernel dump cancelled by user
+            return DialogResult.No;
         }
 
         DialogResult RequirePatchedKernel()
         {
             if (hakchi.Shell.IsOnline) return DialogResult.OK; // OK - Shell is online
-            if (MessageBox.Show(Resources.CustomWarning, Resources.CustomKernel, MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+            if (MessageBox.Show(Resources.FlashedKernelQ, Resources.CustomKernel, MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
                     == System.Windows.Forms.DialogResult.Yes)
             {
-                if (FlashCustomKernel())
-                    return DialogResult.Yes; // Succesfully flashed
-                else
-                    return DialogResult.No; // Not flashed for some other reason
+                return DialogResult.Yes;
             }
-            else return DialogResult.No;
+            return DialogResult.No;
         }
 
         private void buttonStart_Click(object sender, EventArgs e)
         {
             SaveConfig();
-
             var stats = RecalculateSelectedGames();
             if (stats.Count == 0)
             {
@@ -1313,11 +1305,11 @@ namespace com.clusterrr.hakchi_gui
             }
             var kernel = RequirePatchedKernel();
             if (kernel == DialogResult.No) return;
-            if (kernel == DialogResult.Yes) // Message for new user
-                MessageBox.Show(Resources.DoneYouCanUpload + "\r\n" + Resources.PressOkToContinue, Resources.Congratulations, MessageBoxButtons.OK, MessageBoxIcon.Information);
             if (UploadGames())
+            {
                 if (!ConfigIni.Instance.DisablePopups)
                     MessageBox.Show(Resources.Done, Resources.Wow, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
 
         private void buttonExport_Click(object sender, EventArgs e)
@@ -1332,29 +1324,6 @@ namespace com.clusterrr.hakchi_gui
             if (UploadGames(true))
                 if (!ConfigIni.Instance.DisablePopups)
                     MessageBox.Show(Resources.Done, Resources.Wow, MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        bool DoKernelDump()
-        {
-            var workerForm = new WorkerForm(this);
-            workerForm.Text = Resources.DumpingKernel;
-            workerForm.Task = WorkerForm.Tasks.DumpKernel;
-            workerForm.Start();
-            return workerForm.DialogResult == DialogResult.OK;
-        }
-
-        bool DoNandFlash()
-        {
-            openDumpFileDialog.FileName = "nand.bin";
-            openDumpFileDialog.DefaultExt = "bin";
-            if (openDumpFileDialog.ShowDialog() != DialogResult.OK)
-                return false;
-            var workerForm = new WorkerForm(this);
-            workerForm.Text = "Bricking your console";
-            workerForm.Task = WorkerForm.Tasks.FlashNand;
-            workerForm.NandDump = openDumpFileDialog.FileName;
-            workerForm.Start();
-            return workerForm.DialogResult == DialogResult.OK;
         }
 
         bool DumpDialog(FileAccess type, string FileName, string FileExt, out string DumpFileName)
@@ -1385,6 +1354,28 @@ namespace com.clusterrr.hakchi_gui
                 default:
                     throw new ArgumentOutOfRangeException("type");
             }
+        }
+
+        bool DoKernelDump()
+        {
+            var workerForm = new WorkerForm(this);
+            workerForm.Text = Resources.DumpingKernel;
+            workerForm.Task = WorkerForm.Tasks.DumpKernel;
+            workerForm.Start();
+            return workerForm.DialogResult == DialogResult.OK;
+        }
+
+        bool DoNandFlash()
+        {
+            string dumpFileName;
+            if (!DumpDialog(FileAccess.Read, "nand.bin", "bin", out dumpFileName))
+                return false;
+            var workerForm = new WorkerForm(this);
+            workerForm.Text = "Bricking your console";
+            workerForm.Task = WorkerForm.Tasks.FlashNand;
+            workerForm.NandDump = dumpFileName;
+            workerForm.Start();
+            return workerForm.DialogResult == DialogResult.OK;
         }
 
         bool DoNand(WorkerForm.Tasks task)
@@ -1456,8 +1447,7 @@ namespace com.clusterrr.hakchi_gui
             workerForm.Config = null;
             workerForm.Games = null;
             workerForm.Start();
-            var result = workerForm.DialogResult == DialogResult.OK;
-            return result;
+            return workerForm.DialogResult == DialogResult.OK;
         }
 
         bool MembootOriginalKernel()
@@ -1490,122 +1480,6 @@ namespace com.clusterrr.hakchi_gui
             workerForm.Games = null;
             workerForm.Start();
             return workerForm.DialogResult == DialogResult.OK;
-        }
-
-        bool UploadGames(bool exportGames = false)
-        {
-            var workerForm = new WorkerForm(this);
-            if (exportGames)
-            {
-                using (ExportGamesDialog driveSelectDialog = new ExportGamesDialog())
-                {
-                    if (driveSelectDialog.ShowDialog(this) != DialogResult.OK)
-                        return false;
-
-                    workerForm.linkRelativeGames = driveSelectDialog.LinkedExport;
-                    workerForm.exportDirectory = driveSelectDialog.ExportPath;
-
-                    if (!Directory.Exists(driveSelectDialog.ExportPath))
-                        Directory.CreateDirectory(driveSelectDialog.ExportPath);
-                }
-            }
-            workerForm.Text = Resources.UploadingGames;
-            workerForm.Task = WorkerForm.Tasks.UploadGames;
-            workerForm.Mod = "mod_hakchi";
-            workerForm.Config = ConfigIni.GetConfigDictionary();
-            workerForm.Games = new NesMenuCollection();
-            workerForm.exportGames = exportGames;
-            if (!exportGames)
-                workerForm.linkRelativeGames = false;
-
-            foreach (ListViewItem game in listViewGames.CheckedItems)
-            {
-                if (game.Tag is NesApplication)
-                    workerForm.Games.Add(game.Tag as NesApplication);
-            }
-
-            workerForm.FoldersMode = ConfigIni.Instance.FoldersMode;
-            workerForm.MaxGamesPerFolder = ConfigIni.Instance.MaxGamesPerFolder;
-            workerForm.Start();
-            return workerForm.DialogResult == DialogResult.OK;
-        }
-
-        void AddGames(IEnumerable<string> files)
-        {
-            SaveConfig();
-            ICollection<NesApplication> addedApps;
-            var workerForm = new WorkerForm(this);
-            workerForm.Text = Resources.LoadingGames;
-            workerForm.Task = WorkerForm.Tasks.AddGames;
-            workerForm.GamesToAdd = files;
-            workerForm.Start();
-            addedApps = workerForm.addedApplications;
-
-            if (addedApps != null)
-            {
-                // show select core dialog if applicable
-                var unknownApps = new List<NesApplication>();
-                foreach(var app in addedApps)
-                {
-                    if (app.Metadata.AppInfo.Unknown)
-                        unknownApps.Add(app);
-                }
-                if (unknownApps.Count > 0)
-                {
-                    using (SelectCoreDialog selectCoreDialog = new SelectCoreDialog())
-                    {
-                        selectCoreDialog.Games.AddRange(unknownApps);
-                        selectCoreDialog.ShowDialog(this);
-                    }
-                }
-
-                // show select cover dialog if applicable
-                unknownApps.Clear();
-                foreach(var app in addedApps)
-                {
-                    if (!app.CoverArtMatchSuccess && app.CoverArtMatches.Any())
-                        unknownApps.Add(app);
-                }
-                if(unknownApps.Count > 0)
-                {
-                    using (SelectCoverDialog selectCoverDialog = new SelectCoverDialog())
-                    {
-                        selectCoverDialog.Games.AddRange(unknownApps);
-                        selectCoverDialog.ShowDialog(this);
-                    }
-                }
-
-                // update list view
-                listViewGames.BeginUpdate();
-                foreach (ListViewItem item in listViewGames.Items)
-                    item.Selected = false;
-                // add games, only new ones
-                var newApps = addedApps.Distinct(new NesApplication.NesAppEqualityComparer());
-                var newCodes = from app in newApps select app.Code;
-                var oldAppsReplaced = from app in listViewGames.Items.Cast<ListViewItem>().ToArray()
-                                      where (app.Tag is NesApplication) && newCodes.Contains((app.Tag as NesApplication).Code)
-                                      select app;
-                foreach (var replaced in oldAppsReplaced)
-                    listViewGames.Items.Remove(replaced);
-                foreach (var newApp in newApps)
-                {
-                    var item = new ListViewItem(newApp.Name);
-                    item.Group = lgvGroups[0];
-                    item.Tag = newApp;
-                    item.Selected = true;
-                    item.Checked = true;
-                    listViewGames.Items.Add(item);
-                }
-                listViewGames.EndUpdate();
-            }
-            else
-            {
-                // Reload all games (maybe process was terminated?)
-                LoadGames();
-            }
-            // Schedule recalculation
-            timerCalculateGames.Enabled = false;
-            timerCalculateGames.Enabled = true;
         }
 
         bool FlashOriginalKernel(bool boot = true)
@@ -1658,11 +1532,13 @@ namespace com.clusterrr.hakchi_gui
 
         private void dumpKernelToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            /*
             if (File.Exists(WorkerForm.KernelDumpPath))
             {
                 MessageBox.Show(Resources.ReplaceKernelQ, Resources.Warning, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+            */
             if (MessageBox.Show(Resources.DumpKernelQ, Resources.AreYouSure, MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
                 == System.Windows.Forms.DialogResult.Yes)
             {
@@ -1703,7 +1579,7 @@ namespace com.clusterrr.hakchi_gui
         private void toolFlashTheWholeNANDStripMenuItem_Click(object sender, EventArgs e)
         {
             // Maybe I'll fix it one day...
-            if (MessageBox.Show("It will brick your console. Do you want to continue?", Resources.AreYouSure, MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+            if (MessageBox.Show(Resources.BrickConsoleQ, Resources.AreYouSure, MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
                 == DialogResult.Yes)
             {
                 DoNandFlash();
@@ -1767,7 +1643,7 @@ namespace com.clusterrr.hakchi_gui
 
         private void membootOriginalKernelToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (!File.Exists(WorkerForm.KernelDumpPath))
+            if (!File.Exists(Shared.PathCombine(Program.BaseDirectoryExternal, "dump", "kernel.img")))
             {
                 MessageBox.Show(Resources.NoKernelYouNeed, Resources.Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -1784,7 +1660,7 @@ namespace com.clusterrr.hakchi_gui
 
         private void flashOriginalKernelToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (!File.Exists(WorkerForm.KernelDumpPath))
+            if (!File.Exists(Shared.PathCombine(Program.BaseDirectoryExternal, "dump", "kernel.img")))
             {
                 MessageBox.Show(Resources.NoKernelYouNeed, Resources.Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -1799,7 +1675,7 @@ namespace com.clusterrr.hakchi_gui
 
         private void uninstallToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (!File.Exists(WorkerForm.KernelDumpPath))
+            if (!File.Exists(Shared.PathCombine(Program.BaseDirectoryExternal, "dump", "kernel.img")))
             {
                 MessageBox.Show(Resources.NoKernelYouNeed, Resources.Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -1810,6 +1686,167 @@ namespace com.clusterrr.hakchi_gui
                 if (Uninstall())
                     MessageBox.Show(Resources.UninstallNote, Resources.Done, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+        }
+
+        private void installModulesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            installModules();
+        }
+
+        private void installModules(string[] add = null)
+        {
+            if (RequireKernelDump() == DialogResult.No) return;
+            var form = new SelectModsForm(false, true, add);
+            form.Text = Resources.SelectModsInstall;
+            if (form.ShowDialog() == DialogResult.OK)
+            {
+                List<string> hmods = new List<string>();
+                foreach (ListViewItem item in form.listViewHmods.CheckedItems)
+                {
+                    hmods.Add(((Hmod)item.Tag).RawName);
+                }
+                if (InstallMods(hmods.ToArray()))
+                {
+                    if (!ConfigIni.Instance.DisablePopups)
+                        MessageBox.Show(Resources.Done, Resources.Wow, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+        }
+
+        private void uninstallModulesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (RequireKernelDump() == DialogResult.No) return;
+            var form = new SelectModsForm(true, false);
+            form.Text = Resources.SelectModsUninstall;
+            if (form.ShowDialog() == DialogResult.OK)
+            {
+                List<string> hmods = new List<string>();
+                foreach (ListViewItem item in form.listViewHmods.CheckedItems)
+                {
+                    hmods.Add(((Hmod)item.Tag).RawName);
+                }
+                if (UninstallMods(hmods.ToArray()))
+                {
+                    if (!ConfigIni.Instance.DisablePopups)
+                        MessageBox.Show(Resources.Done, Resources.Wow, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+        }
+
+        bool UploadGames(bool exportGames = false)
+        {
+            var workerForm = new WorkerForm(this);
+            if (exportGames)
+            {
+                using (ExportGamesDialog driveSelectDialog = new ExportGamesDialog())
+                {
+                    if (driveSelectDialog.ShowDialog(this) != DialogResult.OK)
+                        return false;
+
+                    workerForm.linkRelativeGames = driveSelectDialog.LinkedExport;
+                    workerForm.exportDirectory = driveSelectDialog.ExportPath;
+
+                    if (!Directory.Exists(driveSelectDialog.ExportPath))
+                        Directory.CreateDirectory(driveSelectDialog.ExportPath);
+                }
+            }
+            workerForm.Text = Resources.UploadingGames;
+            workerForm.Task = WorkerForm.Tasks.UploadGames;
+            workerForm.Mod = "mod_hakchi";
+            workerForm.Config = ConfigIni.GetConfigDictionary();
+            workerForm.Games = new NesMenuCollection();
+            workerForm.exportGames = exportGames;
+            if (!exportGames)
+                workerForm.linkRelativeGames = false;
+
+            foreach (ListViewItem game in listViewGames.CheckedItems)
+            {
+                if (game.Tag is NesApplication)
+                    workerForm.Games.Add(game.Tag as NesApplication);
+            }
+
+            workerForm.FoldersMode = ConfigIni.Instance.FoldersMode;
+            workerForm.MaxGamesPerFolder = ConfigIni.Instance.MaxGamesPerFolder;
+            workerForm.Start();
+            return workerForm.DialogResult == DialogResult.OK;
+        }
+
+        void AddGames(IEnumerable<string> files)
+        {
+            SaveConfig();
+            ICollection<NesApplication> addedApps;
+            var workerForm = new WorkerForm(this);
+            workerForm.Text = Resources.LoadingGames;
+            workerForm.Task = WorkerForm.Tasks.AddGames;
+            workerForm.GamesToAdd = files;
+            workerForm.Start();
+            addedApps = workerForm.addedApplications;
+
+            if (addedApps != null)
+            {
+                // show select core dialog if applicable
+                var unknownApps = new List<NesApplication>();
+                foreach (var app in addedApps)
+                {
+                    if (app.Metadata.AppInfo.Unknown)
+                        unknownApps.Add(app);
+                }
+                if (unknownApps.Count > 0)
+                {
+                    using (SelectCoreDialog selectCoreDialog = new SelectCoreDialog())
+                    {
+                        selectCoreDialog.Games.AddRange(unknownApps);
+                        selectCoreDialog.ShowDialog(this);
+                    }
+                }
+
+                // show select cover dialog if applicable
+                unknownApps.Clear();
+                foreach (var app in addedApps)
+                {
+                    if (!app.CoverArtMatchSuccess && app.CoverArtMatches.Any())
+                        unknownApps.Add(app);
+                }
+                if (unknownApps.Count > 0)
+                {
+                    using (SelectCoverDialog selectCoverDialog = new SelectCoverDialog())
+                    {
+                        selectCoverDialog.Games.AddRange(unknownApps);
+                        selectCoverDialog.ShowDialog(this);
+                    }
+                }
+
+                // update list view
+                listViewGames.BeginUpdate();
+                foreach (ListViewItem item in listViewGames.Items)
+                    item.Selected = false;
+                // add games, only new ones
+                var newApps = addedApps.Distinct(new NesApplication.NesAppEqualityComparer());
+                var newCodes = from app in newApps select app.Code;
+                var oldAppsReplaced = from app in listViewGames.Items.Cast<ListViewItem>().ToArray()
+                                      where (app.Tag is NesApplication) && newCodes.Contains((app.Tag as NesApplication).Code)
+                                      select app;
+                foreach (var replaced in oldAppsReplaced)
+                    listViewGames.Items.Remove(replaced);
+                foreach (var newApp in newApps)
+                {
+                    var item = new ListViewItem(newApp.Name);
+                    item.Group = lgvGroups[0];
+                    item.Tag = newApp;
+                    item.Selected = true;
+                    item.Checked = true;
+                    listViewGames.Items.Add(item);
+                }
+                listViewGames.EndUpdate();
+            }
+            else
+            {
+                // Reload all games (maybe process was terminated?)
+                LoadGames();
+            }
+            // Schedule recalculation
+            timerCalculateGames.Enabled = false;
+            timerCalculateGames.Enabled = true;
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2110,51 +2147,6 @@ namespace com.clusterrr.hakchi_gui
             foldersSplitByFirstLetterToolStripMenuItem.Checked = (byte)ConfigIni.Instance.FoldersMode == 8;
             foldersSplitByFirstLetterOriginalToolStripMenuItem.Checked = (byte)ConfigIni.Instance.FoldersMode == 9;
             customToolStripMenuItem.Checked = (byte)ConfigIni.Instance.FoldersMode == 99;
-        }
-
-        private void installModulesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            installModules();
-        }
-
-        private void installModules(string[] add = null)
-        {
-            if (RequireKernelDump() == DialogResult.No) return;
-            var form = new SelectModsForm(false, true, add);
-            form.Text = Resources.SelectModsInstall;
-            if (form.ShowDialog() == DialogResult.OK)
-            {
-                List<string> hmods = new List<string>();
-                foreach (ListViewItem item in form.listViewHmods.CheckedItems)
-                {
-                    hmods.Add(((Hmod)item.Tag).RawName);
-                }
-                if (InstallMods(hmods.ToArray()))
-                {
-                    if (!ConfigIni.Instance.DisablePopups)
-                        MessageBox.Show(Resources.Done, Resources.Wow, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-            }
-        }
-
-        private void uninstallModulesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (RequireKernelDump() == DialogResult.No) return;
-            var form = new SelectModsForm(true, false);
-            form.Text = Resources.SelectModsUninstall;
-            if (form.ShowDialog() == DialogResult.OK)
-            {
-                List<string> hmods = new List<string>();
-                foreach (ListViewItem item in form.listViewHmods.CheckedItems)
-                {
-                    hmods.Add(((Hmod)item.Tag).RawName);
-                }
-                if (UninstallMods(hmods.ToArray()))
-                {
-                    if (!ConfigIni.Instance.DisablePopups)
-                        MessageBox.Show(Resources.Done, Resources.Wow, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-            }
         }
 
         private void timerConnectionCheck_Tick(object sender, EventArgs e)

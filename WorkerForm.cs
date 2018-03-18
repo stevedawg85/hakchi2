@@ -50,25 +50,25 @@ namespace com.clusterrr.hakchi_gui
         };
         public Tasks Task;
 
-        public static string KernelDumpPath
+        public static string GetKernelDumpName(MainForm.ConsoleType type)
         {
-            get
+            switch (type)
             {
-                switch (hakchi.DetectedConsoleType)
-                {
-                    default:
-                        throw new OperationCanceledException();
-                    case MainForm.ConsoleType.NES:
-                        return Path.Combine(Path.Combine(Program.BaseDirectoryExternal, "dump"), "kernel.img");
-                    case MainForm.ConsoleType.Famicom:
-                        return Path.Combine(Path.Combine(Program.BaseDirectoryExternal, "dump"), "kernel_famicom.img");
-                    case MainForm.ConsoleType.SNES:
-                        return Path.Combine(Path.Combine(Program.BaseDirectoryExternal, "dump"), "kernel_snes.img");
-                    case MainForm.ConsoleType.SuperFamicom:
-                        return Path.Combine(Path.Combine(Program.BaseDirectoryExternal, "dump"), "kernel_super_famicom.img");
-                }
+                default:
+                    return "kernel_undefined.img";
+                case MainForm.ConsoleType.NES:
+                    return "kernel.img";
+                case MainForm.ConsoleType.Famicom:
+                    return "kernel_famicom.img";
+                case MainForm.ConsoleType.SNES:
+                    return "kernel_snes.img";
+                case MainForm.ConsoleType.SuperFamicom:
+                    return "kernel_super_famicom.img";
             }
         }
+
+        public MainForm.ConsoleType DetectedKernelDumpConsoleType;
+        public string KernelDumpPath;
         //public string UBootDump;
         public string[] HmodsToLoad;
         public List<Hmod> LoadedHmods;
@@ -109,6 +109,7 @@ namespace com.clusterrr.hakchi_gui
         readonly string modsDirectory;
         readonly string[] hmodDirectories;
         readonly string toolsDirectory;
+        readonly string kernelTempDump;
         readonly string kernelPatched;
         readonly string ramdiskPatched;
         readonly string tempHmodsDirectory;
@@ -145,20 +146,22 @@ namespace com.clusterrr.hakchi_gui
         public WorkerForm(MainForm parentForm = null)
         {
             InitializeComponent();
+
             MainForm = parentForm;
             DialogResult = DialogResult.None;
             baseDirectoryInternal = Program.BaseDirectoryInternal;
             baseDirectoryExternal = Program.BaseDirectoryExternal;
-            fes1Path = Path.Combine(Path.Combine(baseDirectoryInternal, "data"), "fes1.bin");
-            zImage = Path.Combine(Path.Combine(baseDirectoryInternal, "data"), "zImage");
-            ubootPath = Shared.PathCombine(baseDirectoryInternal, "data", ConfigIni.Instance.MembootUboot);
-#if VERY_DEBUG
-            
+
+#if VERY_DEBUG            
             tempDirectory = Path.Combine(baseDirectoryInternal, "temp");
             Debug.WriteLine($"Using temp directory: \"{tempDirectory}\".");
 #else
             tempDirectory = Path.Combine(Path.GetTempPath(), "hakchi-temp");
 #endif
+
+            fes1Path = Path.Combine(Path.Combine(baseDirectoryInternal, "data"), "fes1.bin");
+            zImage = Path.Combine(Path.Combine(baseDirectoryInternal, "data"), "zImage");
+            ubootPath = Shared.PathCombine(baseDirectoryInternal, "data", ConfigIni.Instance.MembootUboot);
             kernelDirectory = Path.Combine(tempDirectory, "kernel");
             initramfs_cpio = Path.Combine(kernelDirectory, "initramfs.cpio");
             initramfs_cpioPatched = Path.Combine(kernelDirectory, "initramfs_mod.cpio");
@@ -170,11 +173,15 @@ namespace com.clusterrr.hakchi_gui
                 Path.Combine(modsDirectory, "hmods")
             };
             toolsDirectory = Path.Combine(baseDirectoryInternal, "tools");
+            kernelTempDump = Path.Combine(kernelDirectory, "kernel.img");
             kernelPatched = Path.Combine(kernelDirectory, "patched_kernel.img");
             ramdiskPatched = Path.Combine(kernelDirectory, "kernel.img-ramdisk_mod.gz");
             argumentsFilePath = Path.Combine(hakchiDirectory, "extra_args");
             transferDirectory = Path.Combine(hakchiDirectory, "transfer");
             tempHmodsDirectory = Path.Combine(transferDirectory, "hmod");
+
+            DetectedKernelDumpConsoleType = MainForm.ConsoleType.Unknown;
+            KernelDumpPath = Path.Combine(baseDirectoryExternal, "dump", "kernel.img");
 
             correctKernels[MainForm.ConsoleType.NES] = new string[] {
                 "5cfdca351484e7025648abc3b20032ff",
@@ -197,10 +204,10 @@ namespace com.clusterrr.hakchi_gui
                 "c3378edfc1b96a5268a066d5fbe12d89", // Super Famicom Mini (JAP)
             };
             correctKeys[MainForm.ConsoleType.NES] =
-                correctKeys[MainForm.ConsoleType.Famicom] =
+            correctKeys[MainForm.ConsoleType.Famicom] =
                 new string[] { "bb8f49e0ae5acc8d5f9b7fa40efbd3e7" };
             correctKeys[MainForm.ConsoleType.SNES] =
-                correctKeys[MainForm.ConsoleType.SuperFamicom] =
+            correctKeys[MainForm.ConsoleType.SuperFamicom] =
                 new string[] { "c5dbb6e29ea57046579cfd50b124c9e1" };
         }
 
@@ -242,11 +249,12 @@ namespace com.clusterrr.hakchi_gui
             TaskbarProgress.SetState(this, TaskbarProgress.TaskbarStates.Normal);
             return DialogResult.Abort;
         }
-        DialogResult WaitForClovershellFromThread()
+
+        DialogResult WaitForShellFromThread()
         {
             if (InvokeRequired)
             {
-                return (DialogResult)Invoke(new Func<DialogResult>(WaitForClovershellFromThread));
+                return (DialogResult)Invoke(new Func<DialogResult>(WaitForShellFromThread));
             }
             SetStatus(Resources.WaitingForDevice);
             TaskbarProgress.SetState(this, TaskbarProgress.TaskbarStates.Paused);
@@ -407,8 +415,6 @@ namespace com.clusterrr.hakchi_gui
             }
         }
 
-
-
         void SetStatus(string status)
         {
             if (Disposing) return;
@@ -433,7 +439,7 @@ namespace com.clusterrr.hakchi_gui
                 {
                     Invoke(new Action<int, int>(SetProgress), new object[] { value, max });
                     if (value == max)
-                        Thread.Sleep(250);
+                        Thread.Sleep(500);
                     return;
                 }
                 if (value >= max)
@@ -497,6 +503,49 @@ namespace com.clusterrr.hakchi_gui
             catch { }
         }
 
+        private void writeFlash(uint address, byte[] kernel, string message, ref int currentProgress, int maxProgress)
+        {
+            int progress = currentProgress;
+            fel.WriteFlash(address, kernel,
+                delegate (Fel.CurrentAction action, string command)
+                {
+                    switch (action)
+                    {
+                        case Fel.CurrentAction.RunningCommand:
+                            SetStatus(Resources.ExecutingCommand + " " + command);
+                            break;
+                        case Fel.CurrentAction.WritingMemory:
+                            SetStatus(message);
+                            break;
+                    }
+                    SetProgress(++progress, maxProgress);
+                }
+            );
+            currentProgress = progress;
+        }
+
+        private byte[] readFlash(uint address, uint length, string message, ref int currentProgress, int maxProgress)
+        {
+            int progress = currentProgress;
+            var r = fel.ReadFlash((UInt32)address, (UInt32)length,
+                delegate (Fel.CurrentAction action, string command)
+                {
+                    switch (action)
+                    {
+                        case Fel.CurrentAction.RunningCommand:
+                            SetStatus(Resources.ExecutingCommand + " " + command);
+                            break;
+                        case Fel.CurrentAction.ReadingMemory:
+                            SetStatus(message);
+                            break;
+                    }
+                    SetProgress(++progress, maxProgress);
+                }
+            );
+            currentProgress = progress;
+            return r;
+        }
+
         public bool DoKernelDump(string dumpPath = null, int maxProgress = 80, int progress = 0)
         {
             if (WaitForFelFromThread() != DialogResult.OK)
@@ -507,24 +556,7 @@ namespace com.clusterrr.hakchi_gui
             progress += 5;
             SetProgress(progress, maxProgress);
 
-            SetStatus(Resources.DumpingKernel);
-            var kernel = fel.ReadFlash(Fel.kernel_base_f, Fel.sector_size * 0x20,
-                delegate (Fel.CurrentAction action, string command)
-                {
-                    switch (action)
-                    {
-                        case Fel.CurrentAction.RunningCommand:
-                            SetStatus(Resources.ExecutingCommand + " " + command);
-                            break;
-                        case Fel.CurrentAction.ReadingMemory:
-                            SetStatus(Resources.DumpingKernel);
-                            break;
-                    }
-                    progress++;
-                    SetProgress(progress, maxProgress);
-                }
-            );
-
+            var kernel = readFlash(Fel.kernel_base_f, Fel.sector_size * 0x20, Resources.DumpingKernel, ref progress, maxProgress);
             var size = CalcKernelSize(kernel);
             if (size == 0 || size > Fel.kernel_max_size)
                 throw new Exception(Resources.InvalidKernelSize + " " + size);
@@ -535,104 +567,83 @@ namespace com.clusterrr.hakchi_gui
                 kernel = sm_kernel;
             }
 
+            // specific kernel name (usually temp name for immediate use)
+            if (!string.IsNullOrEmpty(dumpPath))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(dumpPath));
+                File.WriteAllBytes(dumpPath, kernel);
+                KernelDumpPath = dumpPath;
+                return true;
+            }
+
+            // autodetect if possible
+            var md5 = System.Security.Cryptography.MD5.Create();
+            var hash = BitConverter.ToString(md5.ComputeHash(kernel)).Replace("-", "").ToLower();
+            var matchedKernels = from k in correctKernels where k.Value.Contains(hash) select k.Key;
+            DetectedKernelDumpConsoleType = MainForm.ConsoleType.Unknown;
+            if (matchedKernels.Count() == 1)
+            {
+                DetectedKernelDumpConsoleType = matchedKernels.First();
+            }
+            else if (matchedKernels.Count() > 1)
+            {
+                throw new IOException("Logic error: dumped kernel hash has multiple console matches, should not happen");
+            }
+
+            // write new kernel dump
+            KernelDumpPath = Shared.PathCombine(Program.BaseDirectoryExternal, "dump", DateTime.Now.ToString("yyyyMMdd_HHmmss"), GetKernelDumpName(DetectedKernelDumpConsoleType));
+            Shared.EnsureEmptyDirectory(Path.GetDirectoryName(KernelDumpPath));
+            File.WriteAllBytes(KernelDumpPath, kernel);
+            Debug.WriteLine($"Dumped kernel: {KernelDumpPath}");
+
             if (Task == Tasks.DumpKernel)
             {
                 SetProgress(maxProgress, maxProgress);
                 SetStatus(Resources.Done);
             }
-
-            var md5 = System.Security.Cryptography.MD5.Create();
-            var hash = BitConverter.ToString(md5.ComputeHash(kernel)).Replace("-", "").ToLower();
-            var matchedKernels = from k in correctKernels where k.Value.Contains(hash) select k.Key;
-            if (matchedKernels.Count() == 0)
-            {
-                // Unknown MD5? Hmm... Lets extract ramfs and check keyfile!
-                string kernelDumpTemp = Path.Combine(tempDirectory, "kernel.img");
-                Directory.CreateDirectory(tempDirectory);
-                File.WriteAllBytes(kernelDumpTemp, kernel);
-                UnpackRamfs(kernelDumpTemp);
-                var key = File.ReadAllBytes(Path.Combine(ramfsDirectory, "key-file"));
-                if (dumpPath == null)
-                {
-                    try
-                    {
-                        Directory.Delete(tempDirectory, true);
-                    }
-                    catch { }
-                }
-                // I don't want to store keyfile inside my code, so I'll store MD5 of it
-                var keymd5 = System.Security.Cryptography.MD5.Create();
-                var keyhash = BitConverter.ToString(md5.ComputeHash(key)).Replace("-", "").ToLower();
-                // Lets try to autodetect console using key hash
-                var matchedKeys = from k in correctKeys where k.Value.Contains(keyhash) select k.Key;
-                if (matchedKeys.Count() > 0)
-                {
-                    if (!matchedKeys.Contains(ConfigIni.Instance.ConsoleType))
-                        throw new Exception(Resources.InvalidConsoleSelected + " " + matchedKeys.First());
-                }
-                else throw new Exception("Unknown key, unknown console");
-
-                if (!File.Exists(KernelDumpPath))
-                {
-                    if (MessageBoxFromThread(this, Resources.MD5Failed + " " + hash + /*"\r\n" + Resources.MD5Failed2 +*/
-                        "\r\n" + Resources.DoYouWantToContinue, Resources.Warning, MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, false)
-                        == DialogResult.No)
-                    {
-                        DialogResult = DialogResult.Abort;
-                        return false;
-                    }
-                }
-            }
-            else
-            {
-                // Lets try to autodetect console using kernel hash
-                if (!matchedKernels.Contains(ConfigIni.Instance.ConsoleType))
-                    throw new Exception(Resources.InvalidConsoleSelected + " " + matchedKernels.First());
-            }
-
-            Directory.CreateDirectory(Path.GetDirectoryName(KernelDumpPath));
-            if (!File.Exists(KernelDumpPath))
-                File.WriteAllBytes(KernelDumpPath, kernel);
-            if (!string.IsNullOrEmpty(dumpPath))
-                File.WriteAllBytes(dumpPath, kernel);
             return true;
         }
 
         public void FlashKernel()
         {
             int progress = 0;
-            int maxProgress = 115 + (string.IsNullOrEmpty(Mod) ? 0 : 110) +
+            int maxProgress =
+                115 +
+                (string.IsNullOrEmpty(Mod) ? 0 : 110) +
                 ((hmodsInstall != null && hmodsInstall.Count() > 0) ? 150 : 0);
             var hmods = hmodsInstall;
             hmodsInstall = null;
+
+            // don't proceed without a valid kernel dump
+            if (string.IsNullOrEmpty(KernelDumpPath) || !File.Exists(KernelDumpPath))
+            {
+                throw new FileNotFoundException("Kernel backup not found for flash kernel operation");
+            }
+
+            // wait for FEL mode
             if (WaitForFelFromThread() != DialogResult.OK)
             {
                 DialogResult = DialogResult.Abort;
                 return;
             }
-            progress += 5;
-            SetProgress(progress, maxProgress);
+            SetProgress(progress += 5, maxProgress);
 
-            if (Directory.Exists(tempDirectory))
-            {
-                Shared.DirectoryDeleteInside(tempDirectory);
-            }
-            Directory.CreateDirectory(tempDirectory);
+            // clean up
+            Shared.EnsureEmptyDirectory(tempDirectory);
 
+            // either patch kernel or read it directly
             byte[] kernel;
             if (!string.IsNullOrEmpty(Mod))
             {
-                // Just to verify that correct console is selected
-                if (!DoKernelDump(null, maxProgress, progress))
-                    return;
-                progress += 80;
-                kernel = CreatePatchedKernel(null, new string[] { Path.Combine("bin", "rsync") });
-                progress += 5;
-                SetProgress(progress, maxProgress);
+                kernel = createPatchedKernel(KernelDumpPath, new string[] { Path.Combine("bin", "rsync") });
             }
             else
+            {
                 kernel = File.ReadAllBytes(KernelDumpPath);
+            }
+            SetProgress(progress += 85, maxProgress);
+
+            // ensure kernel valid
             var size = CalcKernelSize(kernel);
             if (size > kernel.Length || size > Fel.kernel_max_size)
                 throw new Exception(Resources.InvalidKernelSize + " " + size);
@@ -646,46 +657,18 @@ namespace com.clusterrr.hakchi_gui
                 kernel = newK;
             }
 
-            fel.WriteFlash(Fel.kernel_base_f, kernel,
-                delegate (Fel.CurrentAction action, string command)
-                {
-                    switch (action)
-                    {
-                        case Fel.CurrentAction.RunningCommand:
-                            SetStatus(Resources.ExecutingCommand + " " + command);
-                            break;
-                        case Fel.CurrentAction.WritingMemory:
-                            SetStatus(Resources.UploadingKernel);
-                            break;
-                    }
-                    progress++;
-                    SetProgress(progress, maxProgress);
-                }
-            );
-            var r = fel.ReadFlash((UInt32)Fel.kernel_base_f, (UInt32)kernel.Length,
-                delegate (Fel.CurrentAction action, string command)
-                {
-                    switch (action)
-                    {
-                        case Fel.CurrentAction.RunningCommand:
-                            SetStatus(Resources.ExecutingCommand + " " + command);
-                            break;
-                        case Fel.CurrentAction.ReadingMemory:
-                            SetStatus(Resources.Verifying);
-                            break;
-                    }
-                    progress++;
-                    SetProgress(progress, maxProgress);
-                }
-            );
+            // flash and verify
+            writeFlash(Fel.kernel_base_f, kernel, Resources.UploadingKernel, ref progress, maxProgress);
+            var r = readFlash(Fel.kernel_base_f, (uint)kernel.Length, Resources.Verifying, ref progress, maxProgress);
             if (!kernel.SequenceEqual(r))
                 throw new Exception(Resources.VerifyFailed);
 
+            // install mods or just shutdown
             hmodsInstall = hmods;
             if (hmodsInstall != null && hmodsInstall.Count() > 0)
             {
                 zImage = Shared.PathCombine(Program.BaseDirectoryInternal, "data", "zImageMemboot");
-                Memboot(maxProgress, progress); // Lets install some mods                
+                Memboot(maxProgress, progress); // Lets install some mods
             }
             else
             {
@@ -725,6 +708,7 @@ namespace com.clusterrr.hakchi_gui
             if (!File.Exists(ubootPath))
                 throw new FileNotFoundException(ubootPath);
 
+            // read, verify and adjust uboot data
             byte[] uboot;
             uboot = File.ReadAllBytes(ubootPath);
             long size = uboot.Length;
@@ -741,57 +725,11 @@ namespace com.clusterrr.hakchi_gui
             }
 
             // Read the current uboot from nand and return the function if it matches what we were going to flash
-            byte[] r = fel.ReadFlash((UInt32)Fel.uboot_base_f, (UInt32)uboot.Length,
-                delegate (Fel.CurrentAction action, string command)
-                {
-                    switch (action)
-                    {
-                        case Fel.CurrentAction.RunningCommand:
-                            SetStatus(Resources.ExecutingCommand + " " + command);
-                            break;
-                        case Fel.CurrentAction.ReadingMemory:
-                            SetStatus(Resources.Verifying);
-                            break;
-                    }
-                    progress++;
-                    SetProgress(progress, maxProgress);
-                }
-            );
+            byte[] r = readFlash(Fel.uboot_base_f, (uint)uboot.Length, Resources.Verifying, ref progress, maxProgress);
             if (!uboot.SequenceEqual(r))
             {
-                // Flash the new uboot
-                fel.WriteFlash(Fel.uboot_base_f, uboot,
-                    delegate (Fel.CurrentAction action, string command)
-                    {
-                        switch (action)
-                        {
-                            case Fel.CurrentAction.RunningCommand:
-                                SetStatus(Resources.ExecutingCommand + " " + command);
-                                break;
-                            case Fel.CurrentAction.WritingMemory:
-                                SetStatus(Resources.FlashingUboot);
-                                break;
-                        }
-                        progress++;
-                        SetProgress(progress, maxProgress);
-                    }
-                );
-                r = fel.ReadFlash((UInt32)Fel.uboot_base_f, (UInt32)uboot.Length,
-                    delegate (Fel.CurrentAction action, string command)
-                    {
-                        switch (action)
-                        {
-                            case Fel.CurrentAction.RunningCommand:
-                                SetStatus(Resources.ExecutingCommand + " " + command);
-                                break;
-                            case Fel.CurrentAction.ReadingMemory:
-                                SetStatus(Resources.Verifying);
-                                break;
-                        }
-                        progress++;
-                        SetProgress(progress, maxProgress);
-                    }
-                );
+                writeFlash(Fel.uboot_base_f, uboot, Resources.FlashingUboot, ref progress, maxProgress);
+                r = readFlash(Fel.uboot_base_f, (uint)uboot.Length, Resources.Verifying, ref progress, maxProgress);
                 if (!uboot.SequenceEqual(r))
                     throw new Exception(Resources.VerifyFailed);
             }
@@ -799,16 +737,7 @@ namespace com.clusterrr.hakchi_gui
             var shutdownCommand = "shutdown";
             SetStatus(Resources.ExecutingCommand + " " + shutdownCommand);
             fel.RunUbootCmd(shutdownCommand, true);
-#if !DEBUG
-                if (Directory.Exists(tempDirectory))
-                {
-                    try
-                    {
-                        Directory.Delete(tempDirectory, true);
-                    }
-                    catch { }
-                }
-#endif
+
             SetStatus(Resources.Done);
             SetProgress(maxProgress, maxProgress);
         }
@@ -830,22 +759,7 @@ namespace com.clusterrr.hakchi_gui
                 throw new Exception("Invalid NAND size");
 
             SetStatus("...");
-            fel.WriteFlash(0, nand,
-                delegate (Fel.CurrentAction action, string command)
-                {
-                    switch (action)
-                    {
-                        case Fel.CurrentAction.RunningCommand:
-                            SetStatus(Resources.ExecutingCommand + " " + command);
-                            break;
-                        case Fel.CurrentAction.WritingMemory:
-                            SetStatus("...");
-                            break;
-                    }
-                    progress++;
-                    SetProgress(progress, maxProgress);
-                }
-            );
+            writeFlash(0, nand, "...", ref progress, maxProgress);
 
             var shutdownCommand = "shutdown";
             SetStatus(Resources.ExecutingCommand + " " + shutdownCommand);
@@ -858,8 +772,8 @@ namespace com.clusterrr.hakchi_gui
         {
             int progress = 0;
             int maxProgress = 500;
-            var clovershell = hakchi.Shell;
             bool error = false;
+            var shell = hakchi.Shell;
             Exception errorException = new Exception();
             try
             {
@@ -885,7 +799,8 @@ namespace com.clusterrr.hakchi_gui
                 if (DialogResult == DialogResult.Abort) return;
                 Thread.Sleep(2000);
 
-                if (WaitForClovershellFromThread() == DialogResult.Abort) return;
+                if (WaitForShellFromThread() == DialogResult.Abort) return;
+                shell = hakchi.Shell;
                 progress += 5;
                 SetProgress(progress, maxProgress);
 
@@ -893,27 +808,27 @@ namespace com.clusterrr.hakchi_gui
 
                 long partitionSize = 300 * 1024 * 1024;
                 if (task == Tasks.DumpNand || task == Tasks.DumpNandB || task == Tasks.FlashNandB)
-                    clovershell.Execute("cat > /bin/sntool; chmod +x /bin/sntool", File.OpenRead(Shared.PathCombine(toolsDirectory, "arm", "sntool.static")), throwOnNonZero: true);
+                    shell.Execute("cat > /bin/sntool; chmod +x /bin/sntool", File.OpenRead(Shared.PathCombine(toolsDirectory, "arm", "sntool.static")), throwOnNonZero: true);
 
                 switch (task)
                 {
                     case Tasks.DumpNandB:
                     case Tasks.FlashNandB:
-                        clovershell.ExecuteSimple("rm /key-file");
-                        clovershell.ExecuteSimple("cd /; sntool sunxi_flash ramdisk | cpio -iu \"key-file\"", throwOnNonZero: true);
-                        clovershell.ExecuteSimple("cryptsetup open /dev/nandb root-crypt --type plain --cipher aes-xts-plain --key-file /key-file", 2000, true);
+                        shell.ExecuteSimple("rm /key-file");
+                        shell.ExecuteSimple("cd /; sntool sunxi_flash ramdisk | cpio -iu \"key-file\"", throwOnNonZero: true);
+                        shell.ExecuteSimple("cryptsetup open /dev/nandb root-crypt --type plain --cipher aes-xts-plain --key-file /key-file", 2000, true);
 
                         if (task == Tasks.DumpNandB)
-                            partitionSize = long.Parse(clovershell.ExecuteSimple("echo $((($(hexdump -e '1/4 \"%u\"' -s $((0x28)) -n 4 /dev/mapper/root-crypt)+0xfff)/0x1000))", throwOnNonZero: true).Trim()) * 4 * 1024;
+                            partitionSize = long.Parse(shell.ExecuteSimple("echo $((($(hexdump -e '1/4 \"%u\"' -s $((0x28)) -n 4 /dev/mapper/root-crypt)+0xfff)/0x1000))", throwOnNonZero: true).Trim()) * 4 * 1024;
 
                         if (task == Tasks.FlashNandB)
-                            partitionSize = long.Parse(clovershell.ExecuteSimple("blockdev --getsize64 /dev/mapper/root-crypt", throwOnNonZero: true));
+                            partitionSize = long.Parse(shell.ExecuteSimple("blockdev --getsize64 /dev/mapper/root-crypt", throwOnNonZero: true));
 
                         break;
 
                     case Tasks.DumpNandC:
                     case Tasks.FlashNandC:
-                        partitionSize = long.Parse(clovershell.ExecuteSimple("blockdev --getsize64 /dev/nandc", throwOnNonZero: true));
+                        partitionSize = long.Parse(shell.ExecuteSimple("blockdev --getsize64 /dev/nandc", throwOnNonZero: true));
                         break;
 
                     case Tasks.DumpNand:
@@ -939,24 +854,24 @@ namespace com.clusterrr.hakchi_gui
                     switch (task)
                     {
                         case Tasks.DumpNandB:
-                            clovershell.Execute($"dd if=/dev/mapper/root-crypt bs=4K count={(partitionSize / 1024) / 4 }", null, file, throwOnNonZero: true);
+                            shell.Execute($"dd if=/dev/mapper/root-crypt bs=4K count={(partitionSize / 1024) / 4 }", null, file, throwOnNonZero: true);
                             break;
 
                         case Tasks.FlashNandB:
-                            clovershell.Execute("dd of=/dev/mapper/root-crypt bs=128K", file, throwOnNonZero: true);
-                            clovershell.Execute("cryptsetup close root-crypt", throwOnNonZero: true);
+                            shell.Execute("dd of=/dev/mapper/root-crypt bs=128K", file, throwOnNonZero: true);
+                            shell.Execute("cryptsetup close root-crypt", throwOnNonZero: true);
                             break;
 
                         case Tasks.DumpNandC:
-                            clovershell.Execute("dd if=/dev/nandc", null, file, throwOnNonZero: true);
+                            shell.Execute("dd if=/dev/nandc", null, file, throwOnNonZero: true);
                             break;
 
                         case Tasks.FlashNandC:
-                            clovershell.Execute("dd of=/dev/nandc bs=128K", file, throwOnNonZero: true);
+                            shell.Execute("dd of=/dev/nandc bs=128K", file, throwOnNonZero: true);
                             break;
 
                         case Tasks.DumpNand:
-                            clovershell.Execute("sntool sunxi_flash phy_read 0 1000", null, file, throwOnNonZero: true);
+                            shell.Execute("sntool sunxi_flash phy_read 0 1000", null, file, throwOnNonZero: true);
                             break;
                     }
                     file.Close();
@@ -974,8 +889,8 @@ namespace com.clusterrr.hakchi_gui
             {
                 try
                 {
-                    if (clovershell.IsOnline)
-                        clovershell.ExecuteSimple("sync; umount -ar; reboot -f", 100);
+                    if (shell.IsOnline)
+                        shell.ExecuteSimple("sync; umount -ar; reboot -f", 100);
                 }
                 catch { }
 
@@ -987,6 +902,325 @@ namespace com.clusterrr.hakchi_gui
         private void File_OnProgress(long Position, long Length)
         {
             throw new NotImplementedException();
+        }
+
+        public void Memboot(int maxProgress = -1, int progress = 0)
+        {
+            if (maxProgress < 0) maxProgress = 1000;
+            SetProgress(progress, maxProgress);
+
+            // need this file
+            if (!File.Exists(KernelDumpPath))
+            {
+                throw new FileNotFoundException("Kernel dump not found for memboot operation.");
+            }
+
+            // Connecting to NES Mini
+            if (!hakchi.Shell.IsOnline && WaitForFelFromThread() != DialogResult.OK)
+            {
+                DialogResult = DialogResult.Abort;
+                return;
+            }
+            SetProgress(progress += 5, maxProgress);
+
+            if (Task == Tasks.Memboot)
+            {
+                Shared.EnsureEmptyDirectory(tempDirectory);
+            }
+            byte[] kernel;
+            if (!string.IsNullOrEmpty(Mod))
+            {
+                kernel = createPatchedKernel(KernelDumpPath);
+            }
+            else
+            {
+                kernel = File.ReadAllBytes(KernelDumpPath);
+            }
+
+            if (!hakchi.Shell.IsOnline)
+            {
+                var size = CalcKernelSize(kernel);
+                if (size > kernel.Length || size > Fel.transfer_max_size)
+                    throw new Exception(Resources.InvalidKernelSize + " " + size);
+                size = (size + Fel.sector_size - 1) / Fel.sector_size;
+                size = size * Fel.sector_size;
+                if (kernel.Length != size)
+                {
+                    var newK = new byte[size];
+                    Array.Copy(kernel, newK, kernel.Length);
+                    kernel = newK;
+                }
+            }
+            maxProgress = (int)((double)kernel.Length / (double)67000 + progress);
+            SetProgress(progress, maxProgress);
+
+            SetStatus(Resources.UploadingKernel);
+            if (hakchi.Shell.IsOnline)
+            {
+                hakchi.Shell.ExecuteSimple("mkdir -p /tmp/kexec/", throwOnNonZero: true);
+                hakchi.Shell.Execute(
+                    command: "cat > /tmp/kexec/kexec && chmod +x /tmp/kexec/kexec",
+                    stdin: File.OpenRead(Shared.PathCombine(Program.BaseDirectoryInternal, "tools", "arm", "kexec.static")),
+                    throwOnNonZero: true
+                );
+                hakchi.Shell.Execute(
+                    command: "cat > /tmp/kexec/unpackbootimg && chmod +x /tmp/kexec/unpackbootimg",
+                    stdin: File.OpenRead(Shared.PathCombine(Program.BaseDirectoryInternal, "tools", "arm", "unpackbootimg.static")),
+                    throwOnNonZero: true
+                );
+
+                hakchi.Shell.ExecuteSimple("uistop");
+
+                hakchi.Shell.Execute(
+                    command: "cat > /tmp/kexec/boot.img; cd /tmp/kexec/; ./unpackbootimg -i boot.img",
+                    stdin: new MemoryStream(kernel, false),
+                    throwOnNonZero: true
+                );
+                hakchi.Shell.ExecuteSimple("cd /tmp/kexec/ && ./kexec -l -t zImage boot.img-zImage \"--command-line=$(cat boot.img-cmdline)\" --ramdisk=boot.img-ramdisk.gz --atags", 0, true);
+                hakchi.Shell.ExecuteSimple("cd /tmp/; umount -ar", 0);
+                try
+                {
+                    hakchi.Shell.ExecuteSimple("/tmp/kexec/kexec -e");
+                }
+                catch
+                {
+                    // no-op
+                }
+
+                Thread.Sleep(5000);
+            }
+            else
+            {
+                fel.WriteMemory(Fel.transfer_base_m, kernel,
+                    delegate (Fel.CurrentAction action, string command)
+                    {
+                        switch (action)
+                        {
+                            case Fel.CurrentAction.WritingMemory:
+                                SetStatus(Resources.UploadingKernel);
+                                break;
+                        }
+                        SetProgress(++progress, maxProgress);
+                    }
+                );
+
+                var bootCommand = string.Format("boota {0:x}", Fel.transfer_base_m);
+                SetStatus(Resources.ExecutingCommand + " " + bootCommand);
+                fel.RunUbootCmd(bootCommand, true);
+            }
+
+            // Wait some time while booting
+            int waitSeconds;
+            if ((hmodsInstall != null && hmodsInstall.Count() > 0)
+                || (hmodsUninstall != null && hmodsUninstall.Count() > 0))
+                waitSeconds = 60;
+            else
+                waitSeconds = 5;
+            for (int i = 0; i < waitSeconds * 2; i++)
+            {
+                Thread.Sleep(500);
+                SetProgress(++progress, maxProgress);
+                if (hakchi.Shell.IsOnline)
+                    break;
+            }
+#if !DEBUG
+            if (Directory.Exists(tempDirectory))
+            {
+                try
+                {
+                    Directory.Delete(tempDirectory, true);
+                }
+                catch {}
+            }
+#endif
+            SetStatus(Resources.Done);
+            SetProgress(maxProgress, maxProgress);
+        }
+
+        private void unpackRamfs(string kernelPath = null)
+        {
+            Shared.EnsureEmptyDirectory(ramfsDirectory);
+            string tempKernelDump = Path.Combine(tempDirectory, "kernel.img");
+            if ((kernelPath ?? KernelDumpPath) != tempKernelDump)
+            {
+                File.Copy(kernelPath ?? KernelDumpPath, tempKernelDump, true);
+            }
+            if (!ExecuteTool("unpackbootimg.exe", string.Format("-i \"{0}\" -o \"{1}\"", tempKernelDump, kernelDirectory)))
+                throw new Exception("Can't unpack kernel image");
+
+            string ramdiskPath = Path.Combine(kernelDirectory, "kernel.img-ramdisk.gz");
+            string ramdiskXZPath = Path.Combine(kernelDirectory, "kernel.img-ramdisk.xz");
+            byte[] ramdiskSignature = new byte[4];
+            using (BinaryReader reader = new BinaryReader(new FileStream(ramdiskPath, FileMode.Open)))
+            {
+                reader.Read(ramdiskSignature, 0, 4);
+            }
+
+            if (ramdiskSignature.SequenceEqual(new byte[] { 0xfd, 0x37, 0x7a, 0x58 }))
+            {
+                // file has to have the .xz extension or it will refuse decompression
+                File.Move(ramdiskPath, ramdiskXZPath);
+                if (!ExecuteTool("xz.exe", string.Format("-dk \"{0}\"", ramdiskXZPath)))
+                {
+                    throw new Exception("Can't unpack ramdisk");
+                }
+                File.Move(ramdiskXZPath, ramdiskPath);
+                File.Move(Path.Combine(kernelDirectory, "kernel.img-ramdisk"), initramfs_cpio);
+            }
+            else
+            {
+                if (!ExecuteTool("lzop.exe", string.Format("-d \"{0}\" -o \"{1}\"", ramdiskPath, initramfs_cpio)))
+                {
+                    throw new Exception("Can't unpack ramdisk");
+                }
+            }
+
+            ExecuteTool("cpio.exe", string.Format("-id --no-preserve-owner --quiet -I \"{0}\"", @"..\initramfs.cpio"), ramfsDirectory);
+            if (!File.Exists(Path.Combine(ramfsDirectory, "init"))) // cpio.exe fails on Windows XP for some reason. But working!
+                throw new Exception("Can't unpack ramdisk 2");
+
+            // check key
+            var key = File.ReadAllBytes(Path.Combine(ramfsDirectory, "key-file"));
+            var keymd5 = System.Security.Cryptography.MD5.Create();
+            var keyhash = BitConverter.ToString(keymd5.ComputeHash(key)).Replace("-", "").ToLower();
+            var matchedKeys = from k in correctKeys where k.Value.Contains(keyhash) select k.Key;
+            if (matchedKeys.Count() == 0)
+            {
+                throw new Exception("Unknown key, unknown console");
+            }
+        }
+
+        private byte[] createPatchedKernel(string kernelPath = null, string[] excludedFiles = null)
+        {
+            SetStatus(Resources.BuildingCustom);
+            if (!File.Exists(Path.Combine(ramfsDirectory, "init")))
+            {
+                if (string.IsNullOrEmpty(kernelPath))
+                {
+                    throw new ArgumentNullException("Can't unpack RamFS, no kernel path given.");
+                }
+                unpackRamfs(kernelPath);
+            }
+            if (Directory.Exists(hakchiDirectory))
+            {
+                Shared.DirectoryDeleteInside(hakchiDirectory);
+            }
+            Shared.DirectoryCopy(Path.Combine(modsDirectory, Mod), ramfsDirectory, true, false, true, false);
+
+            if (ModExtraFilesPaths != null)
+            {
+                foreach (string ModExtraFilesPath in ModExtraFilesPaths)
+                {
+                    if (!string.IsNullOrEmpty(ModExtraFilesPath) && Directory.Exists(ModExtraFilesPath))
+                    {
+                        Shared.DirectoryCopy(ModExtraFilesPath, ramfsDirectory, true, false, true, false);
+                    }
+                }
+            }
+
+            var ramfsFiles = Directory.GetFiles(ramfsDirectory, "*.*", SearchOption.AllDirectories);
+            foreach (var file in ramfsFiles)
+            {
+                var fInfo = new FileInfo(file);
+                if (fInfo.Length > 10 && fInfo.Length < 100 && ((fInfo.Attributes & FileAttributes.System) == 0) &&
+                    (Encoding.ASCII.GetString(File.ReadAllBytes(file), 0, 10)) == "!<symlink>")
+                    fInfo.Attributes |= FileAttributes.System;
+            }
+
+            if (hmodsInstall != null && hmodsInstall.Count() > 0)
+            {
+                Directory.CreateDirectory(tempHmodsDirectory);
+                foreach (var hmod in hmodsInstall)
+                {
+                    var modName = hmod + ".hmod";
+                    foreach (var dir in hmodDirectories)
+                    {
+                        if (Directory.Exists(Path.Combine(dir, modName)))
+                        {
+                            Shared.DirectoryCopy(Path.Combine(dir, modName), Path.Combine(tempHmodsDirectory, modName), true, false, true, false);
+                            break;
+                        }
+                        if (File.Exists(Path.Combine(dir, modName)))
+                        {
+                            File.Copy(Path.Combine(dir, modName), Path.Combine(tempHmodsDirectory, modName));
+                            break;
+                        }
+                    }
+                }
+            }
+            if (hmodsUninstall != null && hmodsUninstall.Count() > 0)
+            {
+                Directory.CreateDirectory(tempHmodsDirectory);
+                var mods = new StringBuilder();
+                foreach (var hmod in hmodsUninstall)
+                    mods.AppendFormat("{0}.hmod\n", hmod);
+                File.WriteAllText(Path.Combine(tempHmodsDirectory, "uninstall"), mods.ToString());
+            }
+
+            // Custom zImage
+            if (!string.IsNullOrEmpty(zImage))
+            {
+                File.Copy(zImage, Path.Combine(kernelDirectory, "kernel.img-zImage"), true);
+            }
+
+            // Delete any excluded files
+            if (excludedFiles != null && excludedFiles.Length > 0)
+            {
+                foreach (string file in excludedFiles)
+                {
+                    string filePath = Path.Combine(ramfsDirectory, file);
+                    if (File.Exists(filePath))
+                        File.Delete(filePath);
+                }
+            }
+
+            // Building image
+            byte[] ramdisk;
+            if (!ExecuteTool("mkbootfs.exe", string.Format("\"{0}\"", ramfsDirectory), out ramdisk))
+            {
+                throw new Exception("Can't repack ramdisk");
+            }
+            File.WriteAllBytes(initramfs_cpioPatched, ramdisk);
+
+            var argCmdline = File.ReadAllText(Path.Combine(kernelDirectory, "kernel.img-cmdline")).Trim();
+            var argBoard = File.ReadAllText(Path.Combine(kernelDirectory, "kernel.img-board")).Trim();
+            var argBase = File.ReadAllText(Path.Combine(kernelDirectory, "kernel.img-base")).Trim();
+            var argPagesize = File.ReadAllText(Path.Combine(kernelDirectory, "kernel.img-pagesize")).Trim();
+            var argKerneloff = File.ReadAllText(Path.Combine(kernelDirectory, "kernel.img-kerneloff")).Trim();
+            var argRamdiscoff = File.ReadAllText(Path.Combine(kernelDirectory, "kernel.img-ramdiskoff")).Trim();
+            var argTagsoff = File.ReadAllText(Path.Combine(kernelDirectory, "kernel.img-tagsoff")).Trim();
+
+            File.Delete(ramdiskPatched);
+            if (!string.IsNullOrEmpty(zImage))
+            {
+                File.Delete($"{initramfs_cpioPatched}.xz");
+                if (!ExecuteTool("xz.exe", string.Format("-z -k --check=crc32 --lzma2=dict=1MiB \"{0}\"", initramfs_cpioPatched)))
+                    throw new Exception("Can't repack ramdisk 2");
+                File.Move($"{initramfs_cpioPatched}.xz", ramdiskPatched);
+            }
+            else
+            {
+                if (!ExecuteTool("lzop.exe", string.Format("--best -f -o \"{0}\" \"{1}\"", ramdiskPatched, initramfs_cpioPatched)))
+                    throw new Exception("Can't repack ramdisk 2");
+            }
+
+            File.Delete(kernelPatched);
+            if (!ExecuteTool("mkbootimg.exe", string.Format("--kernel \"{0}\" --ramdisk \"{1}\" --cmdline \"{2}\" --board \"{3}\" --base \"{4}\" --pagesize \"{5}\" --kernel_offset \"{6}\" --ramdisk_offset \"{7}\" --tags_offset \"{8}\" -o \"{9}\"",
+                Path.Combine(kernelDirectory, "kernel.img-zImage"), ramdiskPatched, argCmdline, argBoard, argBase, argPagesize, argKerneloff, argRamdiscoff, argTagsoff, kernelPatched)))
+                throw new Exception("Can't rebuild kernel");
+
+            var result = File.ReadAllBytes(kernelPatched);
+#if !DEBUG
+            if (Directory.Exists(tempDirectory))
+            {
+                try
+                {
+                    Directory.Delete(tempDirectory, true);
+                }
+                catch { }
+            }
+#endif
+            return result;
         }
 
         public static void GetMemoryStats()
@@ -1029,6 +1263,13 @@ namespace com.clusterrr.hakchi_gui
             if (Games == null || Games.Count == 0)
                 throw new Exception("there are no games");
 
+            // make sure we have a working shell before proceeding
+            if (WaitForShellFromThread() != DialogResult.OK)
+            {
+                DialogResult = DialogResult.Abort;
+                return;
+            }
+
             // cleanup first
             tempGamesDirectory = Path.Combine(tempDirectory, "games");
             SetStatus(Resources.CleaningUp);
@@ -1069,12 +1310,6 @@ namespace com.clusterrr.hakchi_gui
             var shell = hakchi.Shell;
             try
             {
-                if (WaitForClovershellFromThread() != DialogResult.OK)
-                {
-                    DialogResult = DialogResult.Abort;
-                    return;
-                }
-
                 gameSyncPath = hakchi.GetRemoteGameSyncPath();
                 gamesPath = shell.ExecuteSimple("hakchi get gamepath", 2000, true).Trim();
                 rootFsPath = shell.ExecuteSimple("hakchi get rootfs", 2000, true).Trim();
@@ -1437,298 +1672,6 @@ namespace com.clusterrr.hakchi_gui
                 SetStatus(Resources.InstallingMods);
                 Memboot();
             }
-        }
-
-        public void Memboot(int maxProgress = -1, int progress = 0)
-        {
-            SetProgress(progress, maxProgress < 0 ? 1000 : maxProgress);
-
-            // Connecting to NES Mini
-            if (!hakchi.Shell.IsOnline && WaitForFelFromThread() != DialogResult.OK)
-            {
-                DialogResult = DialogResult.Abort;
-                return;
-            }
-            progress += 5;
-            SetProgress(progress, maxProgress > 0 ? maxProgress : 1000);
-
-            if (Directory.Exists(tempDirectory))
-            {
-                Shared.DirectoryDeleteInside(tempDirectory);
-            }
-            Directory.CreateDirectory(tempDirectory);
-
-            byte[] kernel;
-            if (!string.IsNullOrEmpty(Mod))
-                kernel = CreatePatchedKernel();
-            else
-                kernel = File.ReadAllBytes(KernelDumpPath);
-
-            if (!hakchi.Shell.IsOnline)
-            {
-                var size = CalcKernelSize(kernel);
-                if (size > kernel.Length || size > Fel.transfer_max_size)
-                    throw new Exception(Resources.InvalidKernelSize + " " + size);
-                size = (size + Fel.sector_size - 1) / Fel.sector_size;
-                size = size * Fel.sector_size;
-                if (kernel.Length != size)
-                {
-                    var newK = new byte[size];
-                    Array.Copy(kernel, newK, kernel.Length);
-                    kernel = newK;
-                }
-                progress += 5;
-            }
-            if (maxProgress < 0)
-                maxProgress = (int)((double)kernel.Length / (double)67000 + 50);
-            SetProgress(progress, maxProgress);
-
-            SetStatus(Resources.UploadingKernel);
-            if (hakchi.Shell.IsOnline)
-            {
-                hakchi.Shell.ExecuteSimple("mkdir -p /tmp/kexec/", throwOnNonZero: true);
-                hakchi.Shell.Execute(
-                    command: "cat > /tmp/kexec/kexec && chmod +x /tmp/kexec/kexec",
-                    stdin: File.OpenRead(Shared.PathCombine(Program.BaseDirectoryInternal, "tools", "arm", "kexec.static")),
-                    throwOnNonZero: true
-                );
-                hakchi.Shell.Execute(
-                    command: "cat > /tmp/kexec/unpackbootimg && chmod +x /tmp/kexec/unpackbootimg",
-                    stdin: File.OpenRead(Shared.PathCombine(Program.BaseDirectoryInternal, "tools", "arm", "unpackbootimg.static")),
-                    throwOnNonZero: true
-                );
-
-                hakchi.Shell.ExecuteSimple("uistop");
-
-                hakchi.Shell.Execute(
-                    command: "cat > /tmp/kexec/boot.img; cd /tmp/kexec/; ./unpackbootimg -i boot.img",
-                    stdin: new MemoryStream(kernel, false),
-                    throwOnNonZero: true
-                );
-                hakchi.Shell.ExecuteSimple("cd /tmp/kexec/ && ./kexec -l -t zImage boot.img-zImage \"--command-line=$(cat boot.img-cmdline)\" --ramdisk=boot.img-ramdisk.gz --atags", 0, true);
-                hakchi.Shell.ExecuteSimple("cd /tmp/; umount -ar", 0);
-                try
-                {
-                    hakchi.Shell.ExecuteSimple("/tmp/kexec/kexec -e");
-                }
-                catch
-                {
-                    // no-op
-                }
-
-                Thread.Sleep(5000);
-            }
-            else
-            {
-                fel.WriteMemory(Fel.transfer_base_m, kernel,
-                    delegate (Fel.CurrentAction action, string command)
-                    {
-                        switch (action)
-                        {
-                            case Fel.CurrentAction.WritingMemory:
-                                SetStatus(Resources.UploadingKernel);
-                                break;
-                        }
-                        progress++;
-                        SetProgress(progress, maxProgress);
-                    }
-                );
-
-                var bootCommand = string.Format("boota {0:x}", Fel.transfer_base_m);
-                SetStatus(Resources.ExecutingCommand + " " + bootCommand);
-                fel.RunUbootCmd(bootCommand, true);
-            }
-
-            // Wait some time while booting
-            int waitSeconds;
-            if ((hmodsInstall != null && hmodsInstall.Count() > 0)
-                || (hmodsUninstall != null && hmodsUninstall.Count() > 0))
-                waitSeconds = 60;
-            else
-                waitSeconds = 5;
-            for (int i = 0; i < waitSeconds * 2; i++)
-            {
-                Thread.Sleep(500);
-                progress++;
-                SetProgress(progress, maxProgress);
-                if (hakchi.Shell.IsOnline)
-                    break;
-            }
-#if !DEBUG
-            if (Directory.Exists(tempDirectory))
-            {
-                try
-                {
-                    Directory.Delete(tempDirectory, true);
-                }
-                catch {}
-            }
-#endif
-            SetStatus(Resources.Done);
-            SetProgress(maxProgress, maxProgress);
-        }
-
-        private void UnpackRamfs(string kernelPath = null)
-        {
-            if (Directory.Exists(ramfsDirectory))
-            {
-                Shared.DirectoryDeleteInside(ramfsDirectory);
-            }
-            Directory.CreateDirectory(tempDirectory);
-            Directory.CreateDirectory(kernelDirectory);
-            Directory.CreateDirectory(ramfsDirectory);
-            string tempKernelDump = Path.Combine(tempDirectory, "kernel.img");
-            if ((kernelPath ?? KernelDumpPath) != tempKernelDump)
-                File.Copy(kernelPath ?? KernelDumpPath, tempKernelDump, true);
-            if (!ExecuteTool("unpackbootimg.exe", string.Format("-i \"{0}\" -o \"{1}\"", tempKernelDump, kernelDirectory)))
-                throw new Exception("Can't unpack kernel image");
-
-            string ramdiskPath = Path.Combine(kernelDirectory, "kernel.img-ramdisk.gz");
-            string ramdiskXZPath = Path.Combine(kernelDirectory, "kernel.img-ramdisk.xz");
-            byte[] ramdiskSignature = new byte[4];
-            using (BinaryReader reader = new BinaryReader(new FileStream(ramdiskPath, FileMode.Open)))
-            {
-                reader.Read(ramdiskSignature, 0, 4);
-            }
-
-            if (ramdiskSignature.SequenceEqual(new byte[] { 0xfd, 0x37, 0x7a, 0x58 }))
-            {
-                // file has to have the .xz extension or it will refuse decompression
-                File.Move(ramdiskPath, ramdiskXZPath);
-                if (!ExecuteTool("xz.exe", string.Format("-dk \"{0}\"", ramdiskXZPath)))
-                    throw new Exception("Can't unpack ramdisk");
-                File.Move(ramdiskXZPath, ramdiskPath);
-                File.Move(Path.Combine(kernelDirectory, "kernel.img-ramdisk"), initramfs_cpio);
-            }
-            else
-            {
-                if (!ExecuteTool("lzop.exe", string.Format("-d \"{0}\" -o \"{1}\"", ramdiskPath, initramfs_cpio)))
-                    throw new Exception("Can't unpack ramdisk");
-            }
-
-            ExecuteTool("cpio.exe", string.Format("-id --no-preserve-owner --quiet -I \"{0}\"",
-               @"..\initramfs.cpio"), ramfsDirectory);
-            if (!File.Exists(Path.Combine(ramfsDirectory, "init"))) // cpio.exe fails on Windows XP for some reason. But working!
-                throw new Exception("Can't unpack ramdisk 2");
-        }
-
-        private byte[] CreatePatchedKernel(string kernelPath = null, string[] excludedFiles = null)
-        {
-            SetStatus(Resources.BuildingCustom);
-            if (!File.Exists(Path.Combine(ramfsDirectory, "init")))
-                UnpackRamfs(kernelPath);
-            if (Directory.Exists(hakchiDirectory))
-            {
-                Shared.DirectoryDeleteInside(hakchiDirectory);
-            }
-            Shared.DirectoryCopy(Path.Combine(modsDirectory, Mod), ramfsDirectory, true, false, true, false);
-
-            if(ModExtraFilesPaths != null)
-            {
-                foreach (string ModExtraFilesPath in ModExtraFilesPaths)
-                {
-                    if (!string.IsNullOrEmpty(ModExtraFilesPath) && Directory.Exists(ModExtraFilesPath))
-                    {
-                        Shared.DirectoryCopy(ModExtraFilesPath, ramfsDirectory, true, false, true, false);
-                    }
-                }
-            }
-
-            var ramfsFiles = Directory.GetFiles(ramfsDirectory, "*.*", SearchOption.AllDirectories);
-            foreach (var file in ramfsFiles)
-            {
-                var fInfo = new FileInfo(file);
-                if (fInfo.Length > 10 && fInfo.Length < 100 && ((fInfo.Attributes & FileAttributes.System) == 0) &&
-                    (Encoding.ASCII.GetString(File.ReadAllBytes(file), 0, 10)) == "!<symlink>")
-                    fInfo.Attributes |= FileAttributes.System;
-            }
-
-            if (hmodsInstall != null && hmodsInstall.Count() > 0)
-            {
-                Directory.CreateDirectory(tempHmodsDirectory);
-                foreach (var hmod in hmodsInstall)
-                {
-                    var modName = hmod + ".hmod";
-                    foreach (var dir in hmodDirectories)
-                    {
-                        if (Directory.Exists(Path.Combine(dir, modName)))
-                        {
-                            Shared.DirectoryCopy(Path.Combine(dir, modName), Path.Combine(tempHmodsDirectory, modName), true, false, true, false);
-                            break;
-                        }
-                        if (File.Exists(Path.Combine(dir, modName)))
-                        {
-                            File.Copy(Path.Combine(dir, modName), Path.Combine(tempHmodsDirectory, modName));
-                            break;
-                        }
-                    }
-                }
-            }
-            if (hmodsUninstall != null && hmodsUninstall.Count() > 0)
-            {
-                Directory.CreateDirectory(tempHmodsDirectory);
-                var mods = new StringBuilder();
-                foreach (var hmod in hmodsUninstall)
-                    mods.AppendFormat("{0}.hmod\n", hmod);
-                File.WriteAllText(Path.Combine(tempHmodsDirectory, "uninstall"), mods.ToString());
-            }
-
-            // Custom zImage
-            if (!string.IsNullOrEmpty(zImage))
-                File.Copy(zImage, Path.Combine(kernelDirectory, "kernel.img-zImage"), true);
-
-            // Delete any excluded files
-            if(excludedFiles != null && excludedFiles.Length > 0)
-            {
-                foreach (string file in excludedFiles)
-                {
-                    string filePath = Path.Combine(ramfsDirectory, file);
-                    if (File.Exists(filePath))
-                        File.Delete(filePath);
-                }
-            }
-
-            // Building image
-            byte[] ramdisk;
-            if (!ExecuteTool("mkbootfs.exe", string.Format("\"{0}\"", ramfsDirectory), out ramdisk))
-                throw new Exception("Can't repack ramdisk");
-            File.WriteAllBytes(initramfs_cpioPatched, ramdisk);
-            var argCmdline = File.ReadAllText(Path.Combine(kernelDirectory, "kernel.img-cmdline")).Trim();
-            var argBoard = File.ReadAllText(Path.Combine(kernelDirectory, "kernel.img-board")).Trim();
-            var argBase = File.ReadAllText(Path.Combine(kernelDirectory, "kernel.img-base")).Trim();
-            var argPagesize = File.ReadAllText(Path.Combine(kernelDirectory, "kernel.img-pagesize")).Trim();
-            var argKerneloff = File.ReadAllText(Path.Combine(kernelDirectory, "kernel.img-kerneloff")).Trim();
-            var argRamdiscoff = File.ReadAllText(Path.Combine(kernelDirectory, "kernel.img-ramdiskoff")).Trim();
-            var argTagsoff = File.ReadAllText(Path.Combine(kernelDirectory, "kernel.img-tagsoff")).Trim();
-            if (!string.IsNullOrEmpty(zImage))
-            {
-                if (!ExecuteTool("xz.exe", string.Format("-z -k --check=crc32 --lzma2=dict=1MiB \"{0}\"", initramfs_cpioPatched)))
-                    throw new Exception("Can't repack ramdisk 2");
-                File.Move($"{initramfs_cpioPatched}.xz", ramdiskPatched);
-            }
-            else
-            {
-                if (!ExecuteTool("lzop.exe", string.Format("--best -f -o \"{0}\" \"{1}\"",
-                ramdiskPatched, initramfs_cpioPatched)))
-                    throw new Exception("Can't repack ramdisk 2");
-            }
-                
-            if (!ExecuteTool("mkbootimg.exe", string.Format("--kernel \"{0}\" --ramdisk \"{1}\" --cmdline \"{2}\" --board \"{3}\" --base \"{4}\" --pagesize \"{5}\" --kernel_offset \"{6}\" --ramdisk_offset \"{7}\" --tags_offset \"{8}\" -o \"{9}\"",
-                Path.Combine(kernelDirectory, "kernel.img-zImage"), ramdiskPatched, argCmdline, argBoard, argBase, argPagesize, argKerneloff, argRamdiscoff, argTagsoff, kernelPatched)))
-                throw new Exception("Can't rebuild kernel");
-
-            var result = File.ReadAllBytes(kernelPatched);
-#if !DEBUG
-            if (Directory.Exists(tempDirectory))
-            {
-                try
-                {
-                    Directory.Delete(tempDirectory, true);
-                }
-                catch { }
-            }
-#endif
-            return result;
         }
 
         private class GamesTreeStats

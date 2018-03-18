@@ -353,6 +353,15 @@ namespace com.clusterrr.hakchi_gui.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This operation is proven to BRICK your console. Do you want to continue?.
+        /// </summary>
+        internal static string BrickConsoleQ {
+            get {
+                return ResourceManager.GetString("BrickConsoleQ", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Building the custom kernel image....
         /// </summary>
         internal static string BuildingCustom {
@@ -811,6 +820,15 @@ namespace com.clusterrr.hakchi_gui.Properties {
         internal static string FirstRun {
             get {
                 return ResourceManager.GetString("FirstRun", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You have to make sure you have already and successfully flashed the custom kernel before proceeding. Do you want to continue?.
+        /// </summary>
+        internal static string FlashedKernelQ {
+            get {
+                return ResourceManager.GetString("FlashedKernelQ", resourceCulture);
             }
         }
         
@@ -1397,7 +1415,7 @@ namespace com.clusterrr.hakchi_gui.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 212a7c8 (dirty).
+        ///   Looks up a localized string similar to dc75c8c (dirty).
         /// </summary>
         internal static string gitCommit {
             get {
@@ -1589,6 +1607,15 @@ namespace com.clusterrr.hakchi_gui.Properties {
         internal static string KernelDumped {
             get {
                 return ResourceManager.GetString("KernelDumped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You have to make sure you have a valid and safe backup of your original kernel before proceeding. Do you want to continue?.
+        /// </summary>
+        internal static string KernelDumpedQ {
+            get {
+                return ResourceManager.GetString("KernelDumpedQ", resourceCulture);
             }
         }
         
@@ -2577,15 +2604,6 @@ namespace com.clusterrr.hakchi_gui.Properties {
         internal static string Verifying {
             get {
                 return ResourceManager.GetString("Verifying", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to INTERNAL VERSION FOR TESTING PURPOSES ONLY.
-        /// </summary>
-        internal static string VersionRevisionNotice {
-            get {
-                return ResourceManager.GetString("VersionRevisionNotice", resourceCulture);
             }
         }
         
