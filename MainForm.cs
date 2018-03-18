@@ -1,5 +1,4 @@
-﻿using com.clusterrr.clovershell;
-using com.clusterrr.hakchi_gui.Properties;
+﻿using com.clusterrr.hakchi_gui.Properties;
 using AutoUpdaterDotNET;
 using SevenZip;
 using System;
@@ -15,7 +14,6 @@ using System.Resources;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
-using System.Net;
 
 namespace com.clusterrr.hakchi_gui
 {
@@ -25,6 +23,11 @@ namespace com.clusterrr.hakchi_gui
         /// The URL for the update metadata XML file
         /// </summary>
         private static string UPDATE_XML_URL = "https://teamshinkansen.github.io/xml/updates/update.xml";
+
+        /// <summary>
+        /// The name of the service advertised by avahi on the console
+        /// </summary>
+        public const string AVAHI_SERVICE_NAME = "_hakchi._tcp.local.";
 
         public enum OriginalGamesPosition { AtTop = 0, AtBottom = 1, Sorted = 2, Hidden = 3 }
         public enum ConsoleType { NES = 0, Famicom = 1, SNES = 2, SuperFamicom = 3, Unknown = 255 }
@@ -52,11 +55,11 @@ namespace com.clusterrr.hakchi_gui
         {
             switch (c)
             {
-                case ConsoleType.NES: return nESMiniToolStripMenuItem.Text;
-                case ConsoleType.Famicom: return famicomMiniToolStripMenuItem.Text;
-                case ConsoleType.SNES: return sNESMiniToolStripMenuItem.Text;
-                case ConsoleType.SuperFamicom: return superFamicomMiniToolStripMenuItem.Text;
-                case ConsoleType.Unknown: return Resources.Unknown;
+                case ConsoleType.NES: return "NES";
+                case ConsoleType.Famicom: return "Famicom";
+                case ConsoleType.SNES: return "SNES";
+                case ConsoleType.SuperFamicom: return "Super Famicom";
+                case ConsoleType.Unknown: return "Unknown";
             }
             return string.Empty;
         }
@@ -65,8 +68,7 @@ namespace com.clusterrr.hakchi_gui
         public static bool? DownloadCover;
         public const int MaxGamesPerFolder = 50;
 
-        public static ClovershellConnection Clovershell;
-        mooftpserv.Server ftpServer;
+        public static mooftpserv.Server FtpServer;
 
         private class GamesSorter : IComparer
         {
@@ -88,20 +90,18 @@ namespace com.clusterrr.hakchi_gui
         {
             InitializeComponent();
             FormInitialize();
-            Clovershell = new ClovershellConnection() { AutoReconnect = true, Enabled = true };
-            Clovershell.OnConnected += Clovershell_OnConnected;
-            Clovershell.OnDisconnected += Clovershell_OnDisconnected;
 
-            ftpServer = new mooftpserv.Server();
-            ftpServer.AuthHandler = new mooftpserv.NesMiniAuthHandler();
-            ftpServer.FileSystemHandler = new mooftpserv.NesMiniFileSystemHandler(Clovershell);
-            ftpServer.LogHandler = new mooftpserv.DebugLogHandler();
-            ftpServer.LocalPort = 1021;
+            // setup system shell
+            hakchi.Initialize();
+            hakchi.OnConnected += Shell_OnConnected;
+            hakchi.OnDisconnected += Shell_OnDisconnected;
 
-            if (ConfigIni.Instance.FtpServer)
-                FTPToolStripMenuItem_Click(null, null);
-            if (ConfigIni.Instance.TelnetServer)
-                shellToolStripMenuItem_Click(null, null);
+            // setup ftp server for legacy system shell
+            FtpServer = new mooftpserv.Server();
+            FtpServer.AuthHandler = new mooftpserv.NesMiniAuthHandler();
+            FtpServer.FileSystemHandler = new mooftpserv.NesMiniFileSystemHandler(hakchi.Shell);
+            FtpServer.LogHandler = new mooftpserv.DebugLogHandler();
+            FtpServer.LocalPort = 1021;
         }
 
         void SetWindowTitle()
@@ -119,9 +119,8 @@ namespace com.clusterrr.hakchi_gui
 
             if (hakchi.DetectedConsoleType != null)
             {
-                title += " - " + GetConsoleTypeName(hakchi.DetectedMountedConsoleType);
-                if (hakchi.DetectedMountedConsoleType != hakchi.DetectedConsoleType)
-                    title += " (HSQS)";
+                title += " - " + GetConsoleTypeName(hakchi.DetectedConsoleType);
+                if (hakchi.CustomFirmwareLoaded) title += " (HSQS)";
             }
 
             this.Text = title;
@@ -178,12 +177,15 @@ namespace com.clusterrr.hakchi_gui
                 // Loading games database in background
                 new Thread(NesGame.LoadCache).Start();
                 new Thread(SnesGame.LoadCache).Start();
+
                 // Recalculate games in background
                 new Thread(RecalculateSelectedGamesThread).Start();
 
                 // servers menu settings
-                openFTPInExplorerToolStripMenuItem.Enabled = FTPToolStripMenuItem.Checked = ConfigIni.Instance.FtpServer;
-                openTelnetToolStripMenuItem.Enabled = shellToolStripMenuItem.Checked = ConfigIni.Instance.TelnetServer;
+                FTPToolStripMenuItem.Checked = ConfigIni.Instance.FtpServer;
+                openFTPInExplorerToolStripMenuItem.Enabled = false;
+                shellToolStripMenuItem.Checked = ConfigIni.Instance.TelnetServer;
+                openTelnetToolStripMenuItem.Enabled = false;
             }
             catch (Exception ex)
             {
@@ -198,67 +200,97 @@ namespace com.clusterrr.hakchi_gui
                                    () => { return MessageBox.Show(this, text, title, buttons, icon); }));
         }
 
-        void Clovershell_OnConnected()
+        void Shell_OnConnected(ISystemShell caller)
         {
             try
             {
-                hakchi.Clovershell_OnConnected();
-                if (!hakchi.MinimalMemboot)
+                if (hakchi.MinimalMemboot)
+                    return;
+
+                if (hakchi.CanInteract)
                 {
-                    if (hakchi.CanInteract)
+                    if (hakchi.DetectedConsoleType != null)
                     {
-                        if (hakchi.DetectedMountedConsoleType != null && hakchi.DetectedMountedConsoleType != ConsoleType.Unknown)
-                        {
-                            ConfigIni.Instance.ConsoleType = (ConsoleType)hakchi.DetectedMountedConsoleType;
-                        }
+                        if (hakchi.DetectedConsoleType != ConsoleType.Unknown)
+                            ConfigIni.Instance.ConsoleType = (ConsoleType)hakchi.DetectedConsoleType;
                         ConfigIni.Instance.LastConnectedConsoleType = (ConsoleType)hakchi.DetectedConsoleType;
+                    }
+                    Invoke(new Action(SyncConsoleType));
 
-                        Invoke(new Action(SyncConsoleType));
-
-                        if (hakchi.SystemEligibleForRootfsUpdate())
+                    if (hakchi.SystemEligibleForRootfsUpdate())
+                    {
+                        if (BackgroundThreadMessageBox(Resources.SystemEligibleForRootfsUpdate, Resources.OutdatedScripts, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
                         {
-                            if (BackgroundThreadMessageBox(Resources.SystemEligibleForRootfsUpdate, Resources.OutdatedScripts, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                            if (MembootCustomKernel())
                             {
-                                if (MembootCustomKernel())
-                                {
-                                    BackgroundThreadMessageBox(Resources.DoneYouCanUpload, Resources.Wow, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                }
-                                return;
+                                BackgroundThreadMessageBox(Resources.DoneYouCanUpload, Resources.Wow, MessageBoxButtons.OK, MessageBoxIcon.Information);
                             }
+                            return;
                         }
+                    }
 
-                        Invoke(new Action(UpdateLocalCache));
-                        WorkerForm.GetMemoryStats();
-                        new Thread(RecalculateSelectedGamesThread).Start();
+                    // enable helper servers
+                    if (caller is ssh.SshClientWrapper)
+                    {
+                        Invoke(new Action(delegate {
+                            changeFTPServerState(false);
+
+                            FTPToolStripMenuItem.Text = string.Format(Resources.FTPServerOn, (caller as ssh.SshClientWrapper).IPAddress + ":21");
+                            FTPToolStripMenuItem.Checked = ConfigIni.Instance.FtpServer;
+                            FTPToolStripMenuItem.Enabled = false;
+                            openFTPInExplorerToolStripMenuItem.Enabled = true;
+
+                            shellToolStripMenuItem.Text = string.Format(Resources.TelnetServerOn, (caller as ssh.SshClientWrapper).IPAddress + ":" + caller.ShellPort);
+                            shellToolStripMenuItem.Checked = ConfigIni.Instance.TelnetServer;
+                            shellToolStripMenuItem.Enabled = false;
+                            openTelnetToolStripMenuItem.Enabled = true;
+                        }));
                     }
                     else
                     {
-                        if (hakchi.SystemRequiresReflash())
+                        Invoke(new Action(delegate
                         {
-                            if (BackgroundThreadMessageBox(Resources.SystemRequiresReflash, Resources.OutdatedKernel, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
-                            {
-                                if (FlashCustomKernel())
-                                {
-                                    BackgroundThreadMessageBox(Resources.DoneYouCanUpload, Resources.Wow, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                }
-                                return;
-                            }
-                        }
-                        else if (hakchi.SystemRequiresRootfsUpdate())
-                        {
-                            if (BackgroundThreadMessageBox(Resources.SystemRequiresRootfsUpdate, Resources.OutdatedScripts, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
-                            {
-                                if (MembootCustomKernel())
-                                {
-                                    BackgroundThreadMessageBox(Resources.DoneYouCanUpload, Resources.Wow, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                }
-                                return;
-                            }
-                        }
+                            FTPToolStripMenuItem.Text = string.Format(Resources.FTPServerOn, "127.0.0.1:21");
+                            FTPToolStripMenuItem.Enabled = true;
+                            FTPToolStripMenuItem_Click(null, null);
 
-                        // show warning message that any interaction is ill-advised
-                        BackgroundThreadMessageBox(Resources.PleaseUpdate, Resources.Warning, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            shellToolStripMenuItem.Text = string.Format(Resources.TelnetServerOn, "127.0.0.1:1023");
+                            shellToolStripMenuItem.Enabled = true;
+                            shellToolStripMenuItem_Click(null, null);
+                        }));
                     }
+
+                    Invoke(new Action(UpdateLocalCache));
+                    WorkerForm.GetMemoryStats();
+                    new Thread(RecalculateSelectedGamesThread).Start();
+                }
+                else
+                {
+                    if (hakchi.SystemRequiresReflash())
+                    {
+                        if (BackgroundThreadMessageBox(Resources.SystemRequiresReflash, Resources.OutdatedKernel, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                        {
+                            if (FlashCustomKernel())
+                            {
+                                BackgroundThreadMessageBox(Resources.DoneYouCanUpload, Resources.Wow, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                            return;
+                        }
+                    }
+                    else if (hakchi.SystemRequiresRootfsUpdate())
+                    {
+                        if (BackgroundThreadMessageBox(Resources.SystemRequiresRootfsUpdate, Resources.OutdatedScripts, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                        {
+                            if (MembootCustomKernel())
+                            {
+                                BackgroundThreadMessageBox(Resources.DoneYouCanUpload, Resources.Wow, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                            return;
+                        }
+                    }
+
+                    // show warning message that any interaction is ill-advised
+                    BackgroundThreadMessageBox(Resources.PleaseUpdate, Resources.Warning, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
 
             }
@@ -268,20 +300,32 @@ namespace com.clusterrr.hakchi_gui
             }
         }
 
-        void Clovershell_OnDisconnected()
+        void Shell_OnDisconnected()
         {
-            hakchi.Clovershell_OnDisconnected();
-            Invoke(new Action(SyncConsoleType));
+            Invoke(new Action(delegate
+            {
+                SyncConsoleType();
+
+                FTPToolStripMenuItem.Text = string.Format(Resources.FTPServerOn, "127.0.0.1:21");
+                FTPToolStripMenuItem.Enabled = true;
+                FTPToolStripMenuItem_Click(null, null);
+                openFTPInExplorerToolStripMenuItem.Enabled = false;
+
+                shellToolStripMenuItem.Text = string.Format(Resources.TelnetServerOn, "127.0.0.1:1023");
+                shellToolStripMenuItem.Enabled = true;
+                shellToolStripMenuItem_Click(null, null);
+                openTelnetToolStripMenuItem.Enabled = false;
+            }));
         }
 
-        static ConsoleType? lastConnectedConsoleType = null;
         static ConsoleType lastConsoleType = ConsoleType.Unknown;
         public void SyncConsoleType()
         {
+            // update window title
             SetWindowTitle();
 
             // skip if unchanged
-            if (ConfigIni.Instance.ConsoleType == lastConsoleType && hakchi.DetectedConsoleType == lastConnectedConsoleType)
+            if (ConfigIni.Instance.ConsoleType == lastConsoleType)
                 return;
 
             // select games collection
@@ -294,13 +338,6 @@ namespace com.clusterrr.hakchi_gui
                 }
             }
 
-            // detected console type
-            noneToolStripMenuItem.Checked = hakchi.DetectedConsoleType == null || hakchi.DetectedConsoleType == ConsoleType.Unknown;
-            nESMiniToolStripMenuItem.Checked = hakchi.DetectedConsoleType == ConsoleType.NES;
-            famicomMiniToolStripMenuItem.Checked = hakchi.DetectedConsoleType == ConsoleType.Famicom;
-            sNESMiniToolStripMenuItem.Checked = hakchi.DetectedConsoleType == ConsoleType.SNES;
-            superFamicomMiniToolStripMenuItem.Checked = hakchi.DetectedConsoleType == ConsoleType.SuperFamicom;
-
             // console settings
             enableUSBHostToolStripMenuItem.Checked = ConfigIni.Instance.UsbHost;
             useExtendedFontToolStripMenuItem.Checked = ConfigIni.Instance.UseFont;
@@ -308,7 +345,7 @@ namespace com.clusterrr.hakchi_gui
             selectButtonCombinationToolStripMenuItem.Enabled = resetUsingCombinationOfButtonsToolStripMenuItem.Checked = ConfigIni.Instance.ResetHack;
             enableAutofireToolStripMenuItem.Checked = ConfigIni.Instance.AutofireHack;
             useXYOnClassicControllerAsAutofireABToolStripMenuItem.Checked = ConfigIni.Instance.AutofireXYHack;
-            upABStartOnSecondControllerToolStripMenuItem.Enabled = hakchi.DetectedConsoleType == ConsoleType.Famicom;
+            upABStartOnSecondControllerToolStripMenuItem.Enabled = true; // hakchi.DetectedConsoleType == ConsoleType.Famicom;
             upABStartOnSecondControllerToolStripMenuItem.Checked = ConfigIni.Instance.FcStart && upABStartOnSecondControllerToolStripMenuItem.Enabled;
 
             // more settings
@@ -378,7 +415,6 @@ namespace com.clusterrr.hakchi_gui
             LoadPresets();
             LoadGames();
             lastConsoleType = ConfigIni.Instance.ConsoleType;
-            lastConnectedConsoleType = hakchi.DetectedConsoleType;
         }
 
         void UpdateLocalCache()
@@ -1132,8 +1168,8 @@ namespace com.clusterrr.hakchi_gui
         {
             Debug.WriteLine("Closing main form");
             SaveConfig();
-            ftpServer.Stop();
-            Clovershell.Dispose();
+            FtpServer.Stop();
+            hakchi.Shutdown();
         }
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
@@ -1253,7 +1289,7 @@ namespace com.clusterrr.hakchi_gui
 
         DialogResult RequirePatchedKernel()
         {
-            if (Clovershell.IsOnline) return DialogResult.OK; // OK - Clovershell is online
+            if (hakchi.Shell.IsOnline) return DialogResult.OK; // OK - Shell is online
             if (MessageBox.Show(Resources.CustomWarning, Resources.CustomKernel, MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
                     == System.Windows.Forms.DialogResult.Yes)
             {
@@ -1306,8 +1342,6 @@ namespace com.clusterrr.hakchi_gui
             workerForm.Start();
             return workerForm.DialogResult == DialogResult.OK;
         }
-
-        
 
         bool DoNandFlash()
         {
@@ -2125,8 +2159,8 @@ namespace com.clusterrr.hakchi_gui
 
         private void timerConnectionCheck_Tick(object sender, EventArgs e)
         {
-            toolStripStatusConnectionIcon.Image = Clovershell.IsOnline ? Resources.green : Resources.red;
-            toolStripStatusConnectionIcon.ToolTipText = Clovershell.IsOnline ? "Online" : "Offline";
+            toolStripStatusConnectionIcon.Image = hakchi.Shell.IsOnline ? Resources.green : Resources.red;
+            toolStripStatusConnectionIcon.ToolTipText = hakchi.Shell.IsOnline ? "Online" : "Offline";
         }
 
         private void saveSettingsToNESMiniNowToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2163,7 +2197,7 @@ namespace com.clusterrr.hakchi_gui
             form.ShowDialog();
         }
 
-        private void FTPToolStripMenuItem_Click(object sender, EventArgs e)
+        private bool changeFTPServerState(bool enabled)
         {
             if (FTPToolStripMenuItem.Checked)
             {
@@ -2173,7 +2207,8 @@ namespace com.clusterrr.hakchi_gui
                     {
                         try
                         {
-                            ftpServer.Run();
+                            (FtpServer.FileSystemHandler as mooftpserv.NesMiniFileSystemHandler).UpdateShell(hakchi.Shell);
+                            FtpServer.Run();
                         }
                         catch (ThreadAbortException)
                         {
@@ -2182,41 +2217,45 @@ namespace com.clusterrr.hakchi_gui
                         {
                             try
                             {
-                                ftpServer.Stop();
+                                FtpServer.Stop();
                             }
                             catch { }
                             Debug.WriteLine(ex.Message + ex.StackTrace);
                             Invoke(new Action(delegate ()
-                                {
-                                    MessageBox.Show(this, ex.Message, Resources.Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                    FTPToolStripMenuItem.Checked = false;
-                                }));
+                            {
+                                MessageBox.Show(this, ex.Message, Resources.Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                ConfigIni.Instance.FtpServer = openFTPInExplorerToolStripMenuItem.Enabled = FTPToolStripMenuItem.Checked = false;
+                            }));
                         }
                     });
                     ftpThread.Start();
-                    ConfigIni.Instance.FtpServer = true;
+                    return true;
                 }
                 catch (Exception ex)
                 {
                     Debug.WriteLine(ex.Message + ex.StackTrace);
                     MessageBox.Show(this, ex.Message, Resources.Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    FTPToolStripMenuItem.Checked = false;
-                    ConfigIni.Instance.FtpServer = false;
                 }
             }
             else
             {
-                ftpServer.Stop();
-                ConfigIni.Instance.FtpServer = false;
+                FtpServer.Stop();
             }
-            openFTPInExplorerToolStripMenuItem.Enabled = FTPToolStripMenuItem.Checked;
+            return false;
+        }
+
+        private void FTPToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ConfigIni.Instance.FtpServer = FTPToolStripMenuItem.Checked = changeFTPServerState(FTPToolStripMenuItem.Checked);
+            openFTPInExplorerToolStripMenuItem.Enabled = hakchi.Connected;
         }
 
         private void shellToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
             {
-                ConfigIni.Instance.TelnetServer = openTelnetToolStripMenuItem.Enabled = Clovershell.ShellEnabled = shellToolStripMenuItem.Checked;
+                ConfigIni.Instance.TelnetServer = hakchi.Shell.ShellEnabled = shellToolStripMenuItem.Checked;
+                openTelnetToolStripMenuItem.Enabled = hakchi.Connected;
             }
             catch (Exception ex)
             {
@@ -2228,15 +2267,26 @@ namespace com.clusterrr.hakchi_gui
 
         private void openFTPInExplorerToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            string ip, port;
+            if (hakchi.Shell is ssh.SshClientWrapper)
+            {
+                ip = (hakchi.Shell as ssh.SshClientWrapper).IPAddress;
+                port = "21";
+            }
+            else
+            {
+                ip = "127.0.0.1";
+                port = FtpServer.LocalPort.ToString();
+            }
+
             try
             {
                 new Process()
                 {
                     StartInfo = new ProcessStartInfo()
                     {
-                        FileName = String.Format(ConfigIni.Instance.FtpCommand, "root", "clover", "127.0.0.1", "1021"),
-                        Arguments = String.Format(ConfigIni.Instance.FtpArguments, "root", "clover", "127.0.0.1", "1021"),
-                        
+                        FileName = String.Format(ConfigIni.Instance.FtpCommand, "root", "clover", ip, port),
+                        Arguments = String.Format(ConfigIni.Instance.FtpArguments, "root", "clover", ip, port)
                     }
                 }.Start();
             }
@@ -2249,14 +2299,26 @@ namespace com.clusterrr.hakchi_gui
 
         private void openTelnetToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            string ip, port;
+            if (hakchi.Shell is ssh.SshClientWrapper)
+            {
+                ip = (hakchi.Shell as ssh.SshClientWrapper).IPAddress;
+                port = hakchi.Shell.ShellPort.ToString();
+            }
+            else
+            {
+                ip = "127.0.0.1";
+                port = "1023";
+            }
+
             try
             {
                 new Process()
                 {
                     StartInfo = new ProcessStartInfo()
                     {
-                        FileName = String.Format(ConfigIni.Instance.TelnetCommand, "127.0.0.1", "1023"),
-                        Arguments = String.Format(ConfigIni.Instance.TelnetArguments, "127.0.0.1", "1023"),
+                        FileName = String.Format(ConfigIni.Instance.TelnetCommand, ip, port),
+                        Arguments = String.Format(ConfigIni.Instance.TelnetArguments, ip, port)
                     }
                 }.Start();
             }
@@ -2584,11 +2646,11 @@ namespace com.clusterrr.hakchi_gui
                             }
                         }
 
-                        Clovershell.Execute("hakchi unset cfg_boot_logo; cat > \"$(hakchi get rootfs)/etc/boot.png\"", File.OpenRead(imageFile));
-                        bool usbHost = Clovershell.ExecuteSimple("if [ -d /media/hakchi/ ]; then echo 1; else echo 0; fi;").Equals("1");
+                        hakchi.Shell.Execute("hakchi unset cfg_boot_logo; cat > \"$(hakchi get rootfs)/etc/boot.png\"", File.OpenRead(imageFile));
+                        bool usbHost = hakchi.Shell.ExecuteSimple("if [ -d /media/hakchi/ ]; then echo 1; else echo 0; fi;").Equals("1");
                         if (usbHost)
                         {
-                            Clovershell.Execute("cat > \"/media/hakchi/boot.png\"", File.OpenRead(imageFile));
+                            hakchi.Shell.Execute("cat > \"/media/hakchi/boot.png\"", File.OpenRead(imageFile));
                         }
 
                         if (!ConfigIni.Instance.DisablePopups)
@@ -2612,11 +2674,11 @@ namespace com.clusterrr.hakchi_gui
                 {
                     var assembly = GetType().Assembly;
 
-                    Clovershell.Execute("hakchi unset cfg_boot_logo; cat > \"$(hakchi get rootfs)/etc/boot.png\"", File.OpenRead(Shared.PathCombine(Program.BaseDirectoryInternal, "data", "blankBoot.png")));
-                    bool usbHost = Clovershell.ExecuteSimple("if [ -d /media/hakchi/ ]; then echo 1; else echo 0; fi;").Equals("1");
+                    hakchi.Shell.Execute("hakchi unset cfg_boot_logo; cat > \"$(hakchi get rootfs)/etc/boot.png\"", File.OpenRead(Shared.PathCombine(Program.BaseDirectoryInternal, "data", "blankBoot.png")));
+                    bool usbHost = hakchi.Shell.ExecuteSimple("if [ -d /media/hakchi/ ]; then echo 1; else echo 0; fi;").Equals("1");
                     if (usbHost)
                     {
-                        Clovershell.Execute("cat > \"/media/hakchi/boot.png\"", File.OpenRead(Shared.PathCombine(Program.BaseDirectoryInternal, "data", "blankBoot.png")));
+                        hakchi.Shell.Execute("cat > \"/media/hakchi/boot.png\"", File.OpenRead(Shared.PathCombine(Program.BaseDirectoryInternal, "data", "blankBoot.png")));
                     }
 
                     if (!ConfigIni.Instance.DisablePopups)
@@ -2637,8 +2699,8 @@ namespace com.clusterrr.hakchi_gui
             {
                 if (WaitingClovershellForm.WaitForDevice(this))
                 {
-                    Clovershell.ExecuteSimple("hakchi unset cfg_boot_logo; rm \"$(hakchi get rootfs)/etc/boot.png\"");
-                    Clovershell.ExecuteSimple("rm \"/media/hakchi/boot.png\"");
+                    hakchi.Shell.ExecuteSimple("hakchi unset cfg_boot_logo; rm \"$(hakchi get rootfs)/etc/boot.png\"");
+                    hakchi.Shell.ExecuteSimple("rm \"/media/hakchi/boot.png\"");
 
                     if (!ConfigIni.Instance.DisablePopups)
                         MessageBox.Show(Resources.Done, Resources.Wow, MessageBoxButtons.OK, MessageBoxIcon.Information);

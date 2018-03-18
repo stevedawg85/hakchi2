@@ -67,6 +67,7 @@
             this.flashNANDBPartitionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dumpNANDCPartitionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.flashNANDCPartitionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.formatNANDCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modulesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.installModulesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.uninstallModulesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -89,12 +90,6 @@
             this.centerBoxArtThumbnailToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.disableHakchi2PopupsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem16 = new System.Windows.Forms.ToolStripSeparator();
-            this.consoleTypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.noneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.nESMiniToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.famicomMiniToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.sNESMiniToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.superFamicomMiniToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cloverconHackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resetUsingCombinationOfButtonsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.selectButtonCombinationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -195,7 +190,6 @@
             this.label8 = new System.Windows.Forms.Label();
             this.numericUpDownSaveCount = new System.Windows.Forms.NumericUpDown();
             this.groupBoxOptions = new System.Windows.Forms.GroupBox();
-            this.formatNANDCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.structureButton = new System.Windows.Forms.Button();
             this.foldersContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.disablePagefoldersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -479,6 +473,12 @@
             resources.ApplyResources(this.flashNANDCPartitionToolStripMenuItem, "flashNANDCPartitionToolStripMenuItem");
             this.flashNANDCPartitionToolStripMenuItem.Click += new System.EventHandler(this.flashNANDCPartitionToolStripMenuItem_Click);
             // 
+            // formatNANDCToolStripMenuItem
+            // 
+            this.formatNANDCToolStripMenuItem.Name = "formatNANDCToolStripMenuItem";
+            resources.ApplyResources(this.formatNANDCToolStripMenuItem, "formatNANDCToolStripMenuItem");
+            this.formatNANDCToolStripMenuItem.Click += new System.EventHandler(this.formatNANDCToolStripMenuItem_Click);
+            // 
             // modulesToolStripMenuItem
             // 
             this.modulesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -564,7 +564,6 @@
             this.centerBoxArtThumbnailToolStripMenuItem,
             this.disableHakchi2PopupsToolStripMenuItem,
             this.toolStripMenuItem16,
-            this.consoleTypeToolStripMenuItem,
             this.cloverconHackToolStripMenuItem,
             this.globalCommandLineArgumentsexpertsOnluToolStripMenuItem,
             this.enableUSBHostToolStripMenuItem,
@@ -660,44 +659,6 @@
             // 
             this.toolStripMenuItem16.Name = "toolStripMenuItem16";
             resources.ApplyResources(this.toolStripMenuItem16, "toolStripMenuItem16");
-            // 
-            // consoleTypeToolStripMenuItem
-            // 
-            this.consoleTypeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.noneToolStripMenuItem,
-            this.nESMiniToolStripMenuItem,
-            this.famicomMiniToolStripMenuItem,
-            this.sNESMiniToolStripMenuItem,
-            this.superFamicomMiniToolStripMenuItem});
-            this.consoleTypeToolStripMenuItem.Name = "consoleTypeToolStripMenuItem";
-            resources.ApplyResources(this.consoleTypeToolStripMenuItem, "consoleTypeToolStripMenuItem");
-            // 
-            // noneToolStripMenuItem
-            // 
-            this.noneToolStripMenuItem.Checked = true;
-            this.noneToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            resources.ApplyResources(this.noneToolStripMenuItem, "noneToolStripMenuItem");
-            this.noneToolStripMenuItem.Name = "noneToolStripMenuItem";
-            // 
-            // nESMiniToolStripMenuItem
-            // 
-            resources.ApplyResources(this.nESMiniToolStripMenuItem, "nESMiniToolStripMenuItem");
-            this.nESMiniToolStripMenuItem.Name = "nESMiniToolStripMenuItem";
-            // 
-            // famicomMiniToolStripMenuItem
-            // 
-            resources.ApplyResources(this.famicomMiniToolStripMenuItem, "famicomMiniToolStripMenuItem");
-            this.famicomMiniToolStripMenuItem.Name = "famicomMiniToolStripMenuItem";
-            // 
-            // sNESMiniToolStripMenuItem
-            // 
-            resources.ApplyResources(this.sNESMiniToolStripMenuItem, "sNESMiniToolStripMenuItem");
-            this.sNESMiniToolStripMenuItem.Name = "sNESMiniToolStripMenuItem";
-            // 
-            // superFamicomMiniToolStripMenuItem
-            // 
-            resources.ApplyResources(this.superFamicomMiniToolStripMenuItem, "superFamicomMiniToolStripMenuItem");
-            this.superFamicomMiniToolStripMenuItem.Name = "superFamicomMiniToolStripMenuItem";
             // 
             // cloverconHackToolStripMenuItem
             // 
@@ -1401,22 +1362,6 @@
             this.groupBoxOptions.Name = "groupBoxOptions";
             this.groupBoxOptions.TabStop = false;
             // 
-            // prepareArtDirectoryToolStripMenuItem
-            // 
-            this.prepareArtDirectoryToolStripMenuItem.Name = "prepareArtDirectoryToolStripMenuItem";
-            resources.ApplyResources(this.prepareArtDirectoryToolStripMenuItem, "prepareArtDirectoryToolStripMenuItem");
-            this.prepareArtDirectoryToolStripMenuItem.Click += new System.EventHandler(this.prepareArtDirectoryToolStripMenuItem_Click);
-            // 
-            // toolStripMenuItem18
-            // 
-            this.toolStripMenuItem18.Name = "toolStripMenuItem18";
-            resources.ApplyResources(this.toolStripMenuItem18, "toolStripMenuItem18");
-            // 
-            // formatNANDCToolStripMenuItem
-            // 
-            this.formatNANDCToolStripMenuItem.Name = "formatNANDCToolStripMenuItem";
-            resources.ApplyResources(this.formatNANDCToolStripMenuItem, "formatNANDCToolStripMenuItem");
-            this.formatNANDCToolStripMenuItem.Click += new System.EventHandler(this.formatNANDCToolStripMenuItem_Click);
             // structureButton
             // 
             resources.ApplyResources(this.structureButton, "structureButton");
@@ -1615,9 +1560,6 @@
         private System.Windows.Forms.ToolStripMenuItem cloverconHackToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem resetUsingCombinationOfButtonsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem selectButtonCombinationToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem consoleTypeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem nESMiniToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem famicomMiniToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem enableAutofireToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem globalCommandLineArgumentsexpertsOnluToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem upABStartOnSecondControllerToolStripMenuItem;
@@ -1644,8 +1586,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem8;
         private System.Windows.Forms.ToolStripMenuItem takeScreenshotToolStripMenuItem;
         private System.Windows.Forms.SaveFileDialog saveDumpFileDialog;
-        private System.Windows.Forms.ToolStripMenuItem sNESMiniToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem superFamicomMiniToolStripMenuItem;
         private System.Windows.Forms.OpenFileDialog openDumpFileDialog;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem11;
         private System.Windows.Forms.ToolStripMenuItem compressGamesToolStripMenuItem;
@@ -1759,7 +1699,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem4;
         private System.Windows.Forms.ToolStripMenuItem maximumGamesPerFolderToolStripMenuItem;
         private System.Windows.Forms.ComboBox gamesConsoleComboBox;
-        private System.Windows.Forms.ToolStripMenuItem noneToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem kachikachiToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem canoeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem retroarchToolStripMenuItem;
