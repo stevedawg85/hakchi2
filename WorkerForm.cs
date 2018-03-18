@@ -229,6 +229,7 @@ namespace com.clusterrr.hakchi_gui
             TaskbarProgress.SetState(this, TaskbarProgress.TaskbarStates.Normal);
             return DialogResult.Abort;
         }
+
         DialogResult WaitForClovershellFromThread()
         {
             if (InvokeRequired)
@@ -394,8 +395,6 @@ namespace com.clusterrr.hakchi_gui
             }
         }
 
-
-
         void SetStatus(string status)
         {
             if (Disposing) return;
@@ -507,7 +506,6 @@ namespace com.clusterrr.hakchi_gui
                 kernelStream.Seek(0, SeekOrigin.Begin);
 
                 var size = CalcKernelSize(header);
-
                 if (size == 0 || size > Fel.kernel_max_size)
                     throw new Exception(Resources.InvalidKernelSize + " " + size);
 
@@ -796,7 +794,7 @@ namespace com.clusterrr.hakchi_gui
             SetProgress(maxProgress, maxProgress);
         }
 
-        public void GeneralMemboot(Action<clovershell.ClovershellConnection> membootAction, bool rebootAfter = true, bool skipCustom = false)
+        public void GeneralMemboot(Action<ClovershellConnection> membootAction, bool rebootAfter = true, bool skipCustom = false)
         {
             if (!hakchi.MinimalMemboot)
             {
@@ -826,14 +824,16 @@ namespace com.clusterrr.hakchi_gui
             }
 
             if (WaitForClovershellFromThread() != DialogResult.Abort)
-                membootAction(MainForm.Clovershell);
+            {
+                membootAction((ClovershellConnection)hakchi.Shell);
+            }
 
             if (rebootAfter)
             {
                 try
                 {
-                    if (MainForm.Clovershell.IsOnline)
-                        MainForm.Clovershell.ExecuteSimple("sync; umount -ar; reboot -f", 100);
+                    if (hakchi.Shell.IsOnline)
+                        hakchi.Shell.ExecuteSimple("sync; umount -ar; reboot -f", 100);
                 }
                 catch { }
             }
@@ -841,7 +841,7 @@ namespace com.clusterrr.hakchi_gui
 
         public static void CopySntool()
         {
-            MainForm.Clovershell.Execute("cat > /bin/sntool; chmod +x /bin/sntool", File.OpenRead(sntoolPath), throwOnNonZero: true);
+            hakchi.Shell.Execute("cat > /bin/sntool; chmod +x /bin/sntool", File.OpenRead(sntoolPath), throwOnNonZero: true);
         }
 
         public void ProcessNand(Tasks task)
