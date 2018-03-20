@@ -1462,12 +1462,20 @@ namespace com.clusterrr.hakchi_gui
 
             byte[] kernel;
             if (!string.IsNullOrEmpty(Mod))
-                kernel = CreatePatchedKernel();
+            {
+                //kernel = CreatePatchedKernel();
+                Debug.WriteLine("USING BOOT.IMG");
+                kernel = File.ReadAllBytes(Path.Combine(Path.Combine(Program.BaseDirectoryExternal, "dump"), "boot.img"));
+            }
             else
+            {
                 kernel = File.ReadAllBytes(KernelDumpPath);
+            }
+                
 
             if (!MainForm.Clovershell.IsOnline)
             {
+                Debug.WriteLine("CALCULATING BOOT.IMG STATS");
                 var size = CalcKernelSize(kernel);
                 if (size > kernel.Length || size > Fel.transfer_max_size)
                     throw new Exception(Resources.InvalidKernelSize + " " + size);
@@ -1522,6 +1530,7 @@ namespace com.clusterrr.hakchi_gui
             }
             else
             {
+                Debug.WriteLine("UPLOADING BOOT.IMG");
                 fel.WriteMemory(Fel.transfer_base_m, kernel,
                     delegate (Fel.CurrentAction action, string command)
                     {
@@ -1536,6 +1545,7 @@ namespace com.clusterrr.hakchi_gui
                     }
                 );
 
+                Debug.WriteLine("RUNNING BOOT.IMG");
                 var bootCommand = string.Format("boota {0:x}", Fel.transfer_base_m);
                 SetStatus(Resources.ExecutingCommand + " " + bootCommand);
                 fel.RunUbootCmd(bootCommand, true);
@@ -1550,11 +1560,65 @@ namespace com.clusterrr.hakchi_gui
                 waitSeconds = 5;
             for (int i = 0; i < waitSeconds * 2; i++)
             {
+                Debug.WriteLine("WAITING FOR CLOVERSHELL FROM BOOT.IMG");
                 Thread.Sleep(500);
                 progress++;
                 SetProgress(progress, maxProgress);
                 if (MainForm.Clovershell.IsOnline)
+                {
+                    if (hmodsInstall != null && hmodsInstall.Count() > 0)
+                    {
+                        //SetStatus(Resources.InstallingMods);
+                        foreach (var hmod in hmodsInstall)
+                        {
+                            var modName = hmod + ".hmod";
+                            Debug.WriteLine("INSTALLING " + modName);
+                            foreach (var dir in hmodDirectories)
+                            {
+                                string hmodHakchiPath = $"/hakchi/transfer/";
+                                if (Directory.Exists(Path.Combine(dir, modName)))
+                                {
+
+                                    MainForm.Clovershell.ExecuteSimple($"mkdir -p '{hmodHakchiPath}'");
+                                    using (var hmodTar = new TarStream(Path.Combine(dir, modName)))
+                                    {
+                                        if (hmodTar.Length > 0)
+                                        {
+                                            MainForm.Clovershell.Execute($"tar -xvC '{hmodHakchiPath}'", hmodTar, null, null, 0, true);
+                                        }
+                                    }
+                                    break;
+                                }
+                                if (File.Exists(Path.Combine(dir, modName)))
+                                {
+                                    MainForm.Clovershell.ExecuteSimple($"mkdir -p '{hmodHakchiPath}'");
+                                    MainForm.Clovershell.Execute($"cat > '{hmodHakchiPath}{modName}'", File.OpenRead(Path.Combine(dir, modName)), null, null, 0, true);
+                                    break;
+                                }
+                            }
+                            //hmodCounter++;
+                            //SetProgress(hmodCounter, hmodCount);
+                        }
+                    }
+
+                    if ((hmodsInstall != null && hmodsInstall.Count() > 0))
+                    {
+                        Debug.WriteLine("INSTALLING THE MODS");
+                        MainForm.Clovershell.ExecuteSimple("echo \"cf_install = y\" >> /hakchi/config", 0);
+                        MainForm.Clovershell.ExecuteSimple("echo \"cf_update = y\" >> /hakchi/config", 0);
+                        
+                        try
+                        {
+                            MainForm.Clovershell.ExecuteSimple("killall clovershell", 0);
+                        }
+                        catch { }
+
+                        //SetStatus(Resources.Done);
+                        //SetProgress(1, 1);
+                    }
+
                     break;
+                }
             }
 #if !DEBUG
             if (Directory.Exists(tempDirectory))

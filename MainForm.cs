@@ -1446,11 +1446,11 @@ namespace com.clusterrr.hakchi_gui
             workerForm.zImage = Shared.PathCombine(Program.BaseDirectoryInternal, "data", "zImageMemboot");
             workerForm.Mod = mod;
 
-            if (copyBaseMods)
+            //if (copyBaseMods)
                 workerForm.hmodsInstall = new List<string>(InternalMods);
 
-            if (!String.IsNullOrEmpty(extraFiles))
-                workerForm.ModExtraFilesPaths = new string[] { Shared.PathCombine(Program.BaseDirectoryInternal, "mods", extraFiles) };
+            //if (!String.IsNullOrEmpty(extraFiles))
+            //    workerForm.ModExtraFilesPaths = new string[] { Shared.PathCombine(Program.BaseDirectoryInternal, "mods", extraFiles) };
 
             workerForm.Config = null;
             workerForm.Games = null;
@@ -1744,7 +1744,7 @@ namespace com.clusterrr.hakchi_gui
 
         private void membootPatchedKernelToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (RequireKernelDump() == DialogResult.No) return;
+            //if (RequireKernelDump() == DialogResult.No) return;
             MembootCustomKernel();
         }
 
