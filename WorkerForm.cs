@@ -38,7 +38,6 @@ namespace com.clusterrr.hakchi_gui
             DownloadCovers,
             ScanCovers,
             DeleteCovers,
-            LoadGames,
             AddGames,
             CompressGames,
             DecompressGames,
@@ -334,9 +333,6 @@ namespace com.clusterrr.hakchi_gui
                         break;
                     case Tasks.ProcessMods:
                         ProcessMods();
-                        break;
-                    case Tasks.LoadGames:
-                        LoadGames();
                         break;
                     case Tasks.AddGames:
                         AddGames(GamesToAdd);
@@ -1938,11 +1934,6 @@ namespace com.clusterrr.hakchi_gui
             return pages * page_size;
         }
 
-        void LoadGames()
-        {
-
-        }
-
         int addedGamesCount = 0; // on totalFiles
         public int AddGames(IEnumerable<string> files, Form parentForm = null)
         {
@@ -2108,7 +2099,7 @@ namespace com.clusterrr.hakchi_gui
                     }
                     else
                         gameFile = game.BasePath;
-                    game.FindCover(game.Metadata.OriginalFilename ?? Path.GetFileName(gameFile), null, crc32, game.Name);
+                    game.FindCover(game.Metadata.OriginalFilename ?? Path.GetFileName(gameFile), crc32, game.Name);
                     if (!game.CoverArtMatchSuccess && game.CoverArtMatches.Any())
                         unknownApps.Add(game);
                 }
@@ -2408,7 +2399,7 @@ namespace com.clusterrr.hakchi_gui
                             // create game temporarily to perform cover search
                             Debug.WriteLine(string.Format("Resetting game \"{0}\".", query.Single().Name));
                             var game = NesApplication.FromDirectory(path);
-                            game.FindCover(code + ".desktop", null);
+                            game.FindCover(code + ".desktop");
                             game.Save();
                         }
 
